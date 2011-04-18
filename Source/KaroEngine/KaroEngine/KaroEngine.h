@@ -4,7 +4,10 @@
 
 using namespace System;
 
-	enum Tile { 
+namespace KaroEngine 
+{
+	public enum Tile
+	{
 		EMPTY,
 		SOLIDTILE,
 		MOVEABLETILE,
@@ -13,6 +16,18 @@ using namespace System;
 		REDUNMARKED,
 		REDMARKED
 	};
+
+	public enum class Managed_Tile
+	{
+		EMPTY = EMPTY,
+		SOLIDTILE = SOLIDTILE,
+		MOVEABLETILE = MOVEABLETILE,
+		WHITEUNMARKED = WHITEUNMARKED,
+		WHITEMARKED = WHITEMARKED,
+		REDUNMARKED = REDUNMARKED,
+		REDMARKED = REDMARKED
+	};
+
 	enum Player{ WHITE, RED };
 
 	enum GameState{ INSERTION, PLAYING, GAMEFINISHED };
@@ -20,7 +35,6 @@ using namespace System;
 	
 	public ref class KaroEngine
 	{
-		// TODO: Add your methods for this class here.
 	private:
 		GameState gameState;
 		Tile *board;
@@ -35,6 +49,6 @@ using namespace System;
 		void UndoMove();
 		bool FreeForMove(int); // checks if a tile is empty
 		bool IsGameTile(int); // checks if a tile exists
-		
+		int * GetBoard(void);
 	};
-
+}
