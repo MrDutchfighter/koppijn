@@ -23,13 +23,15 @@ using namespace System;
 		// TODO: Add your methods for this class here.
 	private:
 		GameState gameState;
-		int *board;
+		FieldTile *board;
 		Player turn;
+		static const int BOARDWIDTH = 15;
 
 	public:
 		KaroEngine(void);
 		~KaroEngine(void);
-		void DoMove();
+		bool IsValidMove(int from, int to);
+		void DoMove(int, int);
 		void UndoMove();
 		bool IsTileEmpty(int); // checks if a tile is empty
 		bool IsTile(int); // checks if a tile exists
