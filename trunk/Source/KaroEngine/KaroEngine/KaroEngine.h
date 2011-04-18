@@ -4,34 +4,41 @@
 
 using namespace System;
 
-namespace KaroEngine {
-	enum Color{
+	enum PieceColor{
 		Black,
 		Red
 	};
 
-	enum State{
+	enum GameState{
+		Insertion,
+		Play,
+		GameFinished
+	};
+
+	enum PieceState{
 		Marked,
 		Unmarked
 	};
 
 	public struct Piece
 	{
-		Color color;
-		State state;
+		PieceColor color;
+		PieceState state;
 	};
 
 	public ref class KaroEngine
 	{
 		// TODO: Add your methods for this class here.
 	private:
-		int gameState;
-		int board;
-		Color turn;
+		GameState gameState;
+		int *board;
+		PieceColor turn;
 
 	public:
+		KaroEngine(void);
+		~KaroEngine(void);
 		void DoMove();
 		void UndoMove();
 		
 	};
-}
+
