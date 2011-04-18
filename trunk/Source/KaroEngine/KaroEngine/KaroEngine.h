@@ -4,41 +4,35 @@
 
 using namespace System;
 
-	enum PieceColor{
-		Black,
-		Red
+	enum FieldTile{ 
+		EMPTY,
+		TILE,
+		MOVEABLETILE,
+		WHITEUNMARKED,
+		WHITEMARKED,
+		REDUNMARKED,
+		REDMARKED
 	};
+	enum Player{ WHITE, RED };
 
-	enum GameState{
-		Insertion,
-		Play,
-		GameFinished
-	};
+	enum GameState{ INSERTION, PLAYING, GAMEFINISHED };
 
-	enum PieceState{
-		Marked,
-		Unmarked
-	};
-
-	public struct Piece
-	{
-		PieceColor color;
-		PieceState state;
-	};
-
+	
 	public ref class KaroEngine
 	{
 		// TODO: Add your methods for this class here.
 	private:
 		GameState gameState;
 		int *board;
-		PieceColor turn;
+		Player turn;
 
 	public:
 		KaroEngine(void);
 		~KaroEngine(void);
 		void DoMove();
 		void UndoMove();
+		bool IsTileEmpty(int); // checks if a tile is empty
+		bool IsTile(int); // checks if a tile exists
 		
 	};
 
