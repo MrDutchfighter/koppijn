@@ -12,7 +12,7 @@ namespace KaroTestGUI
 
     public partial class Form1 : Form
     {
-
+        KaroEngine engine;
         Pen penBlack;
         Pen penGray;
         Brush   brushBlack;
@@ -31,11 +31,11 @@ namespace KaroTestGUI
         BOARDTILES[] board;
 
         public Form1()
-        {            
+        {
+            engine = new KaroEngine();
+            
             penBlack        = Pens.Black;
-
             penGray = new Pen(Color.Gray, 2);    
-
             brushBlack      = Brushes.Black;            
             brushRed        = Brushes.Red;
             brushWhite      = Brushes.White;
