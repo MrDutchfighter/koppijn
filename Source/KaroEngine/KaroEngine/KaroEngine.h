@@ -4,9 +4,9 @@
 
 using namespace System;
 
-	enum FieldTile{ 
+	enum Tile { 
 		EMPTY,
-		TILE,
+		SOLIDTILE,
 		MOVEABLETILE,
 		WHITEUNMARKED,
 		WHITEMARKED,
@@ -23,7 +23,7 @@ using namespace System;
 		// TODO: Add your methods for this class here.
 	private:
 		GameState gameState;
-		FieldTile *board;
+		Tile *board;
 		Player turn;
 		static const int BOARDWIDTH = 15;
 
@@ -33,8 +33,8 @@ using namespace System;
 		bool IsValidMove(int from, int to);
 		void DoMove(int, int);
 		void UndoMove();
-		bool IsTileEmpty(int); // checks if a tile is empty
-		bool IsTile(int); // checks if a tile exists
+		bool FreeForMove(int); // checks if a tile is empty
+		bool IsGameTile(int); // checks if a tile exists
 		
 	};
 
