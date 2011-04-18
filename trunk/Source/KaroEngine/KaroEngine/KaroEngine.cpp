@@ -6,7 +6,7 @@
 
 KaroEngine::KaroEngine(void)
 {
-	board = new FieldTile[BOARDWIDTH * BOARDWIDTH];
+	board = new Tile[BOARDWIDTH * BOARDWIDTH];
 	this->turn = WHITE;
 	int gamestate = INSERTION; // 0 is insertionstate 1 is gameplaystate 2 is gameover
 
@@ -15,7 +15,7 @@ KaroEngine::KaroEngine(void)
 
 	for(int j = 4; j < 8; j++)
 		for( int k = 5; k < 10; k++ )
-			board[j*BOARDWIDTH+k] = TILE;
+			board[j*BOARDWIDTH+k] = SOLIDTILE;
 }
 
 KaroEngine::~KaroEngine(void)
@@ -24,48 +24,75 @@ KaroEngine::~KaroEngine(void)
 }
 void KaroEngine::DoMove(int from, int to)
 {
-	if(IsTile(to))
+	if(IsValidMove(from, to))
 	{
-
 		board[to] = board[from];
 	}
 }
 
 bool KaroEngine::IsValidMove(int from, int to)
 {
-	bool valid = false;
-	// grenzende move
-	int move = from - to;
-	if(move == -1 || move == 1 || move == -BOARDWIDTH+1 || move == -BOARDWIDTH || move == -BOARDWIDTH-1 || move == BOARDWIDTH-1 || move == BOARDWIDTH || move == BOARDWIDTH+1 )
-	{
-		if(IsTile(to))
-			valid = true;
-	}
-	// jump move
-	else if(move == -2 || move == 2 || move == -(2*BOARDWIDTH)+1 || move == -2*BOARDWIDTH || move == -(2*BOARDWIDTH)-1 || move == (2*BOARDWIDTH)-1 || move == 2*BOARDWIDTH || move == (2*BOARDWIDTH)+1 )
-	{
-		if(IsTile(to))
-		{
-			FieldTile tempField = board[((from - to) / 2) + to];
-			if ( tempField == WHITEUNMARKED || tempField == WHITEUNMARKED || tempField == WHITEUNMARKED || tempField == WHITEUNMARKED )
-			{
-				valid = true;
-			}
-		}
+	int rowFrom = from/BOARDWIDTH;
+	int rowTo = to/BOARDWIDTH;
+
+	int colFrom = from%BOARDWIDTH;
+	int colTo = to%BOARDWIDTH;
+
+	int rowDifference = rowFrom-rowTo;
+	int colDifference = colFrom-colTo;
+
+	int rowDifferencePos = rowDifference;
+	if(rowDifference < 0) { rowDifference *= -1; } 
+
+	int colDifferencePos = colDifference;
+	if(colDifferencePos < 0) { colDifferencePos *= -1; }
+
+	// Distance bigger than 2 steps
+	if(rowDifference < -2 || rowDifference > 2 || colDifference < -2 && colDifference > 2) {
+		return false;
 	}
 
-	return valid;
+	// Can you move this tile?
+	if(!IsGameTile(from) || FreeForMove(from)) {
+		return false;
+	}
 
+	// If moveto tile not a valid tile
+	if(!IsGameTile(to) || !FreeForMove(to)) {
+		return false;
+	}
+
+	// If impossible move
+	if(rowDifferencePos+colDifferencePos == 3) {
+		return false;
+	}
+
+	// If possible move
+	if(rowDifferencePos+colDifferencePos == 1 || (rowDifferencePos == 1 && colDifferencePos == 1)) {
+		return true;
+	}
+
+	// Tile to check
+	int checkableTile = ((from-to)/2)+to;
+	if(FreeForMove(checkableTile) || !IsGameTile(checkableTile)) {
+		return false;
+	}
+
+	return true; // VICTORIOUSSSSS
 }
 void KaroEngine::UndoMove()
 {
 }
 
-bool KaroEngine::IsTileEmpty(int tile)
+bool KaroEngine::FreeForMove(int tile)
 {
-	return board[tile] == EMPTY;
+	if(board[tile] == SOLIDTILE || board[tile] == MOVEABLETILE) {
+		return false;
+	}
+	return true;
 }
-bool KaroEngine::IsTile(int tile)
+
+bool KaroEngine::IsGameTile(int tile)
 {
-	return board[tile] == TILE;
+	return board[tile] != EMPTY;
 }
