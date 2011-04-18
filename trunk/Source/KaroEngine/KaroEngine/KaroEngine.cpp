@@ -4,3 +4,10 @@
 
 #include "KaroEngine.h"
 
+void KaroEngine::DoMove()
+{
+}
+
+void KaroEngine::UndoMove()
+{
+}
