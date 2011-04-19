@@ -17,18 +17,11 @@ namespace KaroEngine
 		REDMARKED=6
 	};
 
-	public enum class Managed_Tile
-	{
-		EMPTY = EMPTY,
-		SOLIDTILE = SOLIDTILE,
-		MOVEABLETILE = MOVEABLETILE,
-		WHITEUNMARKED = WHITEUNMARKED,
-		WHITEMARKED = WHITEMARKED,
-		REDUNMARKED = REDUNMARKED,
-		REDMARKED = REDMARKED
+	public enum Player
+	{ 
+		WHITE = 0,
+		RED = 1
 	};
-
-	enum Player{ WHITE, RED };
 
 	enum GameState{ INSERTION, PLAYING, GAMEFINISHED };
 
