@@ -22,6 +22,8 @@ namespace KaroTestGUI
         REDMARKED = 6
     };
 
+    public enum Player { WHITE = 0, RED = 1 };
+
     public partial class Form1 : Form
     {
         KaroEngine.KaroEngine   engine;
@@ -49,7 +51,7 @@ namespace KaroTestGUI
 
             clickedFirst    = new Point(-1, -1);
             clickedSecond   = new Point(-1, -1);
-
+            label2.Text = "White";
             InitializeComponent();
         }
 
@@ -142,8 +144,16 @@ namespace KaroTestGUI
                     clickedSecond = new Point(-1, -1);
                 }
             }
-
+            ChangePlayerTurnLabel();
             pictureBox1.Invalidate();
+        }
+
+        private void ChangePlayerTurnLabel()
+        {
+            if ((Player) engine.GetTurn() == Player.WHITE)
+                label2.Text = "WHITE";
+            else
+                label2.Text = "RED";
         }
     }
 }

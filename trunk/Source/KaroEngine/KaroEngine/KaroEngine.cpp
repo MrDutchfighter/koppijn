@@ -10,7 +10,8 @@ namespace KaroEngine
 	{
 		board = new Tile[BOARDWIDTH * BOARDWIDTH];
 		this->turn = WHITE;
-		int gamestate = INSERTION; // 0 is insertionstate 1 is gameplaystate 2 is gameover
+		int gameState = INSERTION; 
+		insertionCount = 0;
 
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH ; i ++ )
 			board[i] = EMPTY;
@@ -39,15 +40,51 @@ namespace KaroEngine
 
 	void KaroEngine::DoMove(int from, int to)
 	{
-		if(IsValidMove(from, to))
+		
+		if(gameState == INSERTION)
 		{
-			board[to] = board[from];
-			board[from] = SOLIDTILE;
+			if(board[to] == SOLIDTILE)
+			{
+				if(turn == WHITE)
+					board[to] = WHITEUNMARKED;
+				else
+					board[to] = REDUNMARKED;
+
+				insertionCount++;
+			}
+			if(insertionCount == 12)
+				gameState = PLAYING;
 		}
+		if(gameState == PLAYING)
+		{
+			if(IsValidMove(from, to))
+			{
+				board[to] = board[from];
+				board[from] = SOLIDTILE;
+			}
+		}
+
+		turn = Reverse(turn);
+	}
+
+	Player KaroEngine::Reverse(Player turn)
+	{
+		if(turn == WHITE )
+			return RED;
+		else
+			return WHITE;
 	}
 
 	bool KaroEngine::IsValidMove(int from, int to)
 	{
+
+		// check if the move is valid by validating with the turn of the current player
+		if(turn == RED && (board[from] != REDUNMARKED || board[from] != REDMARKED))
+			return false;
+		else if(turn == WHITE && (board[from] != WHITEUNMARKED || board[from] != WHITEMARKED))
+			return false;
+
+
 		int rowFrom = from/BOARDWIDTH;
 		int rowTo = to/BOARDWIDTH;
 
@@ -58,7 +95,7 @@ namespace KaroEngine
 		int colDifference = colFrom-colTo;
 
 		int rowDifferencePos = rowDifference;
-		if(rowDifference < 0) { rowDifference *= -1; } 
+		if(rowDifference < 0) { rowDifferencePos *= -1; } 
 
 		int colDifferencePos = colDifference;
 		if(colDifferencePos < 0) { colDifferencePos *= -1; }
@@ -103,14 +140,19 @@ namespace KaroEngine
 	bool KaroEngine::FreeForMove(int tile)
 	{
 		if(board[tile] == SOLIDTILE || board[tile] == MOVEABLETILE) {
-			return false;
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	bool KaroEngine::IsGameTile(int tile)
 	{
 		return board[tile] != EMPTY;
+	}
+
+	Player KaroEngine::GetTurn()
+	{
+		return turn;
 	}
 
 	Tile KaroEngine::GetByXY(int x,int y){
