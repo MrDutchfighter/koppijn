@@ -67,12 +67,12 @@ namespace KaroTestGUI
             {
                 for (int x = 0; x < 15; x++) 
                 {
-                    //Draw the board
+                    // Draw the board
                     if (board[(y * 15) + x] != KaroEngine.Managed_Tile.EMPTY) {
                         g.FillRectangle(brushBlack, x * boxSize, y * boxSize, boxSize, boxSize);
                     }
 
-                    //draw the 'selected' tiles
+                    // Draw the 'selected' tiles
                     if (x == clickedFirst.X && y == clickedFirst.Y)
                     {
                         g.FillRectangle(brushBlue, x * boxSize, y * boxSize, boxSize, boxSize);
@@ -82,7 +82,7 @@ namespace KaroTestGUI
                         g.FillRectangle(brushBlue, x * boxSize, y * boxSize, boxSize, boxSize);
                     }
 
-                    //check what kind of tiles, pawns etc are on the board.
+                    // Check what kind of tiles, pawns etc are on the board.
                     switch (board[(y * 15) + x]) { 
                         case KaroEngine.Managed_Tile.EMPTY:
                             break;
@@ -97,16 +97,16 @@ namespace KaroTestGUI
                             g.FillEllipse(brushRed, x * boxSize + 1, y * boxSize + 1, boxSize - 2, boxSize -2 );
                             g.DrawEllipse(penGray, x * boxSize + 5, y * boxSize + 5, boxSize - 10, boxSize - 10);
                             break;
-                        case KaroEngine.Managed_Tile.WHITEMARKED:
+                        case KaroEngine.Managed_Tile.WHITEUNMARKED:
                             g.FillEllipse(brushWhite, x * boxSize + 1, y * boxSize + 1, boxSize - 2, boxSize - 2);                            
                             break;
-                        case KaroEngine.Managed_Tile.WHITEUNMARKED:
+                        case KaroEngine.Managed_Tile.WHITEMARKED:
                             g.FillEllipse(brushWhite, x * boxSize + 1, y * boxSize + 1, boxSize - 2, boxSize - 2);
                             g.DrawEllipse(penGray, x * boxSize + 5, y * boxSize + 5, boxSize - 10, boxSize - 10);
                             break;                    
                     }
 
-                    //Draw a grid
+                    // Draw a grid
                     g.DrawRectangle(Pens.Gray, x * boxSize, y * boxSize, boxSize, boxSize);
                 }
             }
