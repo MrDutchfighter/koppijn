@@ -112,4 +112,8 @@ namespace KaroEngine
 	{
 		return board[tile] != EMPTY;
 	}
+
+	Tile KaroEngine::GetByXY(int x,int y){
+		return board[(y*15)+x];
+	}
 }

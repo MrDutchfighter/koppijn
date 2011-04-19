@@ -8,13 +8,13 @@ namespace KaroEngine
 {
 	public enum Tile
 	{
-		EMPTY,
-		SOLIDTILE,
-		MOVEABLETILE,
-		WHITEUNMARKED,
-		WHITEMARKED,
-		REDUNMARKED,
-		REDMARKED
+		EMPTY=0,
+		SOLIDTILE=1,
+		MOVEABLETILE=2,
+		WHITEUNMARKED=3,
+		WHITEMARKED=4,
+		REDUNMARKED=5,
+		REDMARKED=6
 	};
 
 	public enum class Managed_Tile
@@ -50,5 +50,6 @@ namespace KaroEngine
 		bool FreeForMove(int); // checks if a tile is empty
 		bool IsGameTile(int); // checks if a tile exists
 		int * GetBoard(void);
+		Tile GetByXY(int x,int y);
 	};
 }

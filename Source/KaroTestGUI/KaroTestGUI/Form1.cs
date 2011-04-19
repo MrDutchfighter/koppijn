@@ -42,19 +42,19 @@ namespace KaroTestGUI
             clickedFirst    = new Point(-1, -1);
             clickedSecond   = new Point(-1, -1);
 
-            board = new Managed_Tile[225];
+            //board = new Managed_Tile[225];
 
-            unsafe
-            {
-                IntPtr intp = (IntPtr)engine.GetBoard();
-                int[] data = new int[225];
-                Marshal.Copy(intp, data, 0, 225);
+            //unsafe
+            //{
+                //IntPtr intp = (IntPtr)engine.GetBoard();
+                //int[] data = new int[225];
+                //Marshal.Copy(intp, data, 0, 225);
 
-                for (int i = 0; i < data.Length; i++)
-                {
-                    board[i] = (KaroEngine.Managed_Tile)Enum.Parse(typeof(KaroEngine.Managed_Tile), data[i].ToString());
-                }
-            }
+                //for (int i = 0; i < data.Length; i++)
+                //{
+                    //board[i] = (KaroEngine.Managed_Tile)Enum.Parse(typeof(KaroEngine.Managed_Tile), data[i].ToString());
+                //}
+            //}
 
             InitializeComponent();
         }
@@ -68,7 +68,8 @@ namespace KaroTestGUI
                 for (int x = 0; x < 15; x++) 
                 {
                     // Draw the board
-                    if (board[(y * 15) + x] != KaroEngine.Managed_Tile.EMPTY) {
+                    if (engine.GetByXY(x, y) != 0)
+                    {
                         g.FillRectangle(brushBlack, x * boxSize, y * boxSize, boxSize, boxSize);
                     }
 
@@ -83,24 +84,24 @@ namespace KaroTestGUI
                     }
 
                     // Check what kind of tiles, pawns etc are on the board.
-                    switch (board[(y * 15) + x]) { 
-                        case KaroEngine.Managed_Tile.EMPTY:
+                    switch ((int)engine.GetByXY(x, y)){ 
+                        case 0:
                             break;
-                        case KaroEngine.Managed_Tile.SOLIDTILE:
+                        case 1:
                             break;
-                        case KaroEngine.Managed_Tile.MOVEABLETILE:
+                        case 2:
                             break;
-                        case KaroEngine.Managed_Tile.REDUNMARKED:
+                        case 5:
                             g.FillEllipse(brushRed, x * boxSize+1, y * boxSize+1, boxSize-2, boxSize-2);                            
                             break;
-                        case KaroEngine.Managed_Tile.REDMARKED:
+                        case 6:
                             g.FillEllipse(brushRed, x * boxSize + 1, y * boxSize + 1, boxSize - 2, boxSize -2 );
                             g.DrawEllipse(penGray, x * boxSize + 5, y * boxSize + 5, boxSize - 10, boxSize - 10);
                             break;
-                        case KaroEngine.Managed_Tile.WHITEUNMARKED:
+                        case 3:
                             g.FillEllipse(brushWhite, x * boxSize + 1, y * boxSize + 1, boxSize - 2, boxSize - 2);                            
                             break;
-                        case KaroEngine.Managed_Tile.WHITEMARKED:
+                        case 4:
                             g.FillEllipse(brushWhite, x * boxSize + 1, y * boxSize + 1, boxSize - 2, boxSize - 2);
                             g.DrawEllipse(penGray, x * boxSize + 5, y * boxSize + 5, boxSize - 10, boxSize - 10);
                             break;                    
@@ -130,13 +131,16 @@ namespace KaroTestGUI
                 {
                     clickedFirst.X = (e.X - 1) / this.boxSize;
                     clickedFirst.Y = (e.Y - 1) / this.boxSize;
-                    board[(clickedFirst.Y * 15) + clickedFirst.X] = KaroEngine.Managed_Tile.REDMARKED;
+                    //board[(clickedFirst.Y * 15) + clickedFirst.X] = KaroEngine.Managed_Tile.REDMARKED;                    
                 }
                 else if (clickedSecond.X == -1)
                 {
                     clickedSecond.X = (e.X - 1) / this.boxSize;
                     clickedSecond.Y = (e.Y - 1) / this.boxSize;
-                    board[(clickedSecond.Y * 15) + clickedSecond.X] = KaroEngine.Managed_Tile.WHITEMARKED;
+                    //board[(clickedSecond.Y * 15) + clickedSecond.X] = KaroEngine.Managed_Tile.WHITEMARKED;
+                    engine.DoMove((clickedFirst.Y * 15) + clickedFirst.X, (clickedFirst.Y * 15) + clickedFirst.X);
+                    clickedFirst = new Point(-1, -1);
+                    clickedSecond = new Point(-1, -1);
                 }
                 else 
                 {
