@@ -158,14 +158,19 @@ namespace KaroEngine
 					//Check horizontal and vertical bounderies
 					if(i <= BOARDWIDTH - 4 && j <= BOARDWIDTH - 4)
 					{
-						//Diagonal
+						//Diagonal down
 						if(board[current + 1 + (1 * BOARDWIDTH)] == marked && board[current + 2 + (2 * BOARDWIDTH)] == marked && board[current + 3 + (3 * BOARDWIDTH)] == marked)
+						{
+							return true;
+						}
+
+						//Diagonal up
+						if(board[current + 3 + (0 * BOARDWIDTH)] == marked && board[current + 2 + (1 * BOARDWIDTH)] == marked && board[current + 1 + (2 * BOARDWIDTH)] == marked && board[current + 0 + (3 * BOARDWIDTH)] == marked)
 						{
 							return true;
 						}
 					}
 				}
-				
 			}
 		}
 
