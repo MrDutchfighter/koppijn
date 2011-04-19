@@ -4,6 +4,7 @@
 #include "Win.h"
 #include "KaroGame.h"
 
+
 class CKaro : public CWin
 {
 public:
