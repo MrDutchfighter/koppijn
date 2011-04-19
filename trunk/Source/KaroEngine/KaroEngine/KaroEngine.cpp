@@ -116,4 +116,59 @@ namespace KaroEngine
 	Tile KaroEngine::GetByXY(int x,int y){
 		return board[(y*15)+x];
 	}
+
+	bool KaroEngine::IsWinner(Player p)
+	{
+		Tile marked;
+		//Right player color 
+		if (p == WHITE) 
+			marked = WHITEMARKED;
+		if (p == RED)
+			marked = REDMARKED;
+
+
+		for(int i = 0; i < BOARDWIDTH; i++) {
+			for(int j = 0; j < BOARDWIDTH; j++) {
+				//Current position
+				int current = i * BOARDWIDTH + j;
+				
+				// Is current tile marked
+				if(board[current] == marked)
+				{
+					//Check vertical boundery 
+					if(i <= BOARDWIDTH - 4)
+					{
+						//Vertical
+						if(board[current + 1 * BOARDWIDTH] == marked && board[current + 2 * BOARDWIDTH] == marked && board[current + 3 * BOARDWIDTH] == marked)
+						{
+							return true;
+						}
+					}
+
+					//Check horizontal boundery
+					if(j <= BOARDWIDTH - 4)
+					{
+						//Horizontal
+						if(board[current + 1] == marked && board[current + 2] == marked && board[current + 3] == marked)
+						{
+							return true;
+						}
+					}
+					
+					//Check horizontal and vertical bounderies
+					if(i <= BOARDWIDTH - 4 && j <= BOARDWIDTH - 4)
+					{
+						//Diagonal
+						if(board[current + 1 + (1 * BOARDWIDTH)] == marked && board[current + 2 + (2 * BOARDWIDTH)] == marked && board[current + 3 + (3 * BOARDWIDTH)] == marked)
+						{
+							return true;
+						}
+					}
+				}
+				
+			}
+		}
+
+		return false;
+	}
 }

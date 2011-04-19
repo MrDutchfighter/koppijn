@@ -51,5 +51,6 @@ namespace KaroEngine
 		bool IsGameTile(int); // checks if a tile exists
 		int * GetBoard(void);
 		Tile GetByXY(int x,int y);
+		bool IsWinner(Player p);
 	};
 }
