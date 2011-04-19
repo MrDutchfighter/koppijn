@@ -11,7 +11,6 @@ using System.Runtime.InteropServices;
 
 namespace KaroTestGUI
 {
-
     public partial class Form1 : Form
     {
         KaroEngine.KaroEngine   engine;
@@ -26,8 +25,6 @@ namespace KaroTestGUI
 
         Point                   clickedFirst;
         Point                   clickedSecond;
-
-        KaroEngine.Managed_Tile[] board; 
 
         public Form1()
         {
