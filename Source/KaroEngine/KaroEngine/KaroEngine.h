@@ -23,7 +23,9 @@ namespace KaroEngine
 		RED = 1
 	};
 
-	enum GameState{ INSERTION, PLAYING, GAMEFINISHED };
+	public enum Player{ WHITE = 0, RED = 1 };
+
+	public enum GameState{ INSERTION, PLAYING, GAMEFINISHED };
 
 	
 	public ref class KaroEngine
@@ -32,11 +34,14 @@ namespace KaroEngine
 		GameState gameState;
 		Tile *board;
 		Player turn;
+		int insertionCount;
 		static const int BOARDWIDTH = 15;
 
 	public:
 		KaroEngine(void);
 		~KaroEngine(void);
+		Player Reverse(Player);
+		Player GetTurn();
 		bool IsValidMove(int from, int to);
 		void DoMove(int, int);
 		void UndoMove();
