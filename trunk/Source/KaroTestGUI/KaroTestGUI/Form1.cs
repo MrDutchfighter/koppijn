@@ -138,7 +138,7 @@ namespace KaroTestGUI
                     clickedSecond.X = (e.X - 1) / this.boxSize;
                     clickedSecond.Y = (e.Y - 1) / this.boxSize;
                     //board[(clickedSecond.Y * 15) + clickedSecond.X] = KaroEngine.Managed_Tile.WHITEMARKED;
-                    engine.DoMove((clickedFirst.Y * 15) + clickedFirst.X, (clickedFirst.Y * 15) + clickedFirst.X);
+                    engine.DoMove((clickedFirst.Y * 15) + clickedFirst.X, (clickedSecond.Y * 15) + clickedSecond.X);
                     clickedFirst = new Point(-1, -1);
                     clickedSecond = new Point(-1, -1);
                 }
