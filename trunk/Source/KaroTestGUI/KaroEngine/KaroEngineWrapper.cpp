@@ -21,6 +21,12 @@ KaroEngineWrapper::~KaroEngineWrapper(void)
 Tile KaroEngineWrapper::GetByXY(int x, int y){
 	return _karoEngine->GetByXY(x,y);
 }
+
 void KaroEngineWrapper::DoMove(int from,int to){
 	_karoEngine->DoMove(from,to,-1);
+}
+
+Player KaroEngineWrapper::GetTurn()
+{
+	return _karoEngine->GetTurn();
 }

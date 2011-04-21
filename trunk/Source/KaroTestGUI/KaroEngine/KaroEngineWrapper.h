@@ -25,6 +25,8 @@ namespace KaroEngine {
 
 		Tile GetByXY(int x, int y);
 		void DoMove(int from,int to);
+		Player GetTurn();
+
 		//PersonWrapper(String ^, int);
 		//~PersonWrapper(void);
 
