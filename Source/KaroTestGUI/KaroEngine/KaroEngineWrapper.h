@@ -20,5 +20,7 @@ namespace KaroEngine {
 		void DoMove(int from,int to);
 		GameState GetGameState();
 		Player GetTurn();
+		void CalculateComputerMove();
+
 	};
 }

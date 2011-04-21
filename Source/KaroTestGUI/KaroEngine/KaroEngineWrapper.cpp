@@ -38,3 +38,7 @@ Player KaroEngineWrapper::GetTurn()
 bool KaroEngineWrapper::InsertByXY(int x, int y){
 	return _karoEngine->InsertByXY(x,y);
 }
+
+void KaroEngineWrapper::CalculateComputerMove(){
+	_karoEngine->CalculateComputerMove();
+}

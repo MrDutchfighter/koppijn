@@ -65,14 +65,14 @@ namespace KaroEngine
 	{
 		if(IsValidMove(from, to, tileFrom))
 		{
-			if(tileFrom != -1)
+			if(tileFrom != -1){
 				board[tileFrom] = Tile::EMPTY;
-			
+			}
+
 			board[to] = board[from];
 			board[from] = Tile::SOLIDTILE;
+			turn = Reverse(turn);
 		}
-
-		turn = Reverse(turn);
 	}
 
 	Player KaroEngine::Reverse(Player turn)
@@ -250,5 +250,19 @@ namespace KaroEngine
 				return true;
 		}
 		return false;
+	}
+
+	void KaroEngine::CalculateComputerMove(){
+		//if in insertionstate, then insert on random position
+		if(gameState == GameState::INSERTION){
+			bool foundInsertPosition=false;
+			while(!foundInsertPosition){
+				int x = 6+rand()%5;
+				int y = 5+rand()%4;
+				if(this->InsertByXY(x,y)){
+					foundInsertPosition=true;
+				}
+			}
+		}
 	}
 }
