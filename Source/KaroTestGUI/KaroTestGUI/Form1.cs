@@ -48,7 +48,8 @@ namespace KaroTestGUI
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;  
+            Graphics g = e.Graphics;            
+            Font drawFont = new Font("Arial", 10);
           
             for (int y = 0; y < 15; y++)
             {
@@ -58,6 +59,13 @@ namespace KaroTestGUI
                     if (engine.GetByXY(x, y) != Tile.EMPTY)
                     {
                         g.FillRectangle(brushBlack, x * boxSize, y * boxSize, boxSize, boxSize);
+
+                    }
+                    else {
+                        if (tileNumbersToolStripMenuItem.Checked)
+                        {
+                            g.DrawString(((y * 15 + x) + ""), drawFont, brushBlack, x * boxSize, y * boxSize);
+                        }
                     }
 
                     // Draw the 'selected' tiles
@@ -117,7 +125,7 @@ namespace KaroTestGUI
                 if (clickedFirst.X == -1)
                 {                    
                     if (engine.GetGameState() == GameState.INSERTION)
-                    {
+                    {                        
                         engine.InsertByXY((e.X - 1) / this.boxSize,(e.Y - 1) / this.boxSize);
                     }
                     else if (engine.GetGameState() == GameState.PLAYING){
@@ -161,5 +169,18 @@ namespace KaroTestGUI
             GetTurn();
             pictureBox1.Invalidate();
         }
+
+        private void tileNumbersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (tileNumbersToolStripMenuItem.Checked)
+            {
+                tileNumbersToolStripMenuItem.Checked = false;
+            }
+            else {
+                tileNumbersToolStripMenuItem.Checked = true;
+            }
+            pictureBox1.Invalidate();
+        }
+       
     }
 }
