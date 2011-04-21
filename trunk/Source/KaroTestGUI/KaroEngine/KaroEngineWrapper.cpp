@@ -42,3 +42,7 @@ bool KaroEngineWrapper::InsertByXY(int x, int y){
 void KaroEngineWrapper::CalculateComputerMove(){
 	_karoEngine->CalculateComputerMove();
 }
+
+String ^KaroEngineWrapper::getMessageLog(){
+	return marshal_as<String ^>(_karoEngine->GetMessageLog());
+}

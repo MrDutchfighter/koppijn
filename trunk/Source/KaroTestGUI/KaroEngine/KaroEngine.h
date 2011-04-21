@@ -3,6 +3,8 @@
 #using <System.dll>
 #include <stdlib.h>
 #include <time.h>
+#include <string>
+
 using namespace System;
 
 namespace KaroEngine 
@@ -32,11 +34,13 @@ namespace KaroEngine
 	{
 	private:
 		GameState gameState;
+		std::string messageLog;
 		Tile * board;
 		Player turn;
 		int insertionCount;
 		static const int BOARDWIDTH = 15;
-
+		int possiblesSteps[8];
+		int possiblesJumps[8];		
 	public:
 		KaroEngine(void);
 		~KaroEngine(void);
@@ -44,7 +48,6 @@ namespace KaroEngine
 		Player GetTurn();
 		GameState GetGameState();
 		bool IsValidMove(int from, int to);
-		void DoMove(int to);
 		void DoMove(int from, int to, int fromTile);
 		void UndoMove();
 		bool FreeForMove(int); // checks if a tile is empty
@@ -54,5 +57,7 @@ namespace KaroEngine
 		Tile GetByXY(int x,int y);
 		bool IsWinner(Player p);
 		void CalculateComputerMove();
+		std::string GetMessageLog();
+		void SetMessageLog(std::string s);
 	};
 }

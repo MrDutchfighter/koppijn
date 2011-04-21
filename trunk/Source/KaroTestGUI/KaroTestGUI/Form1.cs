@@ -27,6 +27,7 @@ namespace KaroTestGUI
         Point                           clickedTile;
         Point                           clickedFirst;
         Point                           clickedSecond;
+        String                          lastMessage;
                 
 
         public Form1()
@@ -45,7 +46,17 @@ namespace KaroTestGUI
             
             InitializeComponent();
 
+            UpdateGUI();
+        }
+
+        private void UpdateGUI() {
+            string log = engine.getMessageLog();
+            if (!log.Equals("")) {
+                this.lastMessage = log;
+                this.txtMessageLog.Text = this.lastMessage + "\r\n" + this.txtMessageLog.Text;
+            }
             GetTurn();
+            pictureBox1.Invalidate();
         }
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
@@ -176,8 +187,7 @@ namespace KaroTestGUI
                 }
             }
 
-            GetTurn();
-            pictureBox1.Invalidate();
+            UpdateGUI();
         }
 
         private void GetTurn()
@@ -191,8 +201,7 @@ namespace KaroTestGUI
         private void btnDoMove_Click(object sender, EventArgs e)
         {            
             engine.CalculateComputerMove();
-            GetTurn();
-            pictureBox1.Invalidate();
+            UpdateGUI();
         }
 
         private void tileNumbersToolStripMenuItem_Click(object sender, EventArgs e)

@@ -35,11 +35,13 @@
             this.newGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vieuwsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tileNumbersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnDoMove = new System.Windows.Forms.Button();
             this.btn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.tileNumbersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.txtMessageLog = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -109,6 +111,14 @@
             this.vieuwsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.vieuwsToolStripMenuItem.Text = "views";
             // 
+            // tileNumbersToolStripMenuItem
+            // 
+            this.tileNumbersToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tileNumbersToolStripMenuItem.Name = "tileNumbersToolStripMenuItem";
+            this.tileNumbersToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.tileNumbersToolStripMenuItem.Text = "TileNumbers";
+            this.tileNumbersToolStripMenuItem.Click += new System.EventHandler(this.tileNumbersToolStripMenuItem_Click);
+            // 
             // btnDoMove
             // 
             this.btnDoMove.Location = new System.Drawing.Point(557, 51);
@@ -147,19 +157,30 @@
             this.pictureBox2.TabIndex = 7;
             this.pictureBox2.TabStop = false;
             // 
-            // tileNumbersToolStripMenuItem
+            // txtMessageLog
             // 
-            this.tileNumbersToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tileNumbersToolStripMenuItem.Name = "tileNumbersToolStripMenuItem";
-            this.tileNumbersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.tileNumbersToolStripMenuItem.Text = "TileNumbers";
-            this.tileNumbersToolStripMenuItem.Click += new System.EventHandler(this.tileNumbersToolStripMenuItem_Click);
+            this.txtMessageLog.Location = new System.Drawing.Point(409, 275);
+            this.txtMessageLog.Multiline = true;
+            this.txtMessageLog.Name = "txtMessageLog";
+            this.txtMessageLog.Size = new System.Drawing.Size(288, 187);
+            this.txtMessageLog.TabIndex = 8;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(409, 256);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(68, 13);
+            this.label2.TabIndex = 9;
+            this.label2.Text = "MessageLog";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(709, 474);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.txtMessageLog);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btn);
@@ -196,6 +217,8 @@
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.ToolStripMenuItem vieuwsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tileNumbersToolStripMenuItem;
+        private System.Windows.Forms.TextBox txtMessageLog;
+        private System.Windows.Forms.Label label2;
 
     }
 }

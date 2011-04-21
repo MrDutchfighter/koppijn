@@ -1,9 +1,7 @@
 #pragma once
 
 #include "KaroEngine.h"
-#include <string.h>
-
-using namespace std;
+#include <string>
 using namespace System;
 
 namespace KaroEngine {
@@ -22,5 +20,6 @@ namespace KaroEngine {
 		Player GetTurn();
 		void CalculateComputerMove();
 
+		String^ getMessageLog();
 	};
 }
