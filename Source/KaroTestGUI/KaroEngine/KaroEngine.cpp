@@ -18,7 +18,10 @@ namespace KaroEngine
 
 		for(int j = 4; j < 8; j++)
 			for( int k = 5; k < 10; k++ )
-				board[j*BOARDWIDTH+k] = Tile::SOLIDTILE;
+				if(j == 4 && k == 5|| j == 4 && k == 9 || j == 7 && k == 5 || j == 7 && k == 9)
+					board[j  *BOARDWIDTH + k] = Tile::MOVEABLETILE;
+				else
+					board[j * BOARDWIDTH + k] = Tile::SOLIDTILE;
 	}
 
 	KaroEngine::~KaroEngine(void)
