@@ -47,6 +47,7 @@ namespace KaroEngine
 		void UndoMove();
 		bool FreeForMove(int); // checks if a tile is empty
 		bool IsGameTile(int); // checks if a tile exists
+		bool InsertByXY(int x, int y);
 		int * GetBoard(void);
 		Tile GetByXY(int x,int y);
 		bool IsWinner(Player p);
