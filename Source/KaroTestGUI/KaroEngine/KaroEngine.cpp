@@ -61,7 +61,7 @@ namespace KaroEngine
 	}
 
 	void KaroEngine::SetMessageLog(std::string txt){
-		this->messageLog+=txt;
+		this->messageLog+=txt+ "\r\n";
 	}
 
 	int * KaroEngine::GetBoard(void)
@@ -79,12 +79,18 @@ namespace KaroEngine
 	void KaroEngine::DoMove(int from, int to, int tileFrom)
 	{		
 		if (tileFrom != -1) { //move the tile
+			
 			if(board[tileFrom] != Tile::MOVEABLETILE) {
 				this->SetMessageLog(" Tried to move a tile that is not moveable ");
 				return;
-			}			
-			board[tileFrom] = Tile::EMPTY;
-			board[to]=Tile::SOLIDTILE;
+			}
+			if(board[to] != Tile::EMPTY){
+				tileFrom =-1;
+				this->SetMessageLog(" Did not move the MOVEABLETILE");				
+			} else {
+				board[tileFrom] = Tile::EMPTY;
+				board[to]=Tile::SOLIDTILE;
+			}
 		}
 		if(IsValidMove(from, to)) {			
 			board[to] = board[from];
@@ -164,6 +170,21 @@ namespace KaroEngine
 					checkTile == Tile::REDUNMARKED	||
 					checkTile == Tile::REDMARKED	){
 						this->SetMessageLog("Jumped succesfully");
+						//switch the mark
+						switch(board[from]){
+							case Tile::WHITEUNMARKED :
+								board[from]=Tile::WHITEMARKED;
+							break;
+							case Tile::WHITEMARKED :
+								board[from]=Tile::WHITEUNMARKED;
+							break;
+							case Tile::REDUNMARKED :
+								board[from]=Tile::REDMARKED;
+							break;
+							case Tile::REDMARKED :
+								board[from]=Tile::REDUNMARKED;
+							break;
+						}
 						return true;
 				}
 			}
