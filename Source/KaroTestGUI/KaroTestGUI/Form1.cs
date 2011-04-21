@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using KaroEngine;
+//using KaroEngine;
 using System.Runtime.InteropServices;    
 
 namespace KaroTestGUI
@@ -26,7 +26,7 @@ namespace KaroTestGUI
 
     public partial class Form1 : Form
     {
-        KaroEngine.KaroEngine   engine;
+        //KaroEngine.KaroEngine   engine;
         Pen                     penBlack;
         Pen                     penGray;
         Brush                   brushBlack;
@@ -41,7 +41,7 @@ namespace KaroTestGUI
 
         public Form1()
         {
-            engine = new KaroEngine.KaroEngine();
+            //engine = new KaroEngine.KaroEngine();
             penBlack        = Pens.Black;
             penGray         = new Pen(Color.Gray, 2);    
             brushBlack      = Brushes.Black;            
@@ -51,15 +51,16 @@ namespace KaroTestGUI
 
             clickedFirst    = new Point(-1, -1);
             clickedSecond   = new Point(-1, -1);
-            label2.Text = "White";
+            
             InitializeComponent();
+            label2.Text = "White";
         }
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;  
           
-            for (int y = 0; y < 15; y++)
+            /*for (int y = 0; y < 15; y++)
             {
                 for (int x = 0; x < 15; x++) 
                 {
@@ -106,7 +107,7 @@ namespace KaroTestGUI
                     // Draw a grid
                     g.DrawRectangle(Pens.Gray, x * boxSize, y * boxSize, boxSize, boxSize);
                 }
-            }
+            }*/
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -121,7 +122,7 @@ namespace KaroTestGUI
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
-            if (!this.gameOver)
+            /*if (!this.gameOver)
             {
                 if (clickedFirst.X == -1)
                 {
@@ -145,15 +146,15 @@ namespace KaroTestGUI
                 }
             }
             ChangePlayerTurnLabel();
-            pictureBox1.Invalidate();
+            pictureBox1.Invalidate();*/
         }
 
         private void ChangePlayerTurnLabel()
         {
-            if ((Player) engine.GetTurn() == Player.WHITE)
+            /*if ((Player) engine.GetTurn() == Player.WHITE)
                 label2.Text = "WHITE";
             else
-                label2.Text = "RED";
+                label2.Text = "RED";*/
         }
     }
 }
