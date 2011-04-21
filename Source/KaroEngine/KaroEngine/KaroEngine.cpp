@@ -1,7 +1,6 @@
 // This is the main DLL file.
 
 #include "stdafx.h"
-
 #include "KaroEngine.h"
 
 namespace KaroEngine 
@@ -54,17 +53,17 @@ namespace KaroEngine
 
 			turn = Reverse(turn);
 	}
-	void KaroEngine::DoMove(int from, int to)
-	{
-		if(gameState == PLAYING)
-		{
-			if(IsValidMove(from, to))
-			{
-				board[to] = board[from];
-				board[from] = SOLIDTILE;
-			}
-		}
 
+	void KaroEngine::DoMove(int from, int to, int tileFrom = -1)
+	{
+		if(IsValidMove(from, to, tileFrom))
+		{
+			if(tileFrom != -1)
+				board[tileFrom] = EMPTY;
+			
+			board[to] = board[from];
+			board[from] = SOLIDTILE;
+		}
 		turn = Reverse(turn);
 	}
 
@@ -76,15 +75,13 @@ namespace KaroEngine
 			return WHITE;
 	}
 
-	bool KaroEngine::IsValidMove(int from, int to)
+	bool KaroEngine::IsValidMove(int from, int to, int tileFrom)
 	{
-
 		// check if the move is valid by validating with the turn of the current player
 		if(turn == RED && (board[from] != REDUNMARKED || board[from] != REDMARKED))
 			return false;
 		else if(turn == WHITE && (board[from] != WHITEUNMARKED || board[from] != WHITEMARKED))
 			return false;
-
 
 		int rowFrom = from/BOARDWIDTH;
 		int rowTo = to/BOARDWIDTH;
@@ -107,14 +104,15 @@ namespace KaroEngine
 		}
 
 		// Can you move this tile?
-		if(!IsGameTile(from) || FreeForMove(from)) {
+		if(!IsGameTile(from) || FreeForMove(from) || (tileFrom > -1 && board[tileFrom] != MOVABLETILE)) {
 			return false;
 		}
 
 		// If moveto tile not a valid tile
-		if(!IsGameTile(to) || !FreeForMove(to)) {
+		if(!IsGameTile(to) || !FreeForMove(to) || (tileFrom > -1 && board[to] != EMPTY)) {
 			return false;
 		}
+		
 
 		// If impossible move
 		if(rowDifferencePos+colDifferencePos == 3) {
@@ -134,8 +132,10 @@ namespace KaroEngine
 
 		return true; // VICTORIOUSSSSS
 	}
+
 	void KaroEngine::UndoMove()
 	{
+
 	}
 
 	bool KaroEngine::FreeForMove(int tile)
@@ -157,7 +157,7 @@ namespace KaroEngine
 	}
 
 	Tile KaroEngine::GetByXY(int x,int y){
-		return board[(y*15)+x];
+		return board[(y * BOARDWIDTH)+x];
 	}
 
 	bool KaroEngine::IsWinner(Player p)
