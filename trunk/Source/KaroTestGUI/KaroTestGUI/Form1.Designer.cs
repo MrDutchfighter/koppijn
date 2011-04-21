@@ -34,10 +34,12 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.vieuwsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnDoMove = new System.Windows.Forms.Button();
             this.btn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.tileNumbersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -65,7 +67,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.vieuwsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(709, 24);
@@ -97,6 +100,14 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // vieuwsToolStripMenuItem
+            // 
+            this.vieuwsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tileNumbersToolStripMenuItem});
+            this.vieuwsToolStripMenuItem.Name = "vieuwsToolStripMenuItem";
+            this.vieuwsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.vieuwsToolStripMenuItem.Text = "views";
             // 
             // btnDoMove
             // 
@@ -135,6 +146,14 @@
             this.pictureBox2.Size = new System.Drawing.Size(131, 50);
             this.pictureBox2.TabIndex = 7;
             this.pictureBox2.TabStop = false;
+            // 
+            // tileNumbersToolStripMenuItem
+            // 
+            this.tileNumbersToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tileNumbersToolStripMenuItem.Name = "tileNumbersToolStripMenuItem";
+            this.tileNumbersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tileNumbersToolStripMenuItem.Text = "TileNumbers";
+            this.tileNumbersToolStripMenuItem.Click += new System.EventHandler(this.tileNumbersToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -175,6 +194,8 @@
         private System.Windows.Forms.Button btn;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.ToolStripMenuItem vieuwsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tileNumbersToolStripMenuItem;
 
     }
 }

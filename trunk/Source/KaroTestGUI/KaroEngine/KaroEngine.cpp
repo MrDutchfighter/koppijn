@@ -91,10 +91,15 @@ namespace KaroEngine
 	bool KaroEngine::IsValidMove(int from, int to, int tileFrom)
 	{
 		// check if the move is valid by validating with the turn of the current player
-		if(turn == Player::RED && (board[from] != Tile::REDUNMARKED || board[from] != Tile::REDMARKED))
-			return false;
-		else if(turn == Player::WHITE && (board[from] != Tile::WHITEUNMARKED || board[from] != Tile::WHITEMARKED))
-			return false;
+		if(turn == Player::RED){
+			if(board[from] != Tile::REDUNMARKED && board[from] != Tile::REDMARKED)
+				return false;
+		}
+		else if(turn == Player::WHITE){
+			if(board[from] != Tile::WHITEUNMARKED && board[from] != Tile::WHITEMARKED)
+				return false;
+		}
+
 
 		int rowFrom = from/BOARDWIDTH;
 		int rowTo = to/BOARDWIDTH;
