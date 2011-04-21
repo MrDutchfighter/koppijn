@@ -34,3 +34,7 @@ Player KaroEngineWrapper::GetTurn()
 {
 	return _karoEngine->GetTurn();
 }
+
+bool KaroEngineWrapper::InsertByXY(int x, int y){
+	return _karoEngine->InsertByXY(x,y);
+}

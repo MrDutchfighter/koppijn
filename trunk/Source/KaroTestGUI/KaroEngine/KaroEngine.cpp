@@ -231,4 +231,24 @@ namespace KaroEngine
 
 		return false;
 	}
+
+	bool KaroEngine::InsertByXY(int x, int y){
+		int position=(y*15)+x;
+		
+		if(board[position] == Tile::SOLIDTILE || board[position] == Tile::MOVEABLETILE ){
+				if(this->turn == Player::WHITE){
+					board[position] =Tile::WHITEUNMARKED;
+				}
+				else{
+					board[position] =Tile::REDUNMARKED;
+				}
+				turn=this->Reverse(turn);
+				insertionCount++;							
+				if(insertionCount == 12){
+					gameState = GameState::PLAYING;
+				}
+				return true;
+		}
+		return false;
+	}
 }

@@ -115,9 +115,16 @@ namespace KaroTestGUI
             if (!this.gameOver)
             {
                 if (clickedFirst.X == -1)
-                {
-                    clickedFirst.X = (e.X - 1) / this.boxSize;
-                    clickedFirst.Y = (e.Y - 1) / this.boxSize;
+                {                    
+                    if (engine.GetGameState() == GameState.INSERTION)
+                    {
+                        engine.InsertByXY((e.X - 1) / this.boxSize,(e.Y - 1) / this.boxSize);
+                    }
+                    else if (engine.GetGameState() == GameState.PLAYING){
+                        clickedFirst.X = (e.X - 1) / this.boxSize;
+                        clickedFirst.Y = (e.Y - 1) / this.boxSize;
+                    }
+                    
                 }
                 else if (clickedSecond.X == -1)
                 {

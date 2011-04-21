@@ -16,6 +16,7 @@ namespace KaroEngine {
 		~KaroEngineWrapper(void);
 
 		Tile GetByXY(int x, int y);
+		bool InsertByXY(int x, int y);
 		void DoMove(int from,int to);
 		GameState GetGameState();
 		Player GetTurn();
