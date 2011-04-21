@@ -142,10 +142,10 @@ namespace KaroTestGUI
 
         private void GetTurn()
         {
-            if ((Player) engine.GetTurn() == Player.WHITE)
-                label2.Text = "WHITE";
+            if ((Player)engine.GetTurn() == Player.WHITE)
+                pictureBox2.BackColor = Color.WhiteSmoke;
             else
-                label2.Text = "RED";
+                pictureBox2.BackColor = Color.Red;
         }
     }
 }
