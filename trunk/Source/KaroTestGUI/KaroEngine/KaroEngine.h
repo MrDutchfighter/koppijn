@@ -20,7 +20,11 @@ namespace KaroEngine
 		RED=1
 	};
 
-	public enum GameState{ INSERTION, PLAYING, GAMEFINISHED };
+	public enum class GameState:unsigned int{
+		INSERTION = 0,
+		PLAYING = 1,
+		GAMEFINISHED = 2 
+	};
 	
 	public class KaroEngine
 	{
@@ -36,6 +40,7 @@ namespace KaroEngine
 		~KaroEngine(void);
 		Player Reverse(Player);
 		Player GetTurn();
+		GameState GetGameState();
 		bool IsValidMove(int from, int to, int fromTile);
 		void DoMove(int to);
 		void DoMove(int from, int to, int fromTile);

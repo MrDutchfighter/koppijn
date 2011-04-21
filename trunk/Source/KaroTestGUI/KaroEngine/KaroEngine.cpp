@@ -10,7 +10,7 @@ namespace KaroEngine
 	{
 		board = new Tile[BOARDWIDTH * BOARDWIDTH];
 		this->turn = Player::WHITE;
-		int gameState = INSERTION; 
+		gameState = GameState::INSERTION; 
 		insertionCount = 0;
 
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH ; i ++ )
@@ -22,6 +22,9 @@ namespace KaroEngine
 					board[j  *BOARDWIDTH + k] = Tile::MOVEABLETILE;
 				else
 					board[j * BOARDWIDTH + k] = Tile::SOLIDTILE;
+	}
+	GameState KaroEngine::GetGameState(){
+		return this->gameState;
 	}
 
 	KaroEngine::~KaroEngine(void)
@@ -53,7 +56,7 @@ namespace KaroEngine
 				insertionCount++;
 			}
 			if(insertionCount == 12)
-				gameState = PLAYING;
+				gameState = GameState::PLAYING;
 
 			turn = Reverse(turn);
 	}
