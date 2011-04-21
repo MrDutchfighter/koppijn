@@ -158,7 +158,7 @@ namespace KaroTestGUI
         private void GetTurn()
         {
             if (engine.GetTurn() == Player.WHITE)
-                pictureBox2.BackColor = Color.WhiteSmoke;
+                pictureBox2.BackColor = Color.White;
             else
                 pictureBox2.BackColor = Color.Red;
         }

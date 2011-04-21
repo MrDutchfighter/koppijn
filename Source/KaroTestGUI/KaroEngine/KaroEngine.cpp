@@ -262,8 +262,8 @@ namespace KaroEngine
 		if(gameState == GameState::INSERTION){
 			bool foundInsertPosition=false;
 			while(!foundInsertPosition){
-				int x = 6+rand()%5;
-				int y = 5+rand()%4;
+				int x = 5+rand()%5;
+				int y = 4+rand()%4;
 				if(this->InsertByXY(x,y)){
 					foundInsertPosition=true;
 				}
