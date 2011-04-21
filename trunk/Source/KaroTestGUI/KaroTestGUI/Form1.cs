@@ -149,10 +149,17 @@ namespace KaroTestGUI
 
         private void GetTurn()
         {
-            if ((Player)engine.GetTurn() == Player.WHITE)
+            if (engine.GetTurn() == Player.WHITE)
                 pictureBox2.BackColor = Color.WhiteSmoke;
             else
                 pictureBox2.BackColor = Color.Red;
+        }
+
+        private void btnDoMove_Click(object sender, EventArgs e)
+        {            
+            engine.CalculateComputerMove();
+            GetTurn();
+            pictureBox1.Invalidate();
         }
     }
 }

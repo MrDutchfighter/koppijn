@@ -106,6 +106,7 @@
             this.btnDoMove.TabIndex = 3;
             this.btnDoMove.Text = "Compute Computer Move";
             this.btnDoMove.UseVisualStyleBackColor = true;
+            this.btnDoMove.Click += new System.EventHandler(this.btnDoMove_Click);
             // 
             // btn
             // 

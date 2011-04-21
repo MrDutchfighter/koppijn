@@ -1,6 +1,8 @@
 // KaroEngine.h
 #pragma once
 #using <System.dll>
+#include <stdlib.h>
+#include <time.h>
 using namespace System;
 
 namespace KaroEngine 
@@ -51,5 +53,6 @@ namespace KaroEngine
 		int * GetBoard(void);
 		Tile GetByXY(int x,int y);
 		bool IsWinner(Player p);
+		void CalculateComputerMove();
 	};
 }
