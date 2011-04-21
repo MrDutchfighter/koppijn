@@ -14,23 +14,23 @@ namespace KaroTestGUI
  
     public partial class Form1 : Form
     {
-        //KaroEngine.KaroEngine   engine;
-        Pen                     penBlack;
-        Pen                     penGray;
-        Brush                   brushBlack;
-        Brush                   brushWhite;
-        Brush                   brushRed;
-        Brush                   brushBlue;
-        int                     boxSize = 25;
-        bool                    gameOver = false; 
+        KaroEngine.KaroEngineWrapper    engine;
+        Pen                             penBlack;
+        Pen                             penGray;
+        Brush                           brushBlack;
+        Brush                           brushWhite;
+        Brush                           brushRed;
+        Brush                           brushBlue;
+        int                             boxSize = 25;
+        bool                            gameOver = false; 
 
-        Point                   clickedFirst;
-        Point                   clickedSecond;
-        KaroEngine.KaroEngineWrapper engine;
+        Point                           clickedFirst;
+        Point                           clickedSecond;
+                
 
         public Form1()
         {
-            engine = new KaroEngineWrapper();            
+            engine          = new KaroEngineWrapper();
             penBlack        = Pens.Black;
             penGray         = new Pen(Color.Gray, 2);    
             brushBlack      = Brushes.Black;            
@@ -42,9 +42,8 @@ namespace KaroTestGUI
             clickedSecond   = new Point(-1, -1);
             
             InitializeComponent();
-            label2.Text = "White";
-            
 
+            GetTurn();
         }
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
@@ -136,16 +135,17 @@ namespace KaroTestGUI
                     clickedSecond = new Point(-1, -1);
                 }
             }
-            ChangePlayerTurnLabel();
+
+            GetTurn();
             pictureBox1.Invalidate();
         }
 
-        private void ChangePlayerTurnLabel()
+        private void GetTurn()
         {
-            /*if ((Player) engine.GetTurn() == Player.WHITE)
+            if ((Player) engine.GetTurn() == Player.WHITE)
                 label2.Text = "WHITE";
             else
-                label2.Text = "RED";*/
+                label2.Text = "RED";
         }
     }
 }

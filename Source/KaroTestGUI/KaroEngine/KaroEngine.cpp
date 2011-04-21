@@ -68,15 +68,21 @@ namespace KaroEngine
 			board[to] = board[from];
 			board[from] = Tile::SOLIDTILE;
 		}
+
 		turn = Reverse(turn);
 	}
 
 	Player KaroEngine::Reverse(Player turn)
 	{
-		if(turn == Player::WHITE )
-			return Player::RED;
-		else
-			return Player::WHITE;
+		switch(turn)
+		{
+			case Player::WHITE:
+				return Player::RED;
+			case Player::RED:
+				return Player::WHITE;
+			default:
+				return turn;
+		}
 	}
 
 	bool KaroEngine::IsValidMove(int from, int to, int tileFrom)
