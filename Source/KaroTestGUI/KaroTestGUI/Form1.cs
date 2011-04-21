@@ -25,12 +25,12 @@ namespace KaroTestGUI
         bool                    gameOver = false; 
 
         Point                   clickedFirst;
-        Point                   clickedSecond;        
-        
+        Point                   clickedSecond;
+        KaroEngine.KaroEngineWrapper engine;
 
         public Form1()
         {
-            //engine = new KaroEngine.KaroEngine();
+            engine = new KaroEngineWrapper();            
             penBlack        = Pens.Black;
             penGray         = new Pen(Color.Gray, 2);    
             brushBlack      = Brushes.Black;            
@@ -42,7 +42,8 @@ namespace KaroTestGUI
             clickedSecond   = new Point(-1, -1);
             
             InitializeComponent();
-            label2.Text = "White";                        
+            label2.Text = "White";
+            
 
         }
 
@@ -50,12 +51,12 @@ namespace KaroTestGUI
         {
             Graphics g = e.Graphics;  
           
-            /*for (int y = 0; y < 15; y++)
+            for (int y = 0; y < 15; y++)
             {
                 for (int x = 0; x < 15; x++) 
                 {
                     // Draw the board
-                    if ((Tile)engine.GetByXY(x, y) != Tile.EMPTY)
+                    if (engine.GetByXY(x, y) != Tile.EMPTY)
                     {
                         g.FillRectangle(brushBlack, x * boxSize, y * boxSize, boxSize, boxSize);
                     }
@@ -71,7 +72,7 @@ namespace KaroTestGUI
                     }
 
                     // Check what kind of tiles, pawns etc are on the board.
-                    switch ((Tile)engine.GetByXY(x, y)){ 
+                    switch (engine.GetByXY(x, y)){ 
                         case Tile.EMPTY:
                             break;
                         case Tile.MOVEABLETILE:
@@ -97,7 +98,7 @@ namespace KaroTestGUI
                     // Draw a grid
                     g.DrawRectangle(Pens.Gray, x * boxSize, y * boxSize, boxSize, boxSize);
                 }
-            }*/
+            }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -112,7 +113,7 @@ namespace KaroTestGUI
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
-            /*if (!this.gameOver)
+            if (!this.gameOver)
             {
                 if (clickedFirst.X == -1)
                 {
@@ -136,7 +137,7 @@ namespace KaroTestGUI
                 }
             }
             ChangePlayerTurnLabel();
-            pictureBox1.Invalidate();*/
+            pictureBox1.Invalidate();
         }
 
         private void ChangePlayerTurnLabel()

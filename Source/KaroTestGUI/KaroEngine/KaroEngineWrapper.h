@@ -7,7 +7,7 @@ using namespace std;
 using namespace System;
 
 namespace KaroEngine {
-	ref class KaroEngineWrapper
+	public ref class KaroEngineWrapper
 	{
 
 
@@ -22,6 +22,9 @@ namespace KaroEngine {
 
 		KaroEngineWrapper(void);
 		~KaroEngineWrapper(void);
+
+		Tile GetByXY(int x, int y);
+		void DoMove(int from,int to);
 		//PersonWrapper(String ^, int);
 		//~PersonWrapper(void);
 
