@@ -38,11 +38,8 @@ namespace KaroEngine
 		return ret;
 	}
 
-	void KaroEngine::DoMove(int from, int to)
+	void KaroEngine::DoMove(int to)
 	{
-		
-		if(gameState == INSERTION)
-		{
 			if(board[to] == Tile::SOLIDTILE)
 			{
 				if(turn == Player::WHITE)
@@ -54,16 +51,20 @@ namespace KaroEngine
 			}
 			if(insertionCount == 12)
 				gameState = PLAYING;
-		}
-		if(gameState == PLAYING)
-		{
-			if(IsValidMove(from, to))
-			{
-				board[to] = board[from];
-				board[from] = Tile::SOLIDTILE;
-			}
-		}
 
+			turn = Reverse(turn);
+	}
+
+	void KaroEngine::DoMove(int from, int to, int tileFrom = -1)
+	{
+		if(IsValidMove(from, to, tileFrom))
+		{
+			if(tileFrom != -1)
+				board[tileFrom] = Tile::EMPTY;
+			
+			board[to] = board[from];
+			board[from] = Tile::SOLIDTILE;
+		}
 		turn = Reverse(turn);
 	}
 
@@ -75,15 +76,13 @@ namespace KaroEngine
 			return Player::WHITE;
 	}
 
-	bool KaroEngine::IsValidMove(int from, int to)
+	bool KaroEngine::IsValidMove(int from, int to, int tileFrom)
 	{
-
 		// check if the move is valid by validating with the turn of the current player
 		if(turn == Player::RED && (board[from] != Tile::REDUNMARKED || board[from] != Tile::REDMARKED))
 			return false;
 		else if(turn == Player::WHITE && (board[from] != Tile::WHITEUNMARKED || board[from] != Tile::WHITEMARKED))
 			return false;
-
 
 		int rowFrom = from/BOARDWIDTH;
 		int rowTo = to/BOARDWIDTH;
@@ -106,14 +105,15 @@ namespace KaroEngine
 		}
 
 		// Can you move this tile?
-		if(!IsGameTile(from) || FreeForMove(from)) {
+		if(!IsGameTile(from) || FreeForMove(from) || (tileFrom > -1 && board[tileFrom] != Tile::MOVEABLETILE)) {
 			return false;
 		}
 
 		// If moveto tile not a valid tile
-		if(!IsGameTile(to) || !FreeForMove(to)) {
+		if(!IsGameTile(to) || !FreeForMove(to) || (tileFrom > -1 && board[to] != Tile::EMPTY)) {
 			return false;
 		}
+		
 
 		// If impossible move
 		if(rowDifferencePos+colDifferencePos == 3) {
@@ -133,6 +133,7 @@ namespace KaroEngine
 
 		return true; // VICTORIOUSSSSS
 	}
+
 	void KaroEngine::UndoMove()
 	{
 	}
