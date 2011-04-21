@@ -26,6 +26,10 @@ void KaroEngineWrapper::DoMove(int from,int to){
 	_karoEngine->DoMove(from,to,-1);
 }
 
+GameState KaroEngineWrapper::GetGameState(){
+	return _karoEngine->GetGameState();
+}
+
 Player KaroEngineWrapper::GetTurn()
 {
 	return _karoEngine->GetTurn();
