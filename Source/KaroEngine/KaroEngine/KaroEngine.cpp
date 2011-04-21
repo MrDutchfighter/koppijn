@@ -38,11 +38,8 @@ namespace KaroEngine
 		return ret;
 	}
 
-	void KaroEngine::DoMove(int from, int to)
+	void KaroEngine::DoMove(int to)
 	{
-		
-		if(gameState == INSERTION)
-		{
 			if(board[to] == SOLIDTILE)
 			{
 				if(turn == WHITE)
@@ -54,7 +51,11 @@ namespace KaroEngine
 			}
 			if(insertionCount == 12)
 				gameState = PLAYING;
-		}
+
+			turn = Reverse(turn);
+	}
+	void KaroEngine::DoMove(int from, int to)
+	{
 		if(gameState == PLAYING)
 		{
 			if(IsValidMove(from, to))
