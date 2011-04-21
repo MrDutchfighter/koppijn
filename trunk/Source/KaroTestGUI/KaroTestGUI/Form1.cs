@@ -53,7 +53,7 @@ namespace KaroTestGUI
             string log = engine.getMessageLog();
             if (!log.Equals("")) {
                 this.lastMessage = log;
-                this.txtMessageLog.Text = this.lastMessage + "\r\n" + this.txtMessageLog.Text;
+                this.txtMessageLog.Text = this.lastMessage + this.txtMessageLog.Text;
             }
             GetTurn();
             pictureBox1.Invalidate();
@@ -157,8 +157,11 @@ namespace KaroTestGUI
                         }
                         else
                         {
-                            clickedFirst.X = (e.X - 1) / this.boxSize;
-                            clickedFirst.Y = (e.Y - 1) / this.boxSize;
+                            if (tempTile != Tile.EMPTY && tempTile != Tile.SOLIDTILE)
+                            {
+                                clickedFirst.X = (e.X - 1) / this.boxSize;
+                                clickedFirst.Y = (e.Y - 1) / this.boxSize;
+                            }
                         }
                     }
                     
