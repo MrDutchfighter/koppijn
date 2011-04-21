@@ -1,12 +1,11 @@
 // KaroEngine.h
-
 #pragma once
-
+#using <System.dll>
 using namespace System;
+
 namespace KaroEngine 
-{
-    enum Tile
-	{
+{	
+	public enum class Tile : unsigned int{
 		EMPTY=0,
 		SOLIDTILE=1,
 		MOVEABLETILE=2,
@@ -16,8 +15,7 @@ namespace KaroEngine
 		REDMARKED=6
 	};
 
-	enum Player
-	{ 
+	public  enum class Player: unsigned int{ 
 		WHITE=0,
 		RED=1
 	};

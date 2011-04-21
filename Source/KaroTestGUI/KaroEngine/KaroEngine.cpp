@@ -9,16 +9,16 @@ namespace KaroEngine
 	KaroEngine::KaroEngine(void)
 	{
 		board = new Tile[BOARDWIDTH * BOARDWIDTH];
-		this->turn = WHITE;
+		this->turn = Player::WHITE;
 		int gameState = INSERTION; 
 		insertionCount = 0;
 
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH ; i ++ )
-			board[i] = EMPTY;
+			board[i] = Tile::EMPTY;
 
 		for(int j = 4; j < 8; j++)
 			for( int k = 5; k < 10; k++ )
-				board[j*BOARDWIDTH+k] = SOLIDTILE;
+				board[j*BOARDWIDTH+k] = Tile::SOLIDTILE;
 	}
 
 	KaroEngine::~KaroEngine(void)
@@ -43,12 +43,12 @@ namespace KaroEngine
 		
 		if(gameState == INSERTION)
 		{
-			if(board[to] == SOLIDTILE)
+			if(board[to] == Tile::SOLIDTILE)
 			{
-				if(turn == WHITE)
-					board[to] = WHITEUNMARKED;
+				if(turn == Player::WHITE)
+					board[to] = Tile::WHITEUNMARKED;
 				else
-					board[to] = REDUNMARKED;
+					board[to] = Tile::REDUNMARKED;
 
 				insertionCount++;
 			}
@@ -60,7 +60,7 @@ namespace KaroEngine
 			if(IsValidMove(from, to))
 			{
 				board[to] = board[from];
-				board[from] = SOLIDTILE;
+				board[from] = Tile::SOLIDTILE;
 			}
 		}
 
@@ -69,19 +69,19 @@ namespace KaroEngine
 
 	Player KaroEngine::Reverse(Player turn)
 	{
-		if(turn == WHITE )
-			return RED;
+		if(turn == Player::WHITE )
+			return Player::RED;
 		else
-			return WHITE;
+			return Player::WHITE;
 	}
 
 	bool KaroEngine::IsValidMove(int from, int to)
 	{
 
 		// check if the move is valid by validating with the turn of the current player
-		if(turn == RED && (board[from] != REDUNMARKED || board[from] != REDMARKED))
+		if(turn == Player::RED && (board[from] != Tile::REDUNMARKED || board[from] != Tile::REDMARKED))
 			return false;
-		else if(turn == WHITE && (board[from] != WHITEUNMARKED || board[from] != WHITEMARKED))
+		else if(turn == Player::WHITE && (board[from] != Tile::WHITEUNMARKED || board[from] != Tile::WHITEMARKED))
 			return false;
 
 
@@ -139,7 +139,7 @@ namespace KaroEngine
 
 	bool KaroEngine::FreeForMove(int tile)
 	{
-		if(board[tile] == SOLIDTILE || board[tile] == MOVEABLETILE) {
+		if(board[tile] == Tile::SOLIDTILE || board[tile] == Tile::MOVEABLETILE) {
 			return true;
 		}
 		return false;
@@ -147,7 +147,7 @@ namespace KaroEngine
 
 	bool KaroEngine::IsGameTile(int tile)
 	{
-		return board[tile] != EMPTY;
+		return board[tile] != Tile::EMPTY;
 	}
 
 	Player KaroEngine::GetTurn()
@@ -163,10 +163,10 @@ namespace KaroEngine
 	{
 		Tile marked;
 		//Right player color 
-		if (p == WHITE) 
-			marked = WHITEMARKED;
-		if (p == RED)
-			marked = REDMARKED;
+		if (p == Player::WHITE) 
+			marked = Tile::WHITEMARKED;
+		if (p == Player::RED)
+			marked = Tile::REDMARKED;
 
 
 		for(int i = 0; i < BOARDWIDTH; i++) {

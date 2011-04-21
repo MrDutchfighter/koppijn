@@ -6,24 +6,12 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-//using KaroEngine;
+using KaroEngine;
 using System.Runtime.InteropServices;    
 
 namespace KaroTestGUI
 {
-    public enum Tile
-    {
-        EMPTY = 0,
-        SOLIDTILE = 1,
-        MOVEABLETILE = 2,
-        WHITEUNMARKED = 3,
-        WHITEMARKED = 4,
-        REDUNMARKED = 5,
-        REDMARKED = 6
-    };
-
-    public enum Player { WHITE = 0, RED = 1 };
-
+ 
     public partial class Form1 : Form
     {
         //KaroEngine.KaroEngine   engine;
@@ -37,7 +25,8 @@ namespace KaroTestGUI
         bool                    gameOver = false; 
 
         Point                   clickedFirst;
-        Point                   clickedSecond;
+        Point                   clickedSecond;        
+        
 
         public Form1()
         {
@@ -53,7 +42,8 @@ namespace KaroTestGUI
             clickedSecond   = new Point(-1, -1);
             
             InitializeComponent();
-            label2.Text = "White";
+            label2.Text = "White";                        
+
         }
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
