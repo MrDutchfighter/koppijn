@@ -36,8 +36,9 @@ namespace KaroEngine
 		~KaroEngine(void);
 		Player Reverse(Player);
 		Player GetTurn();
-		bool IsValidMove(int from, int to);
-		void DoMove(int, int);
+		bool IsValidMove(int from, int to, int fromTile);
+		void DoMove(int to);
+		void DoMove(int from, int to, int fromTile);
 		void UndoMove();
 		bool FreeForMove(int); // checks if a tile is empty
 		bool IsGameTile(int); // checks if a tile exists
