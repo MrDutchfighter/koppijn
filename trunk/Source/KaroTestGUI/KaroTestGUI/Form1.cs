@@ -22,8 +22,9 @@ namespace KaroTestGUI
         Brush                           brushRed;
         Brush                           brushBlue;
         int                             boxSize = 25;
-        bool                            gameOver = false; 
+        bool                            gameOver = false;
 
+        Point                           clickedTile;
         Point                           clickedFirst;
         Point                           clickedSecond;
                 
@@ -40,6 +41,7 @@ namespace KaroTestGUI
 
             clickedFirst    = new Point(-1, -1);
             clickedSecond   = new Point(-1, -1);
+            clickedTile     = new Point(-1, -1);
             
             InitializeComponent();
 
@@ -76,6 +78,10 @@ namespace KaroTestGUI
                     if (x == clickedSecond.X && y == clickedSecond.Y)
                     {
                         g.FillRectangle(brushBlue, x * boxSize, y * boxSize, boxSize, boxSize);
+                    }
+                    if (x == clickedTile.X && y == clickedTile.Y)
+                    {
+                        g.FillRectangle(Brushes.BlueViolet, x * boxSize, y * boxSize, boxSize, boxSize);
                     }
 
                     // Check what kind of tiles, pawns etc are on the board.
@@ -129,8 +135,20 @@ namespace KaroTestGUI
                         engine.InsertByXY((e.X - 1) / this.boxSize,(e.Y - 1) / this.boxSize);
                     }
                     else if (engine.GetGameState() == GameState.PLAYING){
-                        clickedFirst.X = (e.X - 1) / this.boxSize;
-                        clickedFirst.Y = (e.Y - 1) / this.boxSize;
+                        Tile tempTile=engine.GetByXY((e.X - 1) / this.boxSize, (e.Y - 1) / this.boxSize);
+                        if (tempTile == Tile.MOVEABLETILE)
+                        {
+                            if (this.clickedTile.X == -1)
+                            {
+                                clickedTile.X = (e.X - 1) / this.boxSize;
+                                clickedTile.Y = (e.Y - 1) / this.boxSize;
+                            }
+                        }
+                        else
+                        {
+                            clickedFirst.X = (e.X - 1) / this.boxSize;
+                            clickedFirst.Y = (e.Y - 1) / this.boxSize;
+                        }
                     }
                     
                 }
@@ -139,10 +157,17 @@ namespace KaroTestGUI
                     clickedSecond.X = (e.X - 1) / this.boxSize;
                     clickedSecond.Y = (e.Y - 1) / this.boxSize;
 
-                    engine.DoMove((clickedFirst.Y * 15) + clickedFirst.X, (clickedSecond.Y * 15) + clickedSecond.X);
+                    if (clickedTile.X == -1)
+                    {
+                        engine.DoMove((clickedFirst.Y * 15) + clickedFirst.X, (clickedSecond.Y * 15) + clickedSecond.X, -1);
+                    }
+                    else {
+                        engine.DoMove((clickedFirst.Y * 15) + clickedFirst.X, (clickedSecond.Y * 15) + clickedSecond.X, (clickedTile.Y * 15) + clickedTile.X);
+                    }
 
-                    clickedFirst = new Point(-1, -1);
-                    clickedSecond = new Point(-1, -1);
+                    clickedTile     = new Point(-1, -1);
+                    clickedFirst    = new Point(-1, -1);
+                    clickedSecond   = new Point(-1, -1);
                 }
                 else 
                 {

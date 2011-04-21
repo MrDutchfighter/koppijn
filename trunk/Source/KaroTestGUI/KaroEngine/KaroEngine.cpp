@@ -61,17 +61,23 @@ namespace KaroEngine
 			turn = Reverse(turn);
 	}
 
-	void KaroEngine::DoMove(int from, int to, int tileFrom = -1)
+	void KaroEngine::DoMove(int from, int to, int tileFrom)
 	{
-		if(IsValidMove(from, to, tileFrom))
-		{
-			if(tileFrom != -1){
-				board[tileFrom] = Tile::EMPTY;
-			}
-
+		Tile oldTile;
+		if (tileFrom != -1) { //move the tile
+			if(board[tileFrom] != Tile::MOVEABLETILE) {
+				return;
+			}			
+			board[tileFrom] = Tile::EMPTY;
+			board[to]=Tile::SOLIDTILE;
+		}
+		if(IsValidMove(from, to)) {			
 			board[to] = board[from];
 			board[from] = Tile::SOLIDTILE;
 			turn = Reverse(turn);
+		} else { // if not a valid move, undo moving of the boardtiles.
+			board[tileFrom] = Tile::MOVEABLETILE;
+			board[to]		= Tile::EMPTY;
 		}
 	}
 
@@ -88,7 +94,7 @@ namespace KaroEngine
 		}
 	}
 
-	bool KaroEngine::IsValidMove(int from, int to, int tileFrom)
+	bool KaroEngine::IsValidMove(int from, int to)
 	{
 		// check if the move is valid by validating with the turn of the current player
 		if(turn == Player::RED){
@@ -122,14 +128,14 @@ namespace KaroEngine
 		}
 
 		// Can you move this tile?
-		if(!IsGameTile(from) || FreeForMove(from) || (tileFrom > -1 && board[tileFrom] != Tile::MOVEABLETILE)) {
-			return false;
-		}
+		//if(!IsGameTile(from) || FreeForMove(from) || (tileFrom > -1 && board[tileFrom] != Tile::MOVEABLETILE)) {
+		//	return false;
+		//}
 
 		// If moveto tile not a valid tile
-		if(!IsGameTile(to) || !FreeForMove(to) || (tileFrom > -1 && board[to] != Tile::EMPTY)) {
-			return false;
-		}
+		//if(!IsGameTile(to) || !FreeForMove(to) || (tileFrom > -1 && board[to] != Tile::EMPTY)) {
+		//	return false;
+		//}
 		
 
 		// If impossible move

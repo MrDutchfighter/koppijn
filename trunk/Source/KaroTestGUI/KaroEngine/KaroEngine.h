@@ -43,7 +43,7 @@ namespace KaroEngine
 		Player Reverse(Player);
 		Player GetTurn();
 		GameState GetGameState();
-		bool IsValidMove(int from, int to, int fromTile);
+		bool IsValidMove(int from, int to);
 		void DoMove(int to);
 		void DoMove(int from, int to, int fromTile);
 		void UndoMove();
