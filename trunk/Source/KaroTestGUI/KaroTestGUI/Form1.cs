@@ -17,6 +17,7 @@ namespace KaroTestGUI
         KaroEngine.KaroEngineWrapper    engine;
         Pen                             penBlack;
         Pen                             penGray;
+        Pen penGreen;
         Brush                           brushBlack;
         Brush                           brushWhite;
         Brush                           brushRed;
@@ -29,12 +30,14 @@ namespace KaroTestGUI
         Point                           clickedSecond;
         String                          lastMessage;
                 
+        // Debug options
 
         public Form1()
         {
             engine          = new KaroEngineWrapper();
-            penBlack        = Pens.Black;
-            penGray         = new Pen(Color.Gray, 2);    
+            penBlack        = new Pen(Color.Black, 1);
+            penGray         = new Pen(Color.Gray, 2);
+            penGreen        = new Pen(Color.Green, 2);
             brushBlack      = Brushes.Black;            
             brushRed        = Brushes.Red;
             brushWhite      = Brushes.White;
@@ -71,8 +74,7 @@ namespace KaroTestGUI
                     // Draw the board
                     if (engine.GetByXY(x, y) != Tile.EMPTY)
                     {
-                        g.FillRectangle(brushBlack, x * boxSize, y * boxSize, boxSize, boxSize);
-
+                        g.FillRectangle(brushBlack, x * boxSize , y * boxSize, boxSize, boxSize);
                     }
                     else {
                         if (tileNumbersToolStripMenuItem.Checked)
@@ -121,6 +123,12 @@ namespace KaroTestGUI
 
                     // Draw a grid
                     g.DrawRectangle(Pens.Gray, x * boxSize, y * boxSize, boxSize, boxSize);
+
+                    // If debug (draw movable tiles) is on, draw the movable tiles
+                    if (movableTilesToolStripMenuItem.Checked && engine.GetByXY(x, y) == Tile.MOVEABLETILE)
+                    {
+                        g.DrawRectangle(penGreen, x * boxSize, y * boxSize, boxSize, boxSize);
+                    }
                 }
             }
         }
@@ -207,6 +215,7 @@ namespace KaroTestGUI
             UpdateGUI();
         }
 
+        #region Menu Toolstrip Actions
         private void tileNumbersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (tileNumbersToolStripMenuItem.Checked)
@@ -218,6 +227,20 @@ namespace KaroTestGUI
             }
             pictureBox1.Invalidate();
         }
-       
+
+        private void movableTilesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (movableTilesToolStripMenuItem.Checked)
+            {
+                movableTilesToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                movableTilesToolStripMenuItem.Checked = true;
+            }
+            pictureBox1.Invalidate();
+        }
+        #endregion
+
     }
 }
