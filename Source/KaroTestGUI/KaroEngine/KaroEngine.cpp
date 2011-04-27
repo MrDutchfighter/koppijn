@@ -35,24 +35,24 @@ namespace KaroEngine
 					board[j * BOARDWIDTH + k] = Tile::SOLIDTILE;
 
 		// Fill the array of possible steps;
-		possibleSteps[0]=-14;
-		possibleSteps[1]=-15;
-		possibleSteps[2]=-16;
+		possibleSteps[0]=-16;
+		possibleSteps[1]=-17;
+		possibleSteps[2]=-18;
 		possibleSteps[3]=-1;
 		possibleSteps[4]= 1;
-		possibleSteps[5]= 14;
-		possibleSteps[6]= 15;
-		possibleSteps[7]= 16;
+		possibleSteps[5]= 16;
+		possibleSteps[6]= 17;
+		possibleSteps[7]= 18;
 
 		// Fill the array of possible jumps
-		possibleJumps[0]=-28;
-		possibleJumps[1]=-30;
-		possibleJumps[2]=-32;
+		possibleJumps[0]=-32;
+		possibleJumps[1]=-34;
+		possibleJumps[2]=-36;
 		possibleJumps[3]=-2;
 		possibleJumps[4]= 2;
-		possibleJumps[5]= 28;
-		possibleJumps[6]= 30;
-		possibleJumps[7]= 32;
+		possibleJumps[5]= 32;
+		possibleJumps[6]= 34;
+		possibleJumps[7]= 36;
 
 		this->SetMessageLog("Engine Initialized");
 	}
