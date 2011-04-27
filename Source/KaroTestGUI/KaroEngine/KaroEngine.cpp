@@ -92,7 +92,7 @@ namespace KaroEngine
 				board[move->positionTo] = board[move->positionFrom];
 			
 			
-			board[move->positionFrom] = Tile::SOLIDTILE; // Solid or movable
+			board[move->positionFrom] = Tile::SOLIDTILE; // Solid or moveable
 			if(move->tileFrom != -1)
 				board[move->tileFrom] = Tile::EMPTY; // Empty moved tile
 
@@ -125,6 +125,7 @@ namespace KaroEngine
 				whitePieces.insert(std::pair<int,bool>(move->positionTo,false));
 			}
 		}
+		turn = Reverse(turn);
 	}
 
 	void KaroEngine::DoMove(int from, int to, int tileFrom)
@@ -281,9 +282,55 @@ namespace KaroEngine
 		return false; // VICTORIOUSSSSS
 	}
 
-	void KaroEngine::UndoMove(Move *m)
+	void KaroEngine::UndoMove(Move *move)
 	{
-		
+		if(move->positionFrom != -1) // PLAYING STATE
+		{
+			if(move->isJumpMove) // Flip piece on the board
+			{
+				if(turn == Player::RED)
+					board[move->positionFrom] = (board[move->positionTo] == Tile::REDUNMARKED ? Tile::REDMARKED : Tile::REDUNMARKED);
+				if(turn == Player::WHITE)
+					board[move->positionFrom] = (board[move->positionTo] == Tile::WHITEUNMARKED ? Tile::WHITEMARKED : Tile::WHITEUNMARKED);
+			}
+			else
+				board[move->positionFrom] = board[move->positionTo];
+			
+			
+			board[move->positionTo] = Tile::SOLIDTILE; // Solid or moveable
+			if(move->tileFrom != -1)
+				board[move->positionTo] = Tile::EMPTY; // Empty moved tile
+
+			bool flippedValue;
+			if(turn == Player::RED){
+				if(move->isJumpMove)
+					flippedValue = (redPieces[move->positionFrom] ? false : true); // Flip piece in map
+				else
+					flippedValue = redPieces[move->positionFrom];
+				
+				redPieces.insert(std::pair<int,bool>(move->positionFrom,flippedValue));
+				redPieces.erase(move->positionTo);
+			}else{
+				if(move->isJumpMove)
+					flippedValue = (whitePieces[move->positionTo] ? false : true); // Flip piece in map
+				else
+					flippedValue = whitePieces[move->positionTo];
+
+				whitePieces.insert(std::pair<int,bool>(move->positionFrom,false));
+				whitePieces.erase(move->positionTo);
+			}
+		}
+		else //INSERTING STATE
+		{
+			if(turn == Player::RED){
+				board[move->positionTo] = Tile::SOLIDTILE; // Solid or moveable
+				redPieces.erase(move->positionTo);
+			}else{
+				board[move->positionTo] = Tile::SOLIDTILE; // Solid or moveable
+				whitePieces.erase(move->positionTo);
+			}
+		}
+		turn = Reverse(turn);
 	}
 
 	bool KaroEngine::IsWinner(Player p, int lastMove)
