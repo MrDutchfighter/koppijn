@@ -616,8 +616,8 @@ namespace KaroEngine
 		}
 
 		// Evaluate the current board, game ended? Return empty move with the max/min score
-		int scoreRed = EvaluateBoard(p);
-		int scoreWhite = EvaluateBoard(p);
+		int scoreRed = EvaluateBoard(Player::RED);
+		int scoreWhite = EvaluateBoard(Player::WHITE);
 		int evaluationScore = scoreRed-scoreWhite;
 
 		// If maximum depth is reached
