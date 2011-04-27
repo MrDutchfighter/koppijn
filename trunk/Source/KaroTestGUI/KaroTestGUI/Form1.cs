@@ -29,6 +29,7 @@ namespace KaroTestGUI
         Point                           clickedFirst;
         Point                           clickedSecond;
         String                          lastMessage;
+        int[][]                         possibleMoves;
                 
         // Debug options
 
@@ -46,6 +47,7 @@ namespace KaroTestGUI
             clickedFirst    = new Point(-1, -1);
             clickedSecond   = new Point(-1, -1);
             clickedTile     = new Point(-1, -1);
+            possibleMoves   = null;
             
             InitializeComponent();
 
@@ -53,7 +55,7 @@ namespace KaroTestGUI
         }
 
         private void UpdateGUI() {
-            string log = engine.getMessageLog();
+            string log = engine.GetMessageLog();
             if (!log.Equals("")) {
                 this.lastMessage = log;
                 this.txtMessageLog.Text = this.lastMessage + this.txtMessageLog.Text;
@@ -71,11 +73,28 @@ namespace KaroTestGUI
             for (int y = 0; y < BOARDWIDTH; y++)
             {
                 for (int x = 0; x < BOARDWIDTH; x++) 
-                {
-                    // Draw the board
+                {                    
+                    // Draw the board                    
+                    bool drawn = false;
+                    if (possibleMoves != null)
+                    {
+                        foreach (int[] move in possibleMoves)
+                        {
+                            if (move[0] == x && move[1] == y)
+                            {
+                                g.FillRectangle(Brushes.HotPink, x * boxSize, y * boxSize, boxSize, boxSize);
+                                drawn = true;
+                            }
+                        }
+                    }
+
                     if (engine.GetByXY(x, y) != Tile.EMPTY)
                     {
-                        g.FillRectangle(brushBlack, x * boxSize , y * boxSize, boxSize, boxSize);
+                        
+                        
+                        if(!drawn){
+                            g.FillRectangle(brushBlack, x * boxSize, y * boxSize, boxSize, boxSize);
+                        }
                     }
                     else {
                         if (tileNumbersToolStripMenuItem.Checked)
@@ -174,6 +193,7 @@ namespace KaroTestGUI
                             {
                                 clickedFirst.X = (e.X - 1) / this.boxSize;
                                 clickedFirst.Y = (e.Y - 1) / this.boxSize;
+                                possibleMoves=engine.GetPossibleMoves(clickedFirst.X, clickedFirst.Y);
                             }
                         }
                     }
@@ -195,6 +215,7 @@ namespace KaroTestGUI
                     clickedTile     = new Point(-1, -1);
                     clickedFirst    = new Point(-1, -1);
                     clickedSecond   = new Point(-1, -1);
+                    possibleMoves = null;
                 }
                 else 
                 {

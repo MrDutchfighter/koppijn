@@ -42,12 +42,12 @@ namespace KaroEngine
 		Tile * board;
 		Player turn;
 		int insertionCount;
-		int evaluationScore;
-		static const int BOARDWIDTH = 17;
+		int evaluationScore;		
 		int possibleSteps[8];
 		int possibleJumps[8];		
 		Move * MiniMax(Player p, int depth, int alpha, int beta);
 	public:
+		static const int BOARDWIDTH = 17;
 		KaroEngine(void);
 		~KaroEngine(void);
 		Player Reverse(Player);

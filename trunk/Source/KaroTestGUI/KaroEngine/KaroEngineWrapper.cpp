@@ -46,6 +46,18 @@ void KaroEngineWrapper::CalculateComputerMove(){
 	_karoEngine->CalculateComputerMove();
 }
 
-String ^KaroEngineWrapper::getMessageLog(){
+String ^KaroEngineWrapper::GetMessageLog(){
 	return marshal_as<String ^>(_karoEngine->GetMessageLog());
+}
+
+array<array<int>^>^ KaroEngineWrapper::GetPossibleMoves(int x, int y){
+	vector<Move*>* possibleMoves = _karoEngine->GetPossibleMoves((y*_karoEngine->BOARDWIDTH+x),false);
+
+	array<array<int>^>^ params = gcnew array<array<int>^>(possibleMoves->size());
+	for(int i=0;i<possibleMoves->size();i++){
+		params[i]=gcnew array<int>(2);
+		params[i][0] = possibleMoves->at(i)->positionTo%_karoEngine->BOARDWIDTH;
+		params[i][1] = possibleMoves->at(i)->positionTo/_karoEngine->BOARDWIDTH;		
+	}
+	return params;
 }
