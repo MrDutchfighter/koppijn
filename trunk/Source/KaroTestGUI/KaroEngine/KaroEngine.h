@@ -38,6 +38,9 @@ namespace KaroEngine
 	public class KaroEngine
 	{
 	private:
+		/**
+		* Properties
+		*/
 		GameState gameState;
 		std::string messageLog;
 		Tile * board;
@@ -45,37 +48,61 @@ namespace KaroEngine
 		int insertionCount;
 		int evaluationScore;		
 		int possibleSteps[8];
-		int possibleJumps[8];		
-		Move * MiniMax(Player p, int depth, int alpha, int beta);
+		int possibleJumps[8];
+
 		map<int,bool> redPieces;
 		map<int,bool> whitePieces;
+
+		/**
+		* Functions
+		*/
+		// Algorithm functions
+		Move * MiniMax(Player p, int depth, int alpha, int beta);
+		
 	public:
-		static const int BOARDWIDTH = 17;
+		
+		/**
+		* Properties
+		*/
+		static const int BOARDWIDTH = 17;	// Width of the board
+		int maxDepth;						// Max depth for minmax
+
+		/**
+		* Functions
+		*/
 		KaroEngine(void);
 		~KaroEngine(void);
-		Player Reverse(Player);
-		Player GetTurn();
-		GameState GetGameState();
-		bool IsValidMove(int from, int to);
-		void DoMove(Move *move);
+
+		// Normal functions
+		bool InsertByXY(int position);
 		void DoMove(int from, int to, int fromTile);
+		void DoMove(Move *move);		
 		void UndoMove(Move *move);
-		bool FreeForMove(int); // checks if a tile is empty
-		bool IsGameTile(int); // checks if a tile exists
-		bool InsertByXY(int x, int y);
-		int * GetBoard(void);
-		Tile GetByXY(int x,int y);
+
+		bool IsValidMove(int from, int to);
 		bool IsWinner(Player p, int lastMove);
-		void CalculateComputerMove();
-		std::string GetMessageLog();
+		Player Reverse(Player);
 		void SetMessageLog(std::string s);
+
 		int EvaluateBoard(Player p);
-		int GetEvaluationScore();
 
 		// Get possible moves
 		vector<Move*> * GetPossibleMoves(Player forPlayer);
 		vector<Move*> * GetPossibleMoves(int tile, bool isTurned);
 
-		int maxDepth; // Maximum moves
+		// Algorithm functions
+		void CalculateComputerMove();
+
+		// 'Getters'
+		bool FreeForMove(int); // checks if a tile is empty
+		bool IsGameTile(int); // checks if a tile exists
+		GameState GetGameState();
+		Player GetTurn();
+
+		// Getters
+		int * GetBoard(void);
+		Tile GetByXY(int x,int y);
+		std::string GetMessageLog();
+		int GetEvaluationScore();
 	};
 }
