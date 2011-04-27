@@ -474,15 +474,15 @@ namespace KaroEngine
 		if(forPlayer == Player::RED) {
 			if(!this->redPieces.empty()) {
 				for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
-					vector<Move*> *move = GetPossibleMoves(it->first, it->second);
-					possibleMoves->insert(possibleMoves->end(), move->begin(), move->end());
+					vector<Move*> *moves = GetPossibleMoves(it->first, it->second);
+					possibleMoves->insert(possibleMoves->end(), moves->begin(), moves->end());
 				}
 			}
-		} else if(forPlayer == Player::RED) {
+		} else if(forPlayer == Player::WHITE) {
 			if(!this->whitePieces.empty()) {
 				for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
-					vector<Move*> *move = GetPossibleMoves(it->first, it->second);
-					possibleMoves->insert(possibleMoves->end(), move->begin(), move->end());
+					vector<Move*> *moves = GetPossibleMoves(it->first, it->second);
+					possibleMoves->insert(possibleMoves->end(), moves->begin(), moves->end());
 				}
 			}
 		}
