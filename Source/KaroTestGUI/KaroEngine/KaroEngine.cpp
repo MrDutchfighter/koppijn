@@ -38,7 +38,7 @@ namespace KaroEngine
 		// Fill the array of possible steps;
 		possibleSteps[0]= 0-(BOARDWIDTH-1);
 		possibleSteps[1]= 0-BOARDWIDTH;
-		possibleSteps[2]=-0-(BOARDWIDTH+1);
+		possibleSteps[2]= 0-(BOARDWIDTH+1);
 		possibleSteps[3]=-1;
 		possibleSteps[4]= 1;
 		possibleSteps[5]= (BOARDWIDTH-1);
@@ -48,7 +48,7 @@ namespace KaroEngine
 		// Fill the array of possible jumps
 		possibleJumps[0]= 0-(BOARDWIDTH*2)+2;
 		possibleJumps[1]= 0-(BOARDWIDTH*2);
-		possibleJumps[2]=-0-(BOARDWIDTH*2)-2;
+		possibleJumps[2]= 0-(BOARDWIDTH*2)-2;
 		possibleJumps[3]=-2;
 		possibleJumps[4]= 2;
 		possibleJumps[5]= (BOARDWIDTH*2)-2;

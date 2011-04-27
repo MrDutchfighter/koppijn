@@ -19,7 +19,8 @@ namespace KaroEngine {
 		GameState GetGameState();
 		Player GetTurn();
 		void CalculateComputerMove();
+		String^ GetMessageLog();
 		int GetEvaluationScore();
-		String^ getMessageLog();
+		array<array<int>^>^ GetPossibleMoves(int x, int y);
 	};
 }
