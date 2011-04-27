@@ -64,7 +64,7 @@ namespace KaroEngine
 		bool InsertByXY(int x, int y);
 		int * GetBoard(void);
 		Tile GetByXY(int x,int y);
-		bool IsWinner(Player p);
+		bool IsWinner(Player p, int lastMove);
 		void CalculateComputerMove();
 		std::string GetMessageLog();
 		void SetMessageLog(std::string s);

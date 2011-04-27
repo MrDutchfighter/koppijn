@@ -149,13 +149,19 @@ namespace KaroEngine
 			{
 				redPieces.insert(std::pair<int,bool>(to,(board[to] == Tile::REDMARKED)));
 				redPieces.erase(from);
+				redPieces.insert(std::pair<int,bool>(to,(board[to] == Tile::REDMARKED)));
 			}
 			else
 			{
 				whitePieces.insert(std::pair<int,bool>(to,(board[to] == Tile::WHITEMARKED)));
 				whitePieces.erase(from);
+				whitePieces.insert(std::pair<int,bool>(to,(board[to] == Tile::WHITEMARKED)));
 			}
 
+			if(KaroEngine::IsWinner(turn, to))
+			{
+				this->SetMessageLog("WIN!");
+			}
 
 			turn = Reverse(turn);
 
@@ -280,62 +286,85 @@ namespace KaroEngine
 		
 	}
 
-	bool KaroEngine::IsWinner(Player p)
+	bool KaroEngine::IsWinner(Player p, int lastMove)
 	{
 		Tile marked;
+		map<int,bool> pieces;
+
 		//Right player color 
 		if (p == Player::WHITE) 
+		{
 			marked = Tile::WHITEMARKED;
+			pieces = whitePieces;
+		}
 		if (p == Player::RED)
+		{
 			marked = Tile::REDMARKED;
+			pieces = redPieces;
+		}
 
+		//check if first piece is marked
+		if(board[lastMove] == marked)
+		{
+			//check if four pieces are Marked else return false
+			int countUnMarked = 0;
+			for each (pair<int, bool> p in pieces)
+			{
+				if(!p.second)
+					countUnMarked++;
+				if(countUnMarked > 2)
+					return false;
+			}
 
-		for(int i = 0; i < BOARDWIDTH; i++) {
-			for(int j = 0; j < BOARDWIDTH; j++) {
-				//Current position
-				int current = i * BOARDWIDTH + j;
-				
-				// Is current tile marked
-				if(board[current] == marked)
+			for each (pair<int, bool> piece in pieces)
+			{
+				for(int i = 0; i < 8; i++)
 				{
-					//Check vertical boundery 
-					if(i <= BOARDWIDTH - 4)
+					//check if piece in possibleStep
+					if(piece.first == lastMove + possibleSteps[i])
 					{
-						//Vertical
-						if(board[current + 1 * BOARDWIDTH] == marked && board[current + 2 * BOARDWIDTH] == marked && board[current + 3 * BOARDWIDTH] == marked)
+						//check if second is marked
+						int second = lastMove + possibleSteps[i];
+						if(board[second] != marked)
 						{
-							return true;
+							break;
 						}
-					}
+						
+						int difference = second - lastMove;
 
-					//Check horizontal boundery
-					if(j <= BOARDWIDTH - 4)
-					{
-						//Horizontal
-						if(board[current + 1] == marked && board[current + 2] == marked && board[current + 3] == marked)
+						//check if third is unmarked
+						int third = second + difference;
+						if(board[third] != marked)
 						{
-							return true;
+							//check if minfirst is unmarked 
+							int minFirst = lastMove - difference;
+							if(board[minFirst] != marked)
+							{
+								break;
+							}
+							else
+							{
+								//check if minfirst is marked and is winning
+								int minSecond = minFirst - difference;
+								if(board[minSecond] == marked)
+								{
+									return true;
+								}
+							}
 						}
-					}
-					
-					//Check horizontal and vertical bounderies
-					if(i <= BOARDWIDTH - 4 && j <= BOARDWIDTH - 4)
-					{
-						//Diagonal down
-						if(board[current + 1 + (1 * BOARDWIDTH)] == marked && board[current + 2 + (2 * BOARDWIDTH)] == marked && board[current + 3 + (3 * BOARDWIDTH)] == marked)
+						else
 						{
-							return true;
-						}
-
-						//Diagonal up
-						if(board[current + 3 + (0 * BOARDWIDTH)] == marked && board[current + 2 + (1 * BOARDWIDTH)] == marked && board[current + 1 + (2 * BOARDWIDTH)] == marked && board[current + 0 + (3 * BOARDWIDTH)] == marked)
-						{
-							return true;
+							//check if fourth is marked and is winning
+							int fourth = third + difference;
+							if(board[fourth] == marked)
+							{
+								return true;
+							}
 						}
 					}
 				}
 			}
-		}
+		}		
 
 		return false;
 	}
@@ -511,10 +540,10 @@ namespace KaroEngine
 		}		
 		
 		// If a player won
-		if(IsWinner(Reverse(p))) {
-			bestMove->score = p == Player::RED ? 10000000 : -1000000; // Does this work??
-			return bestMove;
-		}
+		//if(IsWinner(Reverse(p))) {
+		//	bestMove->score = p == Player::RED ? 10000000 : -1000000; // Does this work??
+		//	return bestMove;
+		//}
 
 		// Empty transposition table on first move?
 		if(depth == 0) {
