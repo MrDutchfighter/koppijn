@@ -58,7 +58,7 @@ namespace KaroEngine
 		bool IsValidMove(int from, int to);
 		void DoMove(Move *m);
 		void DoMove(int from, int to, int fromTile);
-		void UndoMove(Move m);
+		void UndoMove(Move *m);
 		bool FreeForMove(int); // checks if a tile is empty
 		bool IsGameTile(int); // checks if a tile exists
 		bool InsertByXY(int x, int y);
@@ -74,5 +74,7 @@ namespace KaroEngine
 		// Get possible moves
 		vector<Move*> * GetPossibleMoves(Player forPlayer);
 		vector<Move*> * GetPossibleMoves(int tile, bool isTurned);
+
+		int maxDepth; // Maximum moves
 	};
 }

@@ -12,6 +12,7 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION; 
 		this->insertionCount = 0;	
+		this->maxDepth = 2;
 		this->evaluationScore = 0;
 
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH ; i ++ )
@@ -26,7 +27,6 @@ namespace KaroEngine
 				}
 			}
 		}
-
 
 		for(int j = 4; j < 8; j++)
 			for( int k = 5; k < 10; k++ )
@@ -73,6 +73,12 @@ namespace KaroEngine
 	
 	void KaroEngine::DoMove(Move *move)
 	{
+		if(move->positionFrom < 0 || move->positionFrom > 289 ||
+			move->positionTo < 0 || move->positionTo > 289) {
+				SetMessageLog("Error");
+		}
+
+
 		if(move->positionFrom != -1) // PLAYING STATE
 		{
 			if(move->isJumpMove) // Flip piece on the board
@@ -208,7 +214,6 @@ namespace KaroEngine
 
 	}
 
-
 	bool KaroEngine::IsValidMove(int from, int to)
 	{
 		// check if the move is valid by validating with the turn of the current player
@@ -270,7 +275,7 @@ namespace KaroEngine
 		return false; // VICTORIOUSSSSS
 	}
 
-	void KaroEngine::UndoMove(Move m)
+	void KaroEngine::UndoMove(Move *m)
 	{
 		
 	}
@@ -371,7 +376,15 @@ namespace KaroEngine
 				}
 			}
 		} else if(gameState == GameState::PLAYING) {
-			// Generate a real computer move with minmax etc.
+			// Generate a real computer move with minmax
+			Move * theMove = MiniMax(GetTurn(), 0, -1000000, 1000000);
+
+			// Execute the final move
+			if(theMove->positionFrom > 0) {
+				DoMove(theMove);
+			} else {
+				SetMessageLog("Geen move gevonden");
+			}
 		}
 	}
 
@@ -475,6 +488,107 @@ namespace KaroEngine
 
 	Move * KaroEngine::MiniMax(Player p, int depth, int alpha, int beta)
 	{
-		return new Move();
+		// Hash the current board?
+		//Position currentPosition = new Position(board);
+
+		// Create new move
+		Move *bestMove = new Move();
+		if(p == Player::RED) {
+			bestMove->score = -100000; // Int32.MinValue
+		} else {
+			bestMove->score = 1000000; // Int32.MaxValue
+		}
+
+		// Evaluate the current board, game ended? Return empty move with the max/min score
+		int scoreRed = EvaluateBoard(p);
+		int scoreWhite = EvaluateBoard(p);
+		int evaluationScore = scoreRed-scoreWhite;
+
+		// If maximum depth is reached
+		if(depth == maxDepth) {
+			bestMove->score = evaluationScore;
+			return bestMove;
+		}		
+		
+		// If a player won
+		if(IsWinner(Reverse(p))) {
+			bestMove->score = p == Player::RED ? 10000000 : -1000000; // Does this work??
+			return bestMove;
+		}
+
+		// Empty transposition table on first move?
+		if(depth == 0) {
+			// transposition.Clear();
+		} else if(depth >= 3) {
+			// Is this move in the transposition table?
+			/* C# CODE!!
+			
+			KeyValuePair<int, Marble> lookupVal;
+               if (transpositions.ContainsKey(currentPosition.hashCode()))
+                {
+                    transpositions.TryGetValue(currentPosition.hashCode(), out lookupVal);
+                    bestMove.score = lookupVal.Key;
+                    if (lookupVal.Value != m)
+                    {
+                        bestMove.score = lookupVal.Key * -1;
+                    }
+                    return bestMove;
+                }*/
+		}
+
+		// Find next moves for the current player
+		vector<Move*> * possibleMoves = GetPossibleMoves(p);
+
+		// Loop through all the moves
+		for(int i=0; i < possibleMoves->size(); i++) {
+			// Execute the move
+			DoMove(possibleMoves->at(i));
+
+			// Get the last best move
+			Move * lastBestMove = MiniMax(Reverse(p), depth+1, alpha, beta);
+
+			// Directly undo this move
+			UndoMove(possibleMoves->at(i));
+
+			// Was the last move the best move?
+			if(lastBestMove->score > bestMove->score && p == Player::RED) {
+				bestMove = lastBestMove;
+			} else if(lastBestMove->score < bestMove->score && p == Player::WHITE) {
+				bestMove = lastBestMove;
+			}
+
+			// Is current player RED?
+			if(p == Player::RED) {
+				if(bestMove->score >= alpha) {
+					alpha = bestMove->score;
+				}
+			}
+
+			if(p == Player::WHITE) {
+				if(bestMove->score <= beta) {
+					beta = bestMove->score;
+				}
+			}
+
+			// Prunning
+			if(beta <= alpha) {
+				return bestMove;
+			}
+		}
+
+		// Put best score in transposition table
+		/* C# code!
+		if(depth <= tableDepth) {
+			try
+                {
+                    transpositions.Add(currentPosition.hashCode(), new KeyValuePair<int,Marble>(bestMove.score,m));
+                }
+                catch
+                {
+
+                }
+		}*/
+
+		return bestMove;
 	}
 }
