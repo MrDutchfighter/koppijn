@@ -36,13 +36,13 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vieuwsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tileNumbersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.movableTilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnDoMove = new System.Windows.Forms.Button();
             this.btn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.txtMessageLog = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.movableTilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -50,9 +50,9 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(15, 51);
+            this.pictureBox1.Location = new System.Drawing.Point(12, 23);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(376, 376);
+            this.pictureBox1.Size = new System.Drawing.Size(426, 426);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
@@ -121,6 +121,13 @@
             this.tileNumbersToolStripMenuItem.Text = "Show Tile Numbers";
             this.tileNumbersToolStripMenuItem.Click += new System.EventHandler(this.tileNumbersToolStripMenuItem_Click);
             // 
+            // movableTilesToolStripMenuItem
+            // 
+            this.movableTilesToolStripMenuItem.Name = "movableTilesToolStripMenuItem";
+            this.movableTilesToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.movableTilesToolStripMenuItem.Text = "Show Movable Tiles";
+            this.movableTilesToolStripMenuItem.Click += new System.EventHandler(this.movableTilesToolStripMenuItem_Click);
+            // 
             // btnDoMove
             // 
             this.btnDoMove.Location = new System.Drawing.Point(557, 51);
@@ -161,27 +168,20 @@
             // 
             // txtMessageLog
             // 
-            this.txtMessageLog.Location = new System.Drawing.Point(409, 275);
+            this.txtMessageLog.Location = new System.Drawing.Point(476, 275);
             this.txtMessageLog.Multiline = true;
             this.txtMessageLog.Name = "txtMessageLog";
-            this.txtMessageLog.Size = new System.Drawing.Size(288, 187);
+            this.txtMessageLog.Size = new System.Drawing.Size(221, 187);
             this.txtMessageLog.TabIndex = 8;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(409, 256);
+            this.label2.Location = new System.Drawing.Point(473, 259);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(68, 13);
             this.label2.TabIndex = 9;
             this.label2.Text = "MessageLog";
-            // 
-            // movableTilesToolStripMenuItem
-            // 
-            this.movableTilesToolStripMenuItem.Name = "movableTilesToolStripMenuItem";
-            this.movableTilesToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
-            this.movableTilesToolStripMenuItem.Text = "Show Movable Tiles";
-            this.movableTilesToolStripMenuItem.Click += new System.EventHandler(this.movableTilesToolStripMenuItem_Click);
             // 
             // Form1
             // 
