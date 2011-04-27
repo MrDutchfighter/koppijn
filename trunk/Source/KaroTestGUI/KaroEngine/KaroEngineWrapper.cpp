@@ -38,6 +38,10 @@ bool KaroEngineWrapper::InsertByXY(int x, int y){
 	return _karoEngine->InsertByXY(x,y);
 }
 
+int KaroEngineWrapper::GetEvaluationScore(){
+	return _karoEngine->GetEvaluationScore();
+}
+
 void KaroEngineWrapper::CalculateComputerMove(){
 	_karoEngine->CalculateComputerMove();
 }
