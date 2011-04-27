@@ -12,8 +12,10 @@ Move::Move(int to)
 	this->positionTo = to;
 }
 
-Move::Move(int from, int to)
+Move::Move(int from, int to, int tileFrom, int tileTo)
 {
 	this->positionFrom = from;
 	this->positionTo = to;
+	this->tileFrom = tileFrom;
+	this->tileTo = tileTo;
 }
