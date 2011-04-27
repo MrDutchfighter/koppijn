@@ -11,7 +11,6 @@ Move::Move(int to)
 	this->positionFrom = -1;
 	this->positionTo = to;
 	this->tileFrom = -1;
-	this->tileTo = -1;
 	this->isJumpMove = false;
 }
 
@@ -20,14 +19,12 @@ Move::Move(int from, int to, bool isJumpMove)
 	this->positionFrom = from;
 	this->positionTo = to;
 	this->tileFrom = -1;
-	this->tileTo = -1;
 	this->isJumpMove = isJumpMove;
 }
 
-Move::Move(int from, int to, int tileFrom, int tileTo, bool isJumpMove)
+Move::Move(int from, int to, int tileFrom, bool isJumpMove)
 {
 	this->positionFrom = from;
 	this->positionTo = to;
 	this->tileFrom = tileFrom;
-	this->tileTo = tileTo;
 }
