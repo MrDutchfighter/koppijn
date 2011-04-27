@@ -453,7 +453,7 @@ namespace KaroEngine
 			}
 		} else if(gameState == GameState::PLAYING) {
 			// Generate a real computer move with minmax
-			Move * theMove = MiniMax(GetTurn(), 0, -1000000, 1000000);
+			Move * theMove = MiniMax(GetTurn(), 0, INT_MIN, INT_MAX);
 
 			// Execute the final move
 			if(theMove->positionFrom > 0) {
@@ -570,9 +570,9 @@ namespace KaroEngine
 		// Create new move
 		Move *bestMove = new Move();
 		if(p == Player::RED) {
-			bestMove->score = -100000; // Int32.MinValue
+			bestMove->score = INT_MIN; // Int32.MinValue
 		} else {
-			bestMove->score = 1000000; // Int32.MaxValue
+			bestMove->score = INT_MAX; // Int32.MaxValue
 		}
 
 		// Evaluate the current board, game ended? Return empty move with the max/min score

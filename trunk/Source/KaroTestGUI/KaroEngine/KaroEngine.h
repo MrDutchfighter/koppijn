@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 #include "Move.h"
+#include "LIMITS.H"
 using namespace std;
 using namespace System;
 
