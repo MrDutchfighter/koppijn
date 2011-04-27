@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string>
+#include "Move.h"
 
 using namespace System;
 
@@ -41,6 +42,7 @@ namespace KaroEngine
 		static const int BOARDWIDTH = 15;
 		int possibleSteps[8];
 		int possibleJumps[8];		
+		Move * MiniMax(Player p, int depth, int alpha, int beta);
 	public:
 		KaroEngine(void);
 		~KaroEngine(void);
