@@ -69,14 +69,13 @@ namespace KaroEngine
 	void KaroEngine::DoMove(int from, int to, int tileFrom)
 	{		
 		if (tileFrom != -1) { //move the tile
-			
 			if(board[tileFrom] != Tile::MOVEABLETILE) {
-				this->SetMessageLog(" Tried to move a tile that is not moveable ");
+				this->SetMessageLog("Tried to move a tile that is not moveable ");
 				return;
 			}
 			if(board[to] != Tile::EMPTY){
 				tileFrom =-1;
-				this->SetMessageLog(" Did not move the MOVEABLETILE");				
+				this->SetMessageLog("Did not move the MOVEABLETILE");				
 			} else {
 				board[tileFrom] = Tile::EMPTY;
 				board[to]=Tile::SOLIDTILE;
@@ -99,13 +98,13 @@ namespace KaroEngine
 
 			turn = Reverse(turn);
 
-			this->SetMessageLog(" Move succesful! ");
+			this->SetMessageLog("Move succesful! ");
 		} else { // if not a valid move, undo moving of the boardtiles.
 			if (tileFrom != -1) {
 				board[tileFrom] = Tile::MOVEABLETILE;
 				board[to]		= Tile::EMPTY;
 			}
-			this->SetMessageLog(" Move failed!");
+			this->SetMessageLog("Move failed!");
 		}
 	}
 
@@ -251,17 +250,17 @@ namespace KaroEngine
 		int position=(y*BOARDWIDTH)+x;
 		
 		if(board[position] == Tile::SOLIDTILE || board[position] == Tile::MOVEABLETILE ){
-				if(this->turn == Player::WHITE){
-					board[position] =Tile::WHITEUNMARKED;
+				if(this->turn == Player::WHITE) {
+					board[position] = Tile::WHITEUNMARKED;
 					whitePieces.insert(std::pair<int,bool>(position,false));
 				}
-				else{
-					board[position] =Tile::REDUNMARKED;
+				else {
+					board[position] = Tile::REDUNMARKED;
 					redPieces.insert(std::pair<int,bool>(position,false));
 				}
-				turn=this->Reverse(turn);
+				turn = this->Reverse(turn);
 				insertionCount++;							
-				if(insertionCount == 12){
+				if(insertionCount == 12) {
 					gameState = GameState::PLAYING;
 				}
 				return true;
@@ -270,8 +269,8 @@ namespace KaroEngine
 	}
 
 	void KaroEngine::CalculateComputerMove() {
-		//if in insertionstate, then insert on random position
-		if(gameState == GameState::INSERTION){
+		// If the game is in insertion state, insert a random item on a tile
+		if(gameState == GameState::INSERTION) {
 			bool foundInsertPosition=false;
 			while(!foundInsertPosition){
 				int x = 5+rand()%5;
@@ -280,7 +279,63 @@ namespace KaroEngine
 					foundInsertPosition=true;
 				}
 			}
+		} else if(gameState == GameState::PLAYING) {
+			// Generate a real computer move with minmax etc.
 		}
+	}
+
+	/**
+	* Get all the possible moves for one player
+	*/
+	vector<Move*>* KaroEngine::GetPossibleMoves(Player forPlayer) {
+		vector<Move*> *possibleMoves = new vector<Move*>();
+
+		// Loop through all the stones of the current player
+		if(forPlayer == Player::RED) {
+			if(!this->redPieces.empty()) {
+				for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
+					vector<Move*> *move = GetPossibleMoves(it->first, it->second);
+					possibleMoves->insert(possibleMoves->end(), move->begin(), move->end());
+				}
+			}
+		} else if(forPlayer == Player::RED) {
+			if(!this->whitePieces.empty()) {
+				for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
+					vector<Move*> *move = GetPossibleMoves(it->first, it->second);
+					possibleMoves->insert(possibleMoves->end(), move->begin(), move->end());
+				}
+			}
+		}
+
+		return possibleMoves;
+	}
+
+	/**
+	* Get all the possible moves from the current tile
+	*/
+	vector<Move*>* KaroEngine::GetPossibleMoves(int curTile, bool isTurned) {
+		vector<Move*> *possibleMoves = new vector<Move*>();
+
+		// Check all the possible (normal) moves
+		for(int i=0; i<8; i++) {
+				// Kan ik verplaatsen naar deze tegel
+			if(board[curTile+possibleSteps[i]] == Tile::SOLIDTILE ||
+				board[curTile+possibleSteps[i]] == Tile::MOVEABLETILE) {
+					possibleMoves->push_back(new Move(curTile, (curTile+possibleSteps[i]), false));
+			}
+						// Kijken of er een pion tussenin staat
+			else if (board[curTile+possibleSteps[i]] != Tile::EMPTY &&
+						board[curTile+possibleSteps[i]] != Tile::BORDER) {
+					
+					// Kijken of tegel vrij is
+				if(board[curTile+possibleJumps[i]] == Tile::SOLIDTILE ||
+					board[curTile+possibleJumps[i]] == Tile::MOVEABLETILE) {
+					possibleMoves->push_back(new Move(curTile, (curTile+possibleJumps[i]), true));
+				}
+			}
+		}
+
+		return possibleMoves;
 	}
 
 	bool KaroEngine::FreeForMove(int tile)
@@ -293,7 +348,7 @@ namespace KaroEngine
 
 	bool KaroEngine::IsGameTile(int tile)
 	{
-		return board[tile] != Tile::EMPTY;
+		return (board[tile] != Tile::EMPTY && board[tile] != Tile::BORDER);
 	}
 
 	std::string KaroEngine::GetMessageLog(){

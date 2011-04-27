@@ -4,11 +4,11 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string>
+#include <vector>
 #include <map>
 #include "Move.h"
-
-using namespace System;
 using namespace std;
+using namespace System;
 
 namespace KaroEngine 
 {	
@@ -66,5 +66,9 @@ namespace KaroEngine
 		void SetMessageLog(std::string s);
 		map<int,bool> redPieces;
 		map<int,bool> whitePieces;
+
+		// Get possible moves
+		vector<Move*> * GetPossibleMoves(Player forPlayer);
+		vector<Move*> * GetPossibleMoves(int tile, bool isTurned);
 	};
 }
