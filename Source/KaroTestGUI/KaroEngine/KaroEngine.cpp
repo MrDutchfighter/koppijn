@@ -130,6 +130,32 @@ namespace KaroEngine
 
 	void KaroEngine::DoMove(int from, int to, int tileFrom)
 	{
+		bool validMove=false;
+		Move* move;
+		// Boolean is neccesairy for future things
+		vector<Move*>* moves= this->GetPossibleMoves(from, true);
+		for(int i=0;i<moves->size();i++){
+			if(moves->at(i)->positionTo ==to){
+				move=moves->at(i);
+				validMove=true;
+				continue;
+			}
+		}
+		// If not a valid move, then return, stop proces
+		if(!validMove){
+			return;
+		}
+		else{
+			DoMove(move);
+
+			this->EvaluateBoard(turn);
+			if(this->IsWinner(turn, to))
+			{
+				this->SetMessageLog("WIN!");
+			}
+		}
+		
+		/*
 		if (tileFrom != -1) { //move the tile
 			if(board[tileFrom] != Tile::MOVEABLETILE) {
 				this->SetMessageLog("Tried to move a tile that is not moveable ");
@@ -174,7 +200,7 @@ namespace KaroEngine
 			}
 			this->SetMessageLog("Move failed!");
 		}
-		this->EvaluateBoard(turn);
+		this->EvaluateBoard(turn);*/
 	}
 
 	Player KaroEngine::Reverse(Player turn)
