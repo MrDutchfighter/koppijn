@@ -111,7 +111,7 @@ namespace KaroEngine
 				else
 					flippedValue = whitePieces[move->positionFrom];
 
-				whitePieces.insert(std::pair<int,bool>(move->positionTo,false));
+				whitePieces.insert(std::pair<int,bool>(move->positionTo,flippedValue));
 				whitePieces.erase(move->positionFrom);
 			}
 		}
@@ -133,6 +133,20 @@ namespace KaroEngine
 		bool validMove=false;
 		Move* move;
 		// Boolean is neccesairy for future things
+		if(turn== Player::RED){
+			if(board[from] != Tile::REDUNMARKED &&
+				board[from] != Tile::REDMARKED) {
+					return;
+			}
+		}
+		else if(turn== Player::WHITE){
+			if(board[from] != Tile::WHITEUNMARKED &&
+				board[from] != Tile::WHITEMARKED) {
+					return;
+			}
+		}
+		
+
 		vector<Move*>* moves= this->GetPossibleMoves(from, true);
 		for(int i=0;i<moves->size();i++){
 			if(moves->at(i)->positionTo ==to){
@@ -147,9 +161,7 @@ namespace KaroEngine
 		}
 		else{
 			DoMove(move);
-
-			this->EvaluateBoard(turn);
-			if(this->IsWinner(turn, to))
+			if(this->IsWinner(Reverse(turn), to))
 			{
 				this->SetMessageLog("WIN!");
 			}
