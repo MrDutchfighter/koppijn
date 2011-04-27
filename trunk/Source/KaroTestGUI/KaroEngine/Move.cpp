@@ -8,11 +8,23 @@ Move::Move(void)
 
 Move::Move(int to)
 {
-	this->positionFrom = 0;
+	this->positionFrom = -1;
 	this->positionTo = to;
+	this->tileFrom = -1;
+	this->tileTo = -1;
+	this->isJumpMove = false;
 }
 
-Move::Move(int from, int to, int tileFrom, int tileTo)
+Move::Move(int from, int to, bool isJumpMove)
+{
+	this->positionFrom = from;
+	this->positionTo = to;
+	this->tileFrom = -1;
+	this->tileTo = -1;
+	this->isJumpMove = isJumpMove;
+}
+
+Move::Move(int from, int to, int tileFrom, int tileTo, bool isJumpMove)
 {
 	this->positionFrom = from;
 	this->positionTo = to;
