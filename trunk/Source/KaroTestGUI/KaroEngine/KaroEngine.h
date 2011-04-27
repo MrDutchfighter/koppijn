@@ -11,13 +11,14 @@ using namespace System;
 namespace KaroEngine 
 {	
 	public enum class Tile : unsigned int {
-		EMPTY = 0,
-		SOLIDTILE = 1,
-		MOVEABLETILE = 2,
-		WHITEUNMARKED = 3,
-		WHITEMARKED = 4,
-		REDUNMARKED = 5,
-		REDMARKED = 6
+		BORDER = 0,
+		EMPTY = 1,
+		SOLIDTILE = 2,
+		MOVEABLETILE = 3,
+		WHITEUNMARKED = 4,
+		WHITEMARKED = 5,
+		REDUNMARKED = 6,
+		REDMARKED = 7
 	};
 
 	public  enum class Player : unsigned int { 
@@ -39,7 +40,7 @@ namespace KaroEngine
 		Tile * board;
 		Player turn;
 		int insertionCount;
-		static const int BOARDWIDTH = 15;
+		static const int BOARDWIDTH = 17;
 		int possibleSteps[8];
 		int possibleJumps[8];		
 		Move * MiniMax(Player p, int depth, int alpha, int beta);

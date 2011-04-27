@@ -24,7 +24,7 @@ namespace KaroTestGUI
         Brush                           brushBlue;
         int                             boxSize = 25;
         bool                            gameOver = false;
-
+        const int                       BOARDWIDTH = 17;
         Point                           clickedTile;
         Point                           clickedFirst;
         Point                           clickedSecond;
@@ -67,9 +67,9 @@ namespace KaroTestGUI
             Graphics g = e.Graphics;            
             Font drawFont = new Font("Arial", 10);
           
-            for (int y = 0; y < 15; y++)
+            for (int y = 0; y < BOARDWIDTH; y++)
             {
-                for (int x = 0; x < 15; x++) 
+                for (int x = 0; x < BOARDWIDTH; x++) 
                 {
                     // Draw the board
                     if (engine.GetByXY(x, y) != Tile.EMPTY)
@@ -79,7 +79,7 @@ namespace KaroTestGUI
                     else {
                         if (tileNumbersToolStripMenuItem.Checked)
                         {
-                            g.DrawString(((y * 15 + x) + ""), drawFont, brushBlack, x * boxSize, y * boxSize);
+                            g.DrawString(((y * BOARDWIDTH + x) + ""), drawFont, brushBlack, x * boxSize, y * boxSize);
                         }
                     }
 
@@ -99,6 +99,8 @@ namespace KaroTestGUI
 
                     // Check what kind of tiles, pawns etc are on the board.
                     switch (engine.GetByXY(x, y)){ 
+                        case Tile.BORDER:
+                            break;
                         case Tile.EMPTY:
                             break;
                         case Tile.MOVEABLETILE:
@@ -183,10 +185,10 @@ namespace KaroTestGUI
 
                     if (clickedTile.X == -1)
                     {
-                        engine.DoMove((clickedFirst.Y * 15) + clickedFirst.X, (clickedSecond.Y * 15) + clickedSecond.X, -1);
+                        engine.DoMove((clickedFirst.Y * BOARDWIDTH) + clickedFirst.X, (clickedSecond.Y * BOARDWIDTH) + clickedSecond.X, -1);
                     }
                     else {
-                        engine.DoMove((clickedFirst.Y * 15) + clickedFirst.X, (clickedSecond.Y * 15) + clickedSecond.X, (clickedTile.Y * 15) + clickedTile.X);
+                        engine.DoMove((clickedFirst.Y * BOARDWIDTH) + clickedFirst.X, (clickedSecond.Y * BOARDWIDTH) + clickedSecond.X, (clickedTile.Y * BOARDWIDTH) + clickedTile.X);
                     }
 
                     clickedTile     = new Point(-1, -1);

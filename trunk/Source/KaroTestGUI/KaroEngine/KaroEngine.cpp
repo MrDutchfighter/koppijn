@@ -15,6 +15,17 @@ namespace KaroEngine
 
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH ; i ++ )
 			board[i] = Tile::EMPTY;
+		for(int y=0;y<BOARDWIDTH;y++){
+			for(int x=0;x<BOARDWIDTH;x++){
+				if(x==0 || y==0 ||x==(BOARDWIDTH-1) || y==(BOARDWIDTH-1)){
+					board[y*BOARDWIDTH + x]=Tile::BORDER;
+				}
+				else{
+				board[y*BOARDWIDTH + x]=Tile::EMPTY;
+				}
+			}
+		}
+
 
 		for(int j = 4; j < 8; j++)
 			for( int k = 5; k < 10; k++ )
@@ -225,7 +236,7 @@ namespace KaroEngine
 	}
 
 	bool KaroEngine::InsertByXY(int x, int y){
-		int position=(y*15)+x;
+		int position=(y*BOARDWIDTH)+x;
 		
 		if(board[position] == Tile::SOLIDTILE || board[position] == Tile::MOVEABLETILE ){
 				if(this->turn == Player::WHITE){
@@ -299,7 +310,7 @@ namespace KaroEngine
 	}
 
 	Tile KaroEngine::GetByXY(int x,int y){
-		return board[(y*15)+x];
+		return board[(y*BOARDWIDTH)+x];
 	}
 
 	Move * KaroEngine::MiniMax(Player p, int depth, int alpha, int beta)

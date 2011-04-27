@@ -8,8 +8,7 @@ using namespace KaroEngine;
 
 KaroEngineWrapper::KaroEngineWrapper(void)
 {
-	_karoEngine = new KaroEngine();
-	//_person = new Person(s, age);
+	_karoEngine = new KaroEngine();	
 }
 
 KaroEngineWrapper::~KaroEngineWrapper(void)
