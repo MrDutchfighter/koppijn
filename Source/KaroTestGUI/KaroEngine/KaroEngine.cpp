@@ -284,6 +284,8 @@ namespace KaroEngine
 
 	void KaroEngine::UndoMove(Move *move)
 	{
+		turn = Reverse(turn);
+
 		if(move->positionFrom != -1) // PLAYING STATE
 		{
 			if(move->isJumpMove) // Flip piece on the board
@@ -330,7 +332,7 @@ namespace KaroEngine
 				whitePieces.erase(move->positionTo);
 			}
 		}
-		turn = Reverse(turn);
+		
 	}
 
 	bool KaroEngine::IsWinner(Player p, int lastMove)
@@ -628,9 +630,9 @@ namespace KaroEngine
 
 			// Was the last move the best move?
 			if(lastBestMove->score > bestMove->score && p == Player::RED) {
-				bestMove = lastBestMove;
+				bestMove = possibleMoves->at(i);//lastBestMove;
 			} else if(lastBestMove->score < bestMove->score && p == Player::WHITE) {
-				bestMove = lastBestMove;
+				bestMove = possibleMoves->at(i);//lastBestMove;
 			}
 
 			// Is current player RED?
