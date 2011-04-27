@@ -9,22 +9,22 @@ using namespace System;
 
 namespace KaroEngine 
 {	
-	public enum class Tile : unsigned int{
-		EMPTY=0,
-		SOLIDTILE=1,
-		MOVEABLETILE=2,
-		WHITEUNMARKED=3,
-		WHITEMARKED=4,
-		REDUNMARKED=5,
-		REDMARKED=6
+	public enum class Tile : unsigned int {
+		EMPTY = 0,
+		SOLIDTILE = 1,
+		MOVEABLETILE = 2,
+		WHITEUNMARKED = 3,
+		WHITEMARKED = 4,
+		REDUNMARKED = 5,
+		REDMARKED = 6
 	};
 
-	public  enum class Player: unsigned int{ 
-		WHITE=0,
-		RED=1
+	public  enum class Player : unsigned int { 
+		WHITE = 0,
+		RED = 1
 	};
 
-	public enum class GameState:unsigned int{
+	public enum class GameState : unsigned int {
 		INSERTION = 0,
 		PLAYING = 1,
 		GAMEFINISHED = 2 
@@ -39,8 +39,8 @@ namespace KaroEngine
 		Player turn;
 		int insertionCount;
 		static const int BOARDWIDTH = 15;
-		int possiblesSteps[8];
-		int possiblesJumps[8];		
+		int possibleSteps[8];
+		int possibleJumps[8];		
 	public:
 		KaroEngine(void);
 		~KaroEngine(void);
