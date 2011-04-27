@@ -12,7 +12,7 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION; 
 		this->insertionCount = 0;	
-		this->maxDepth = 2;
+		this->maxDepth = 4;
 		this->evaluationScore = 0;
 
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH ; i ++ )
@@ -20,10 +20,10 @@ namespace KaroEngine
 		for(int y=0;y<BOARDWIDTH;y++){
 			for(int x=0;x<BOARDWIDTH;x++){
 				if(x==0 || y==0 ||x==(BOARDWIDTH-1) || y==(BOARDWIDTH-1)){
-					board[y*BOARDWIDTH + x]=Tile::BORDER;
+					board[y*BOARDWIDTH + x] = Tile::BORDER;
 				}
 				else{
-				board[y*BOARDWIDTH + x]=Tile::EMPTY;
+					board[y*BOARDWIDTH + x] = Tile::EMPTY;
 				}
 			}
 		}
@@ -58,26 +58,19 @@ namespace KaroEngine
 		this->SetMessageLog("Engine Initialized");
 	}
 
-	GameState KaroEngine::GetGameState(){
-		return this->gameState;
-	}
-	
-	int KaroEngine::GetEvaluationScore()
-	{
-		return EvaluateBoard(Player::RED)-EvaluateBoard(Player::WHITE);
-	}
-
 	KaroEngine::~KaroEngine(void)
 	{
 	}
 	
+	/**
+	* Executes a given move
+	*/
 	void KaroEngine::DoMove(Move *move)
 	{
 		if(move->positionFrom < 0 || move->positionFrom > 289 ||
 			move->positionTo < 0 || move->positionTo > 289) {
 				SetMessageLog("Error");
 		}
-
 
 		if(move->positionFrom != -1) // PLAYING STATE
 		{
@@ -98,36 +91,101 @@ namespace KaroEngine
 
 			bool flippedValue;
 			if(turn == Player::RED){
-				if(move->isJumpMove)
-					flippedValue = (redPieces[move->positionFrom] ? false : true); // Flip piece in map
-				else
-					flippedValue = redPieces[move->positionFrom];
+				flippedValue = board[move->positionTo] == Tile::REDUNMARKED ? false : true;
 				
-				redPieces.insert(std::pair<int,bool>(move->positionTo,flippedValue));
+				redPieces.insert(std::pair<int,bool>(move->positionTo, flippedValue));
 				redPieces.erase(move->positionFrom);
 			} else if(turn == Player::WHITE) {
-				if(move->isJumpMove)
-					flippedValue = (whitePieces[move->positionFrom] ? false : true); // Flip piece in map
-				else
-					flippedValue = whitePieces[move->positionFrom];
+				flippedValue = board[move->positionTo] == Tile::WHITEUNMARKED ? false : true;
 
-				whitePieces.insert(std::pair<int,bool>(move->positionTo,flippedValue));
+				whitePieces.insert(std::pair<int,bool>(move->positionTo, flippedValue));
 				whitePieces.erase(move->positionFrom);
 			}
 		}
 		else //INSERTING STATE
 		{
-			if(turn == Player::RED){
+			if(turn == Player::RED) {
 				board[move->positionTo] = Tile::REDUNMARKED;
-				redPieces.insert(std::pair<int,bool>(move->positionTo,false));
-			}else{
+				redPieces.insert(std::pair<int,bool>(move->positionTo, false));
+			} else {
 				board[move->positionTo] = Tile::WHITEUNMARKED;
-				whitePieces.insert(std::pair<int,bool>(move->positionTo,false));
+				whitePieces.insert(std::pair<int,bool>(move->positionTo, false));
 			}
 		}
 		turn = Reverse(turn);
 	}
+	
+	/**
+	* Executes a given move (if valid)
+	*/
+	void KaroEngine::DoMove(int from, int to, int tileFrom)
+	{
+		bool validMove=false;
+		Move* move;
+		// Boolean is neccesairy for future things
+		if(turn== Player::RED){
+			if(board[from] != Tile::REDUNMARKED &&
+				board[from] != Tile::REDMARKED) {
+					return;
+			}
+		}
+		else if(turn== Player::WHITE){
+			if(board[from] != Tile::WHITEUNMARKED &&
+				board[from] != Tile::WHITEMARKED) {
+					return;
+			}
+		}
 
+		vector<Move*>* moves= this->GetPossibleMoves(from, true);
+		for(int i=0;i<moves->size();i++){
+			if(moves->at(i)->positionTo == to && moves->at(i)->positionFrom == from){
+				move = moves->at(i);
+				validMove = true;
+				continue;
+			}
+		}
+
+		// If not a valid move, then return, stop proces
+		if(!validMove) {
+			return;
+		}
+		else {
+			DoMove(move);
+			if(this->IsWinner(Reverse(turn), to))
+			{
+				this->SetMessageLog("WIN!");
+			}
+		}
+	}
+
+	/**
+	* Inserts a tile on the given position
+	*/
+	bool KaroEngine::InsertByXY(int position) {
+		if(board[position] == Tile::SOLIDTILE || board[position] == Tile::MOVEABLETILE ){
+				if(this->turn == Player::WHITE) {
+					board[position] = Tile::WHITEUNMARKED;
+					whitePieces.insert(std::pair<int,bool>(position, false));
+				}
+				else
+				{
+					board[position] = Tile::REDUNMARKED;
+					redPieces.insert(std::pair<int,bool>(position, false));
+				}
+
+				turn = this->Reverse(turn);
+				insertionCount++;							
+				if(insertionCount == 12) {
+					gameState = GameState::PLAYING;
+				}
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	* Undo's the given move
+	*/
 	void KaroEngine::UndoMove(Move *move)
 	{
 		turn = Reverse(turn);
@@ -151,20 +209,14 @@ namespace KaroEngine
 
 			bool flippedValue;
 			if(turn == Player::RED){
-				if(move->isJumpMove)
-					flippedValue = (redPieces[move->positionFrom] ? false : true); // Flip piece in map
-				else
-					flippedValue = redPieces[move->positionFrom];
+				flippedValue = board[move->positionFrom] == Tile::REDUNMARKED ? false : true;
 				
-				redPieces.insert(std::pair<int,bool>(move->positionFrom,flippedValue));
+				redPieces.insert(std::pair<int,bool>(move->positionFrom, flippedValue));
 				redPieces.erase(move->positionTo);
 			} else if(turn == Player::WHITE) {
-				if(move->isJumpMove)
-					flippedValue = (whitePieces[move->positionTo] ? false : true); // Flip piece in map
-				else
-					flippedValue = whitePieces[move->positionTo];
+				flippedValue = board[move->positionFrom] == Tile::WHITEUNMARKED ? false : true;
 
-				whitePieces.insert(std::pair<int,bool>(move->positionFrom,false));
+				whitePieces.insert(std::pair<int,bool>(move->positionFrom, flippedValue));
 				whitePieces.erase(move->positionTo);
 			}
 		}
@@ -180,47 +232,9 @@ namespace KaroEngine
 		}
 	}
 
-	void KaroEngine::DoMove(int from, int to, int tileFrom)
-	{
-		bool validMove=false;
-		Move* move;
-		// Boolean is neccesairy for future things
-		if(turn== Player::RED){
-			if(board[from] != Tile::REDUNMARKED &&
-				board[from] != Tile::REDMARKED) {
-					return;
-			}
-		}
-		else if(turn== Player::WHITE){
-			if(board[from] != Tile::WHITEUNMARKED &&
-				board[from] != Tile::WHITEMARKED) {
-					return;
-			}
-		}
-		
-
-		vector<Move*>* moves= this->GetPossibleMoves(from, true);
-		for(int i=0;i<moves->size();i++){
-			if(moves->at(i)->positionTo == to && moves->at(i)->positionFrom == from){
-				move = moves->at(i);
-				validMove=true;
-				continue;
-			}
-		}
-
-		// If not a valid move, then return, stop proces
-		if(!validMove) {
-			return;
-		}
-		else {
-			DoMove(move);
-			if(this->IsWinner(Reverse(turn), to))
-			{
-				this->SetMessageLog("WIN!");
-			}
-		}
-	}
-
+	/**
+	* Switches the turn
+	*/
 	Player KaroEngine::Reverse(Player turn)
 	{
 		switch(turn)
@@ -234,36 +248,9 @@ namespace KaroEngine
 		}
 	}
 
-	int KaroEngine::EvaluateBoard(Player p)
-	{
-		int calculatedScore = 0;
-		switch(p)
-		{
-		case Player::WHITE:
-			{
-				if(!this->whitePieces.empty()) {
-					for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
-						if (it->second == true)
-							calculatedScore += 2;
-					}
-				}
-			break;
-			}
-		case Player::RED:
-			{
-				if(!this->redPieces.empty()) {
-					for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
-						if (it->second == true)
-							calculatedScore += 2;
-					}
-				}
-			break;
-			}
-		}
-		this->evaluationScore = this->evaluationScore; // DON'T USE IT!
-		return calculatedScore;
-	}
-
+	/**
+	* Checks if from 'from' to 'to' is a valid move
+	*/
 	bool KaroEngine::IsValidMove(int from, int to)
 	{
 		// check if the move is valid by validating with the turn of the current player
@@ -325,6 +312,9 @@ namespace KaroEngine
 		return false; // VICTORIOUSSSSS
 	}	
 
+	/**
+	* Checks if the player (p) has won the game by moving his last tile
+	*/
 	bool KaroEngine::IsWinner(Player p, int lastMove)
 	{
 		Tile marked;
@@ -408,30 +398,9 @@ namespace KaroEngine
 		return false;
 	}
 
-	bool KaroEngine::InsertByXY(int x, int y){
-		int position=(y*BOARDWIDTH)+x;
-		
-		if(board[position] == Tile::SOLIDTILE || board[position] == Tile::MOVEABLETILE ){
-				if(this->turn == Player::WHITE) {
-					board[position] = Tile::WHITEUNMARKED;
-					whitePieces.insert(std::pair<int,bool>(position, false));
-				}
-				else
-				{
-					board[position] = Tile::REDUNMARKED;
-					redPieces.insert(std::pair<int,bool>(position, false));
-				}
-
-				turn = this->Reverse(turn);
-				insertionCount++;							
-				if(insertionCount == 12) {
-					gameState = GameState::PLAYING;
-				}
-				return true;
-		}
-		return false;
-	}
-
+	/**
+	* Calculates the next computer move
+	*/
 	void KaroEngine::CalculateComputerMove() {
 		// If the game is in insertion state, insert a random item on a tile
 		if(gameState == GameState::INSERTION) {
@@ -439,7 +408,10 @@ namespace KaroEngine
 			while(!foundInsertPosition){
 				int x = 5+rand()%5;
 				int y = 4+rand()%4;
-				if(this->InsertByXY(x,y)){
+
+				int position=(y*BOARDWIDTH)+x;
+
+				if(this->InsertByXY(position)){
 					foundInsertPosition=true;
 				}
 			}
@@ -510,6 +482,9 @@ namespace KaroEngine
 		return possibleMoves;
 	}
 
+	/**
+	* Can someone place his 'marble' here
+	*/
 	bool KaroEngine::FreeForMove(int tile)
 	{
 		if(board[tile] == Tile::SOLIDTILE || board[tile] == Tile::MOVEABLETILE) {
@@ -518,42 +493,23 @@ namespace KaroEngine
 		return false;
 	}
 
+	/**
+	* Does this tile takes part in the game
+	*/
 	bool KaroEngine::IsGameTile(int tile)
 	{
 		return (board[tile] != Tile::EMPTY && board[tile] != Tile::BORDER);
 	}
 
-	std::string KaroEngine::GetMessageLog(){
-		std::string s = this->messageLog;
-		this->messageLog="";
-		return s;
-	}
 
-	void KaroEngine::SetMessageLog(std::string txt){
-		this->messageLog+=txt+ "\r\n";
-	}
 
-	int * KaroEngine::GetBoard(void)
-	{
-		int * ret = new int[BOARDWIDTH * BOARDWIDTH];
-		
-		for (int i = 0 ; i < BOARDWIDTH * BOARDWIDTH; i ++)
-		{
-			ret[i] = (int)this->board[i];
-		}
+	/**													//
+	* --------------- Algorithm functions ---------		//
+	*/													//
 
-		return ret;
-	}
-
-	Player KaroEngine::GetTurn()
-	{
-		return turn;
-	}
-
-	Tile KaroEngine::GetByXY(int x,int y){
-		return board[(y*BOARDWIDTH)+x];
-	}
-
+	/**
+	* MinMax function
+	*/
 	Move * KaroEngine::MiniMax(Player p, int depth, int alpha, int beta)
 	{
 		// Hash the current board?
@@ -612,6 +568,18 @@ namespace KaroEngine
 			// Execute the move
 			DoMove(possibleMoves->at(i));
 
+			// Was this the winning move? (has to be here, because IsWinner needs the last move...)
+			if(IsWinner(p, possibleMoves->at(i)->positionTo)) {
+				bestMove = possibleMoves->at(i);
+				if(p == Player::RED) {
+					bestMove->score = INT_MAX;
+				} else if(p == Player::WHITE) {
+					bestMove->score = INT_MIN;
+				}
+				UndoMove(possibleMoves->at(i));
+				return bestMove;
+			}
+
 			// Get the last best move
 			Move * lastBestMove = MiniMax(Reverse(p), depth+1, alpha, beta);
 
@@ -660,5 +628,84 @@ namespace KaroEngine
 		}*/
 
 		return bestMove;
+	}
+
+	/**
+	* Evaluation function of the current board for the given player
+	*/
+	int KaroEngine::EvaluateBoard(Player p)
+	{
+		int calculatedScore = 0;
+		switch(p)
+		{
+		case Player::WHITE:
+			{
+				if(!this->whitePieces.empty()) {
+					for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
+						if (it->second == true)
+							calculatedScore += 2;
+					}
+				}
+			break;
+			}
+		case Player::RED:
+			{
+				if(!this->redPieces.empty()) {
+					for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
+						if (it->second == true)
+							calculatedScore += 2;
+					}
+				}
+			break;
+			}
+		}
+		this->evaluationScore = this->evaluationScore; // DON'T USE IT!
+		return calculatedScore;
+	}
+
+	/**													//
+	* --------------- Getters ------------------------	//
+	*/													//
+	std::string KaroEngine::GetMessageLog(){
+		std::string s = this->messageLog;
+		this->messageLog="";
+		return s;
+	}
+
+	int * KaroEngine::GetBoard(void)
+	{
+		int * ret = new int[BOARDWIDTH * BOARDWIDTH];
+		
+		for (int i = 0 ; i < BOARDWIDTH * BOARDWIDTH; i ++)
+		{
+			ret[i] = (int)this->board[i];
+		}
+
+		return ret;
+	}
+
+	Player KaroEngine::GetTurn()
+	{
+		return turn;
+	}
+
+	Tile KaroEngine::GetByXY(int x,int y){
+		return board[(y*BOARDWIDTH)+x];
+	}
+
+	GameState KaroEngine::GetGameState(){
+		return this->gameState;
+	}
+	
+	int KaroEngine::GetEvaluationScore()
+	{
+		return EvaluateBoard(Player::RED)-EvaluateBoard(Player::WHITE);
+	}
+
+	/**													//
+	* --------------- Setters ------------------------	//
+	*/													//
+	void KaroEngine::SetMessageLog(std::string txt){
+		this->messageLog+=txt+ "\r\n";
 	}
 }

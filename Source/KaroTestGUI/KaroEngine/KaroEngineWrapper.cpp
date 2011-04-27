@@ -34,8 +34,9 @@ Player KaroEngineWrapper::GetTurn()
 	return _karoEngine->GetTurn();
 }
 
-bool KaroEngineWrapper::InsertByXY(int x, int y){
-	return _karoEngine->InsertByXY(x,y);
+bool KaroEngineWrapper::InsertByXY(int x, int y) {
+	int position=(y*_karoEngine->BOARDWIDTH)+x;
+	return _karoEngine->InsertByXY(position);
 }
 
 int KaroEngineWrapper::GetEvaluationScore(){
