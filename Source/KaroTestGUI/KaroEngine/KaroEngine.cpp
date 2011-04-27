@@ -301,4 +301,9 @@ namespace KaroEngine
 	Tile KaroEngine::GetByXY(int x,int y){
 		return board[(y*15)+x];
 	}
+
+	Move * KaroEngine::MiniMax(Player p, int depth, int alpha, int beta)
+	{
+		return new Move();
+	}
 }
