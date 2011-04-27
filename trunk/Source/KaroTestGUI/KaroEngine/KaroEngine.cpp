@@ -23,28 +23,29 @@ namespace KaroEngine
 				else
 					board[j * BOARDWIDTH + k] = Tile::SOLIDTILE;
 
-		//Fill the array of possible steps;
-		possiblesSteps[0]=-14;
-		possiblesSteps[1]=-15;
-		possiblesSteps[2]=-16;
-		possiblesSteps[3]=-1;
-		possiblesSteps[4]= 1;
-		possiblesSteps[5]= 14;
-		possiblesSteps[6]= 15;
-		possiblesSteps[7]= 16;
+		// Fill the array of possible steps;
+		possibleSteps[0]=-14;
+		possibleSteps[1]=-15;
+		possibleSteps[2]=-16;
+		possibleSteps[3]=-1;
+		possibleSteps[4]= 1;
+		possibleSteps[5]= 14;
+		possibleSteps[6]= 15;
+		possibleSteps[7]= 16;
 
-		//Fill the array of possible jumps
-		possiblesJumps[0]=-28;
-		possiblesJumps[1]=-30;
-		possiblesJumps[2]=-32;
-		possiblesJumps[3]=-2;
-		possiblesJumps[4]= 2;
-		possiblesJumps[5]= 28;
-		possiblesJumps[6]= 30;
-		possiblesJumps[7]= 32;
+		// Fill the array of possible jumps
+		possibleJumps[0]=-28;
+		possibleJumps[1]=-30;
+		possibleJumps[2]=-32;
+		possibleJumps[3]=-2;
+		possibleJumps[4]= 2;
+		possibleJumps[5]= 28;
+		possibleJumps[6]= 30;
+		possibleJumps[7]= 32;
 
-		this->SetMessageLog(" Engine Initialized");
+		this->SetMessageLog("Engine Initialized");
 	}
+
 	GameState KaroEngine::GetGameState(){
 		return this->gameState;
 	}
@@ -52,28 +53,6 @@ namespace KaroEngine
 	KaroEngine::~KaroEngine(void)
 	{
 
-	}
-
-	std::string KaroEngine::GetMessageLog(){
-		std::string s = this->messageLog;
-		this->messageLog="";
-		return s;
-	}
-
-	void KaroEngine::SetMessageLog(std::string txt){
-		this->messageLog+=txt+ "\r\n";
-	}
-
-	int * KaroEngine::GetBoard(void)
-	{
-		int * ret = new int[BOARDWIDTH * BOARDWIDTH];
-		
-		for (int i = 0 ; i < BOARDWIDTH * BOARDWIDTH; i ++)
-		{
-			ret[i] = (int)this->board[i];
-		}
-
-		return ret;
 	}
 
 	void KaroEngine::DoMove(int from, int to, int tileFrom)
@@ -123,65 +102,53 @@ namespace KaroEngine
 	bool KaroEngine::IsValidMove(int from, int to)
 	{
 		// check if the move is valid by validating with the turn of the current player
-		if(turn == Player::RED){
+		if(turn == Player::RED) {
 			if(board[from] != Tile::REDUNMARKED && board[from] != Tile::REDMARKED)
 				return false;
 		}
-		else if(turn == Player::WHITE){
+
+		else if(turn == Player::WHITE) {
 			if(board[from] != Tile::WHITEUNMARKED && board[from] != Tile::WHITEMARKED)
 				return false;
 		}
-		if(board[to] != Tile::SOLIDTILE && board[to] != Tile::MOVEABLETILE){
+
+		if(board[to] != Tile::SOLIDTILE && board[to] != Tile::MOVEABLETILE) {
 			return false;
 		}
-
-		//int rowFrom = from/BOARDWIDTH;
-		//int rowTo = to/BOARDWIDTH;
-
-		//int colFrom = from%BOARDWIDTH;
-		//int colTo = to%BOARDWIDTH;
-
-		//int rowDifference = rowFrom-rowTo;
-		//int colDifference = colFrom-colTo;
-
-		//int rowDifferencePos = rowDifference;
-		//if(rowDifference < 0) { rowDifferencePos *= -1; } 
-
-		//int colDifferencePos = colDifference;
-		//if(colDifferencePos < 0) { colDifferencePos *= -1; }
 
 		int moved = to - from;
 
 		// If possible move ( one step )
 		for(int i=0;i<8;i++){
-			if(possiblesSteps[i]==moved){
+			if(possibleSteps[i]==moved) {
 				return true;
 			}
 		}
+
 		//check if it is a jumpmove
 		for(int i=0;i<8;i++){
-			if(possiblesJumps[i]==moved){
+			if(possibleJumps[i]==moved){
 				//if the jump is possible, check if there is a piece between the 2 places.
-				int checkingTilenr=from+possiblesSteps[i];
+				int checkingTilenr=from+possibleSteps[i];
 				Tile checkTile=board[checkingTilenr];
 
-				if( checkTile== Tile::WHITEUNMARKED ||
-					checkTile == Tile::WHITEMARKED	||
-					checkTile == Tile::REDUNMARKED	||
-					checkTile == Tile::REDMARKED	){
+				if(checkTile== Tile::WHITEUNMARKED ||
+					checkTile == Tile::WHITEMARKED ||
+					checkTile == Tile::REDUNMARKED ||
+					checkTile == Tile::REDMARKED) {
 						this->SetMessageLog("Jumped succesfully");
 						//switch the mark
 						switch(board[from]){
-							case Tile::WHITEUNMARKED :
+							case Tile::WHITEUNMARKED:
 								board[from]=Tile::WHITEMARKED;
 							break;
-							case Tile::WHITEMARKED :
+							case Tile::WHITEMARKED:
 								board[from]=Tile::WHITEUNMARKED;
 							break;
-							case Tile::REDUNMARKED :
+							case Tile::REDUNMARKED:
 								board[from]=Tile::REDMARKED;
 							break;
-							case Tile::REDMARKED :
+							case Tile::REDMARKED:
 								board[from]=Tile::REDUNMARKED;
 							break;
 						}
@@ -190,66 +157,11 @@ namespace KaroEngine
 			}
 		}
 
-		
-
-
-
-		// Distance bigger than 2 steps
-		//if(rowDifference < -2 && rowDifference > 2 || colDifference < -2 && colDifference > 2) {
-			//return false;
-		//}
-
-		// Can you move this tile?
-		//if(!IsGameTile(from) || FreeForMove(from) || (tileFrom > -1 && board[tileFrom] != Tile::MOVEABLETILE)) {
-		//	return false;
-		//}
-
-		// If moveto tile not a valid tile
-		//if(!IsGameTile(to) || !FreeForMove(to) || (tileFrom > -1 && board[to] != Tile::EMPTY)) {
-		//	return false;
-		//}
-		
-
-		// If impossible move
-		//if(rowDifferencePos+colDifferencePos == 3) {
-		//	return false;
-		//}
-
-		
-
-		// Tile to check
-		//int checkableTile = ((from-to)/2)+to;
-		//if(FreeForMove(checkableTile) || !IsGameTile(checkableTile)) {
-			//return false;
-		//}
-
 		return false; // VICTORIOUSSSSS
 	}
 
 	void KaroEngine::UndoMove()
 	{
-	}
-
-	bool KaroEngine::FreeForMove(int tile)
-	{
-		if(board[tile] == Tile::SOLIDTILE || board[tile] == Tile::MOVEABLETILE) {
-			return true;
-		}
-		return false;
-	}
-
-	bool KaroEngine::IsGameTile(int tile)
-	{
-		return board[tile] != Tile::EMPTY;
-	}
-
-	Player KaroEngine::GetTurn()
-	{
-		return turn;
-	}
-
-	Tile KaroEngine::GetByXY(int x,int y){
-		return board[(y*15)+x];
 	}
 
 	bool KaroEngine::IsWinner(Player p)
@@ -332,7 +244,7 @@ namespace KaroEngine
 		return false;
 	}
 
-	void KaroEngine::CalculateComputerMove(){
+	void KaroEngine::CalculateComputerMove() {
 		//if in insertionstate, then insert on random position
 		if(gameState == GameState::INSERTION){
 			bool foundInsertPosition=false;
@@ -344,5 +256,49 @@ namespace KaroEngine
 				}
 			}
 		}
+	}
+
+	bool KaroEngine::FreeForMove(int tile)
+	{
+		if(board[tile] == Tile::SOLIDTILE || board[tile] == Tile::MOVEABLETILE) {
+			return true;
+		}
+		return false;
+	}
+
+	bool KaroEngine::IsGameTile(int tile)
+	{
+		return board[tile] != Tile::EMPTY;
+	}
+
+	std::string KaroEngine::GetMessageLog(){
+		std::string s = this->messageLog;
+		this->messageLog="";
+		return s;
+	}
+
+	void KaroEngine::SetMessageLog(std::string txt){
+		this->messageLog+=txt+ "\r\n";
+	}
+
+	int * KaroEngine::GetBoard(void)
+	{
+		int * ret = new int[BOARDWIDTH * BOARDWIDTH];
+		
+		for (int i = 0 ; i < BOARDWIDTH * BOARDWIDTH; i ++)
+		{
+			ret[i] = (int)this->board[i];
+		}
+
+		return ret;
+	}
+
+	Player KaroEngine::GetTurn()
+	{
+		return turn;
+	}
+
+	Tile KaroEngine::GetByXY(int x,int y){
+		return board[(y*15)+x];
 	}
 }
