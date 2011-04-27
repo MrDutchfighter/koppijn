@@ -64,7 +64,7 @@ namespace KaroEngine
 	
 	int KaroEngine::GetEvaluationScore()
 	{
-		return this->evaluationScore;
+		return EvaluateBoard(Player::RED)-EvaluateBoard(Player::WHITE);
 	}
 
 	KaroEngine::~KaroEngine(void)
