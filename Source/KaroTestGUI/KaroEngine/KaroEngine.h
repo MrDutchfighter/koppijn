@@ -46,6 +46,8 @@ namespace KaroEngine
 		int possibleSteps[8];
 		int possibleJumps[8];		
 		Move * MiniMax(Player p, int depth, int alpha, int beta);
+		map<int,bool> redPieces;
+		map<int,bool> whitePieces;
 	public:
 		static const int BOARDWIDTH = 17;
 		KaroEngine(void);
@@ -54,8 +56,9 @@ namespace KaroEngine
 		Player GetTurn();
 		GameState GetGameState();
 		bool IsValidMove(int from, int to);
+		void DoMove(Move *m);
 		void DoMove(int from, int to, int fromTile);
-		void UndoMove();
+		void UndoMove(Move m);
 		bool FreeForMove(int); // checks if a tile is empty
 		bool IsGameTile(int); // checks if a tile exists
 		bool InsertByXY(int x, int y);
@@ -67,8 +70,6 @@ namespace KaroEngine
 		void SetMessageLog(std::string s);
 		int EvaluateBoard(Player p);
 		int GetEvaluationScore();
-		map<int,bool> redPieces;
-		map<int,bool> whitePieces;
 
 		// Get possible moves
 		vector<Move*> * GetPossibleMoves(Player forPlayer);

@@ -70,9 +70,59 @@ namespace KaroEngine
 	KaroEngine::~KaroEngine(void)
 	{
 	}
+	
+	void KaroEngine::DoMove(Move *move)
+	{
+		if(move->positionFrom != -1) // PLAYING STATE
+		{
+			if(move->isJumpMove) // Flip piece on the board
+			{
+				if(turn == Player::RED)
+					board[move->positionTo] = (board[move->positionFrom] == Tile::REDUNMARKED ? Tile::REDMARKED : Tile::REDUNMARKED);
+				if(turn == Player::WHITE)
+					board[move->positionTo] = (board[move->positionFrom] == Tile::WHITEUNMARKED ? Tile::WHITEMARKED : Tile::WHITEUNMARKED);
+			}
+			else
+				board[move->positionTo] = board[move->positionFrom];
+			
+			
+			board[move->positionFrom] = Tile::SOLIDTILE; // Solid or movable
+			if(move->tileFrom != -1)
+				board[move->tileFrom] = Tile::EMPTY; // Empty moved tile
+
+			bool flippedValue;
+			if(turn == Player::RED){
+				if(move->isJumpMove)
+					flippedValue = (redPieces[move->positionFrom] ? false : true); // Flip piece in map
+				else
+					flippedValue = redPieces[move->positionFrom];
+				
+				redPieces.insert(std::pair<int,bool>(move->positionTo,flippedValue));
+				redPieces.erase(move->positionFrom);
+			}else{
+				if(move->isJumpMove)
+					flippedValue = (whitePieces[move->positionFrom] ? false : true); // Flip piece in map
+				else
+					flippedValue = whitePieces[move->positionFrom];
+
+				whitePieces.insert(std::pair<int,bool>(move->positionTo,false));
+				whitePieces.erase(move->positionFrom);
+			}
+		}
+		else //INSERTING STATE
+		{
+			if(turn == Player::RED){
+				board[move->positionTo] = Tile::REDUNMARKED;
+				redPieces.insert(std::pair<int,bool>(move->positionTo,false));
+			}else{
+				board[move->positionTo] = Tile::WHITEUNMARKED;
+				whitePieces.insert(std::pair<int,bool>(move->positionTo,false));
+			}
+		}
+	}
 
 	void KaroEngine::DoMove(int from, int to, int tileFrom)
-	{		
+	{
 		if (tileFrom != -1) { //move the tile
 			if(board[tileFrom] != Tile::MOVEABLETILE) {
 				this->SetMessageLog("Tried to move a tile that is not moveable ");
@@ -91,12 +141,12 @@ namespace KaroEngine
 			board[from] = Tile::SOLIDTILE;
 			if(turn == Player::RED)
 			{
-				redPieces.insert(std::pair<int,bool>(to,(board[from] == Tile::REDMARKED)));
+				redPieces.insert(std::pair<int,bool>(to,(board[to] == Tile::REDMARKED)));
 				redPieces.erase(from);
 			}
 			else
 			{
-				whitePieces.insert(std::pair<int,bool>(to,(board[from] == Tile::WHITEMARKED)));
+				whitePieces.insert(std::pair<int,bool>(to,(board[to] == Tile::WHITEMARKED)));
 				whitePieces.erase(from);
 			}
 
@@ -220,8 +270,9 @@ namespace KaroEngine
 		return false; // VICTORIOUSSSSS
 	}
 
-	void KaroEngine::UndoMove()
+	void KaroEngine::UndoMove(Move m)
 	{
+		
 	}
 
 	bool KaroEngine::IsWinner(Player p)
@@ -292,11 +343,13 @@ namespace KaroEngine
 					board[position] = Tile::WHITEUNMARKED;
 					whitePieces.insert(std::pair<int,bool>(position,false));
 				}
-				else {
-					board[position] = Tile::REDUNMARKED;
+				else
+				{
+					board[position] =Tile::REDUNMARKED;
 					redPieces.insert(std::pair<int,bool>(position,false));
 				}
-				turn = this->Reverse(turn);
+
+				turn=this->Reverse(turn);
 				insertionCount++;							
 				if(insertionCount == 12) {
 					gameState = GameState::PLAYING;
