@@ -8,10 +8,10 @@ namespace KaroEngine
 {
 	KaroEngine::KaroEngine(void)
 	{
-		board = new Tile[BOARDWIDTH * BOARDWIDTH];
+		this->board = new Tile[BOARDWIDTH * BOARDWIDTH];
 		this->turn = Player::WHITE;
-		gameState = GameState::INSERTION; 
-		insertionCount = 0;		
+		this->gameState = GameState::INSERTION; 
+		this->insertionCount = 0;		
 
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH ; i ++ )
 			board[i] = Tile::EMPTY;
@@ -85,6 +85,18 @@ namespace KaroEngine
 		if(IsValidMove(from, to)) {			
 			board[to] = board[from];
 			board[from] = Tile::SOLIDTILE;
+			if(turn == Player::RED)
+			{
+				redPieces.insert(std::pair<int,bool>(to,(board[from] == Tile::REDMARKED)));
+				redPieces.erase(from);
+			}
+			else
+			{
+				whitePieces.insert(std::pair<int,bool>(to,(board[from] == Tile::WHITEMARKED)));
+				whitePieces.erase(from);
+			}
+
+
 			turn = Reverse(turn);
 
 			this->SetMessageLog(" Move succesful! ");
@@ -241,9 +253,11 @@ namespace KaroEngine
 		if(board[position] == Tile::SOLIDTILE || board[position] == Tile::MOVEABLETILE ){
 				if(this->turn == Player::WHITE){
 					board[position] =Tile::WHITEUNMARKED;
+					whitePieces.insert(std::pair<int,bool>(position,false));
 				}
 				else{
 					board[position] =Tile::REDUNMARKED;
+					redPieces.insert(std::pair<int,bool>(position,false));
 				}
 				turn=this->Reverse(turn);
 				insertionCount++;							

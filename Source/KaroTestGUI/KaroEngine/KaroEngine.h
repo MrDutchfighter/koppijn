@@ -4,9 +4,11 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string>
+#include <map>
 #include "Move.h"
 
 using namespace System;
+using namespace std;
 
 namespace KaroEngine 
 {	
@@ -62,5 +64,7 @@ namespace KaroEngine
 		void CalculateComputerMove();
 		std::string GetMessageLog();
 		void SetMessageLog(std::string s);
+		map<int,bool> redPieces;
+		map<int,bool> whitePieces;
 	};
 }
