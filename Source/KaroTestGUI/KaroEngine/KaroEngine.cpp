@@ -668,9 +668,11 @@ namespace KaroEngine
 
 			// Was the last move the best move?
 			if(lastBestMove->score > bestMove->score && p == Player::RED) {
-				bestMove = possibleMoves->at(i);//lastBestMove;
+				bestMove = possibleMoves->at(i);
+				bestMove->score = lastBestMove->score;
 			} else if(lastBestMove->score < bestMove->score && p == Player::WHITE) {
-				bestMove = possibleMoves->at(i);//lastBestMove;
+				bestMove = possibleMoves->at(i);
+				bestMove->score = lastBestMove->score;
 			}
 
 			// Is current player RED?
