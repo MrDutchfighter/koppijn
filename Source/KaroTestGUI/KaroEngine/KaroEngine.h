@@ -42,6 +42,7 @@ namespace KaroEngine
 		Tile * board;
 		Player turn;
 		int insertionCount;
+		int evaluationScore;
 		static const int BOARDWIDTH = 17;
 		int possibleSteps[8];
 		int possibleJumps[8];		
@@ -64,6 +65,8 @@ namespace KaroEngine
 		void CalculateComputerMove();
 		std::string GetMessageLog();
 		void SetMessageLog(std::string s);
+		int EvaluateBoard(Player p);
+		int GetEvaluationScore();
 		map<int,bool> redPieces;
 		map<int,bool> whitePieces;
 

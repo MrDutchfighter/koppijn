@@ -58,6 +58,7 @@ namespace KaroTestGUI
                 this.lastMessage = log;
                 this.txtMessageLog.Text = this.lastMessage + this.txtMessageLog.Text;
             }
+            this.lblEvalScore.Text = "Eval score: " + engine.GetEvaluationScore();
             GetTurn();
             pictureBox1.Invalidate();
         }

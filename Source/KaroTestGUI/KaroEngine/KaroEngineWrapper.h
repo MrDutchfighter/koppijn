@@ -19,7 +19,7 @@ namespace KaroEngine {
 		GameState GetGameState();
 		Player GetTurn();
 		void CalculateComputerMove();
-
+		int GetEvaluationScore();
 		String^ getMessageLog();
 	};
 }

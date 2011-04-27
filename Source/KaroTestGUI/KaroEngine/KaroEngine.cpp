@@ -11,7 +11,8 @@ namespace KaroEngine
 		this->board = new Tile[BOARDWIDTH * BOARDWIDTH];
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION; 
-		this->insertionCount = 0;		
+		this->insertionCount = 0;	
+		this->evaluationScore = 0;
 
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH ; i ++ )
 			board[i] = Tile::EMPTY;
@@ -60,10 +61,14 @@ namespace KaroEngine
 	GameState KaroEngine::GetGameState(){
 		return this->gameState;
 	}
+	
+	int KaroEngine::GetEvaluationScore()
+	{
+		return this->evaluationScore;
+	}
 
 	KaroEngine::~KaroEngine(void)
 	{
-
 	}
 
 	void KaroEngine::DoMove(int from, int to, int tileFrom)
@@ -106,6 +111,7 @@ namespace KaroEngine
 			}
 			this->SetMessageLog("Move failed!");
 		}
+		this->EvaluateBoard(turn);
 	}
 
 	Player KaroEngine::Reverse(Player turn)
@@ -120,6 +126,38 @@ namespace KaroEngine
 				return turn;
 		}
 	}
+
+	int KaroEngine::EvaluateBoard(Player p)
+	{
+		int calculatedScore = 0;
+		switch(p)
+		{
+		case Player::WHITE:
+			{
+				if(!this->whitePieces.empty()) {
+					for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
+						if (it->second == true)
+							calculatedScore++;
+					}
+				}
+			break;
+			}
+		case Player::RED:
+			{
+				if(!this->redPieces.empty()) {
+					for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
+						if (it->second == true)
+							calculatedScore++;
+					}
+				}
+			break;
+			}
+		}
+		this->evaluationScore = calculatedScore;
+		return calculatedScore;
+
+	}
+
 
 	bool KaroEngine::IsValidMove(int from, int to)
 	{
