@@ -140,7 +140,9 @@ namespace KaroTestGUI
 
         private void newGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            engine = new KaroEngineWrapper();
 
+            pictureBox1.Invalidate();
         }
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
