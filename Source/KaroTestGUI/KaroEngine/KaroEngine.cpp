@@ -108,8 +108,8 @@ namespace KaroEngine
 	*/
 	void KaroEngine::DoMove(Move *move)
 	{
-		Tile test1 = board[move->positionFrom];
-		Tile test2 = board[move->positionTo];
+		//Tile test1 = board[move->positionFrom];
+		//Tile test2 = board[move->positionTo];
 		//Tile test3 = board[move->positionFrom];
 
 
@@ -141,29 +141,27 @@ namespace KaroEngine
 			return;
 		}
 
-
-
-
-
-
-
 		// Is it a "normal" move (not inserting state)
 		// PLAYING STATE
 		if(move->positionFrom > 0) {
-
-			// Moet er een tegel mee verplaatst worden, check dan of de neighbours van die tegel movable worden
+			// Als er een moveable tile is, dan wordt deze op EMPTY gezet.
 			if(move->tileFrom > 0) {
 				board[move->tileFrom] = Tile::EMPTY;
 			}
 
 			// Jump move?
 			if(move->isJumpMove) {
-				if(turn == Player::RED)
-					board[move->positionTo] = (board[move->positionFrom] == Tile::REDUNMARKED ? Tile::REDMARKED : Tile::REDUNMARKED);
-				if(turn == Player::WHITE)
-					board[move->positionTo] = (board[move->positionFrom] == Tile::WHITEUNMARKED ? Tile::WHITEMARKED : Tile::WHITEUNMARKED);
-			} 
+				if(turn == Player::RED){
+					board[move->positionTo] = ( board[move->positionFrom] == Tile::REDUNMARKED ) ? Tile::REDMARKED : Tile::REDUNMARKED;
+				}
+				if(turn == Player::WHITE){
+					board[move->positionTo] = ( board[move->positionFrom] == Tile::WHITEUNMARKED ) ? Tile::WHITEMARKED : Tile::WHITEUNMARKED;
+				}
+			}
 			else {
+				if(board[move->positionFrom] == Tile::EMPTY){
+					return;
+				}
 				board[move->positionTo] = board[move->positionFrom];
 			}
 			
@@ -173,19 +171,16 @@ namespace KaroEngine
 
 			// Hoeft alleen maar de neighbours te 'herchecken' als er een tegel verplaatst is
 			if(move->tileFrom > 0) {
-				TransformToMovableTiles(move->tileFrom, true);
 				TransformToMovableTiles(move->positionTo, true);
 			}
 
 			bool flippedValue;
 			if(turn == Player::RED){
-				flippedValue = board[move->positionTo] == Tile::REDUNMARKED ? false : true;
-				
+				flippedValue = (board[move->positionTo] == Tile::REDUNMARKED) ? false : true;
 				redPieces.insert(std::pair<int,bool>(move->positionTo, flippedValue));
 				redPieces.erase(move->positionFrom);
 			} else if(turn == Player::WHITE) {
-				flippedValue = board[move->positionTo] == Tile::WHITEUNMARKED ? false : true;
-
+				flippedValue = (board[move->positionTo] == Tile::WHITEUNMARKED)? false : true;
 				whitePieces.insert(std::pair<int,bool>(move->positionTo, flippedValue));
 				whitePieces.erase(move->positionFrom);
 			}
@@ -295,16 +290,17 @@ namespace KaroEngine
 	void KaroEngine::UndoMove(Move *move)
 	{
 		turn = Reverse(turn);
-
 		// PLAYING STATE
 		if(move->positionFrom > 0) {
 
 			// Put old piece back
 			if(move->isJumpMove) {
-				if(turn == Player::RED)
-					board[move->positionFrom] = (board[move->positionTo] == Tile::REDUNMARKED ? Tile::REDMARKED : Tile::REDUNMARKED);
-				if(turn == Player::WHITE)
-					board[move->positionFrom] = (board[move->positionTo] == Tile::WHITEUNMARKED ? Tile::WHITEMARKED : Tile::WHITEUNMARKED);
+				if(turn == Player::RED){
+					board[move->positionFrom] = (board[move->positionTo] == Tile::REDUNMARKED)? Tile::REDMARKED : Tile::REDUNMARKED;
+				}
+				if(turn == Player::WHITE){
+					board[move->positionFrom] = (board[move->positionTo] == Tile::WHITEUNMARKED)? Tile::WHITEMARKED : Tile::WHITEUNMARKED;
+				}
 			} else {
 				Tile x = board[move->positionTo];
 				if(board[move->positionTo] != Tile::REDUNMARKED &&
@@ -321,7 +317,6 @@ namespace KaroEngine
 			if(move->tileFrom > 0) {
 				board[move->tileFrom] = Tile::SOLIDTILE;			// Returns the moved tile
 				board[move->positionTo] = Tile::EMPTY;				// Removes the old tile
-
 				TransformToMovableTiles(move->tileFrom, true);
 				TransformToMovableTiles(move->positionTo, true);
 			} else {
@@ -334,13 +329,11 @@ namespace KaroEngine
 
 			bool flippedValue;
 			if(turn == Player::RED){
-				flippedValue = board[move->positionFrom] == Tile::REDUNMARKED ? false : true;
-				
+				flippedValue = (board[move->positionFrom] == Tile::REDUNMARKED)? false : true;
 				redPieces.insert(std::pair<int,bool>(move->positionFrom, flippedValue));
 				redPieces.erase(move->positionTo);
 			} else if(turn == Player::WHITE) {
-				flippedValue = board[move->positionFrom] == Tile::WHITEUNMARKED ? false : true;
-
+				flippedValue = (board[move->positionFrom] == Tile::WHITEUNMARKED)? false : true;
 				whitePieces.insert(std::pair<int,bool>(move->positionFrom, flippedValue));
 				whitePieces.erase(move->positionTo);
 			}
@@ -678,6 +671,16 @@ namespace KaroEngine
 	* Get all the possible moves from the current tile
 	*/
 	vector<Move*>* KaroEngine::GetPossibleMoves(int curTile, bool isTurned) {
+
+		if(this->board[curTile]==Tile::EMPTY || 
+			this->board[curTile]==Tile::BORDER ||
+			(turn==Player::RED && this->board[curTile]==Tile::WHITEMARKED) ||
+			(turn==Player::RED && this->board[curTile]==Tile::WHITEUNMARKED) ||
+			(turn==Player::WHITE && this->board[curTile]==Tile::REDMARKED) ||
+			(turn==Player::WHITE && this->board[curTile]==Tile::REDUNMARKED)
+			){
+			return new vector<Move*>();
+		} 
 		vector<Move*> *possibleMoves = new vector<Move*>();
 
 		// Check all the possible (normal) moves
@@ -752,14 +755,14 @@ namespace KaroEngine
 		//return;
 		// Staat er niks op deze tile?
 		if(board[tileNumber] == Tile::SOLIDTILE || board[tileNumber] == Tile::MOVEABLETILE) {
+			
+			if(board[tileNumber] == Tile::MOVEABLETILE) {
+						moveableTiles.erase(tileNumber);
+			}
+			board[tileNumber] = Tile::EMPTY;
+
 			int amountNeighbours = GetAmmountConnectedNeighbours(tileNumber);
 			if(amountNeighbours <= 2 && amountNeighbours > 0) {
-
-				if(board[tileNumber] == Tile::MOVEABLETILE) {
-						moveableTiles.erase(tileNumber);
-				}
-				board[tileNumber] = Tile::EMPTY;
-
 				int totalConnected = 0;
 				if(this->board[tileNumber-1] != Tile::EMPTY && this->board[tileNumber-1] != Tile::BORDER) {
 					totalConnected = GetAmmountConnectedTiles(tileNumber-1);
@@ -784,27 +787,24 @@ namespace KaroEngine
 				}
 			}
 			else {
-				if(board[tileNumber] == Tile::MOVEABLETILE) {
-					moveableTiles.erase(tileNumber);
-				}
 				board[tileNumber] = Tile::SOLIDTILE;
 			}
-		} else if(board[tileNumber] == Tile::EMPTY) {
+		} else {
 			moveableTiles.erase(tileNumber);
 		}
 
 		// Check the neighbours
 		if(checkNeighbours) {
-			if(this->board[tileNumber-1] != Tile::EMPTY && this->board[tileNumber-1] != Tile::BORDER) {
+			if(this->board[tileNumber-1] != Tile::BORDER) {
 				TransformToMovableTiles(tileNumber-1, false);
 			}
-			if(this->board[tileNumber-BOARDWIDTH] != Tile::EMPTY && this->board[tileNumber-BOARDWIDTH] != Tile::BORDER){
+			if(this->board[tileNumber-BOARDWIDTH] != Tile::BORDER){
 				TransformToMovableTiles(tileNumber-BOARDWIDTH, false);
 			}
-			if(this->board[tileNumber+1] != Tile::EMPTY && this->board[tileNumber+1] != Tile::BORDER){
+			if(this->board[tileNumber+1] != Tile::BORDER){
 				TransformToMovableTiles(tileNumber+1, false);
 			}
-			if(this->board[tileNumber+BOARDWIDTH] != Tile::EMPTY && this->board[tileNumber+BOARDWIDTH] != Tile::BORDER){
+			if(this->board[tileNumber+BOARDWIDTH] != Tile::BORDER){
 				TransformToMovableTiles(tileNumber+BOARDWIDTH, false);
 			}
 		}
