@@ -623,7 +623,7 @@ namespace KaroEngine
 							}
 
 							if(neighbours > 0) {
-								possibleMoves->push_back(new Move(curTile, (curTile+possibleSteps[i]), j.first, true));
+								possibleMoves->push_back(new Move(curTile, (curTile+possibleSteps[i]), j.first, false));
 							}
 						}
 					} else {
