@@ -14,6 +14,7 @@ namespace KaroEngine
 		this->insertionCount = 0;	
 		this->maxDepth = 4;
 		this->evaluationScore = 0;
+		this->visitedList = new VisitedList();
 
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH ; i ++ )
 			board[i] = Tile::EMPTY;
@@ -151,6 +152,12 @@ namespace KaroEngine
 		}
 		else {
 			DoMove(move);
+			int connectedTiles = this->GetAmmountConnectedTiles(to);
+			std::string s;
+			std::stringstream stringstream;
+			stringstream << connectedTiles;
+			s = stringstream.str();
+			this->SetMessageLog("Ammount of connected tiles: "+s);
 			if(this->IsWinner(Reverse(turn), to))
 			{
 				this->SetMessageLog("WIN!");
@@ -569,6 +576,54 @@ namespace KaroEngine
 		}
 
 		return possibleMoves;
+	}
+
+	/**
+	* Make a call to find the ammount of ammount of connected tiles
+	*/
+	int KaroEngine::GetAmmountConnectedTiles(int tileNumber){
+		visitedList->Clear();
+		return GetAmmountConnectedTilesRecursive(tileNumber);
+	}
+
+	/**
+	* Make a recursive call to find the ammount of connected tiles
+	*/
+	int KaroEngine::GetAmmountConnectedTilesRecursive(int tileNumber){
+		int ammountTiles=0;
+		if(this->board[tileNumber] == Tile::EMPTY ||this->board[tileNumber] == Tile::BORDER){
+			return ammountTiles;
+		}
+		if(this->visitedList->isInArray(tileNumber)){
+			return ammountTiles;
+		}
+		this->visitedList->insertAt(tileNumber);
+		ammountTiles+=1;
+		ammountTiles+=this->GetAmmountConnectedTilesRecursive(tileNumber-1);
+		ammountTiles+=this->GetAmmountConnectedTilesRecursive(tileNumber-BOARDWIDTH);
+		ammountTiles+=this->GetAmmountConnectedTilesRecursive(tileNumber+1);
+		ammountTiles+=this->GetAmmountConnectedTilesRecursive(tileNumber+BOARDWIDTH);
+		return ammountTiles;
+	}
+
+	/**
+	* Check how many neighbours the tile had
+	*/
+	int KaroEngine::GetAmmountConnectedNeighbours(int tileNumber){
+		int ammountTiles=0;
+		if(this->board[tileNumber-1] != Tile::EMPTY && this->board[tileNumber-1] != Tile::BORDER){
+			ammountTiles+=1;
+		}
+		if(this->board[tileNumber-BOARDWIDTH] != Tile::EMPTY && this->board[tileNumber-BOARDWIDTH] != Tile::BORDER){
+			ammountTiles+=1;
+		}
+		if(this->board[tileNumber+1] != Tile::EMPTY && this->board[tileNumber+1] != Tile::BORDER){
+			ammountTiles+=1;
+		}
+		if(this->board[tileNumber+BOARDWIDTH] != Tile::EMPTY && this->board[tileNumber+BOARDWIDTH] != Tile::BORDER){
+			ammountTiles+=1;
+		}
+		return ammountTiles;
 	}
 
 	/**

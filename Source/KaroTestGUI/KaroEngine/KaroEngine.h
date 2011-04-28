@@ -12,9 +12,12 @@
 #include <windows.h>
 #include <tchar.h>
 #include <stdio.h>
+#include "VisitedList.h"
+#include <sstream>
 using namespace std;
 using namespace System;
 
+class VisitedList;
 namespace KaroEngine 
 {	
 	public enum class Tile : unsigned int {
@@ -56,12 +59,17 @@ namespace KaroEngine
 
 		map<int,bool> redPieces;
 		map<int,bool> whitePieces;
+		map<int,int> moveableTiles;
+		VisitedList * visitedList;
 
 		/**
 		* Functions
 		*/
 		// Algorithm functions
 		Move * MiniMax(Player p, int depth, int alpha, int beta);
+		int GetAmmountConnectedTilesRecursive(int tileNumber);
+		int GetAmmountConnectedNeighbours(int tileNumber);
+
 		
 	public:
 		
@@ -103,7 +111,9 @@ namespace KaroEngine
 		bool IsGameTile(int); // checks if a tile exists
 		GameState GetGameState();
 		Player GetTurn();
+		int GetAmmountConnectedTiles(int tileNumber);
 
+			
 		// Getters
 		int * GetBoard(void);
 		Tile GetByXY(int x,int y);
