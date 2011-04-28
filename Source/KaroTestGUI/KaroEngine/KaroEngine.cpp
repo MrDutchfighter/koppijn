@@ -56,6 +56,17 @@ namespace KaroEngine
 		possibleJumps[6]= (BOARDWIDTH*2);
 		possibleJumps[7]= (BOARDWIDTH*2)+2;
 
+
+		//Fill the random sets with random numbers
+		for(int i = 0; i < 289; i++)
+		{
+			randomTile[i] = GetRandomNumber();
+			randomWhiteUnmarked[i] = GetRandomNumber();
+			randomRedUnmarked[i] = GetRandomNumber();
+			randomWhiteMarked[i] = GetRandomNumber();
+			randomRedMarked[i] = GetRandomNumber();
+		}
+
 		this->SetMessageLog("Engine Initialized");
 	}
 
@@ -676,7 +687,7 @@ namespace KaroEngine
 		if(depth == maxDepth) {
 			bestMove->score = evaluationScore;
 			return bestMove;
-		}		
+		}
 		
 		// If a player won
 		//if(IsWinner(Reverse(p))) {
@@ -686,22 +697,16 @@ namespace KaroEngine
 
 		// Empty transposition table on first move?
 		if(depth == 0) {
-			// transposition.Clear();
+			transpositionTable.clear();
 		} else if(depth >= 3) {
 			// Is this move in the transposition table?
-			/* C# CODE!!
-			
-			KeyValuePair<int, Marble> lookupVal;
-               if (transpositions.ContainsKey(currentPosition.hashCode()))
-                {
-                    transpositions.TryGetValue(currentPosition.hashCode(), out lookupVal);
-                    bestMove.score = lookupVal.Key;
-                    if (lookupVal.Value != m)
-                    {
-                        bestMove.score = lookupVal.Key * -1;
-                    }
-                    return bestMove;
-                }*/
+			int hash = GetHash();
+			map<int,int>::iterator it = transpositionTable.find(hash);
+            if (it != transpositionTable.end())
+            {
+                bestMove->score = it->second;
+                return bestMove;
+            }
 		}
 
 		// Find next moves for the current player
@@ -759,17 +764,13 @@ namespace KaroEngine
 		}
 
 		// Put best score in transposition table
-		/* C# code!
-		if(depth <= tableDepth) {
-			try
-                {
-                    transpositions.Add(currentPosition.hashCode(), new KeyValuePair<int,Marble>(bestMove.score,m));
-                }
-                catch
-                {
-
-                }
-		}*/
+		//if(depth <= tableDepth) {
+			int hash = GetHash();
+			map<int,int>::iterator it = transpositionTable.find(hash);
+			if (it == transpositionTable.end()){
+                transpositionTable.insert(pair<int,int>(hash, bestMove->score));
+			}
+		//}
 
 		return bestMove;
 	}
@@ -854,9 +855,59 @@ namespace KaroEngine
 	}
 
 	/**													//
-	* --------------- Setters ------------------------	//
+	* --------------- Setters ------------------------	//2
 	*/													//
 	void KaroEngine::SetMessageLog(std::string txt){
 		this->messageLog+=txt+ "\r\n";
+	}
+
+	int KaroEngine::GetHash()
+	{
+		int hash = 0;
+		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH; i++)
+		{
+			if(board[i] != Tile::EMPTY)
+			{
+				if(board[i] == Tile::SOLIDTILE || board[i] == Tile::MOVEABLETILE)
+					hash ^= randomTile[i];
+				else if(board[i] == Tile::REDMARKED)
+					hash ^= randomRedMarked[i];
+				else if(board[i] == Tile::WHITEMARKED)
+					hash ^= randomWhiteMarked[i];
+				else if(board[i] == Tile::REDUNMARKED)
+					hash ^= randomRedUnmarked[i];
+				else if(board[i] == Tile::WHITEUNMARKED)
+					hash ^= randomWhiteUnmarked[i];
+			}
+		}
+		return hash;
+	}
+
+	int KaroEngine::GetRandomNumber()
+	{
+		int randomNumber = rand() % 99999 + 10000;
+
+		for(int i = 0; i < sizeof(randomTile) / sizeof(randomTile[0]); i++){
+			if(randomTile[i] == randomNumber)
+				randomNumber = GetRandomNumber();
+		}
+		for(int i = 0; i < sizeof(randomRedUnmarked) / sizeof(randomRedUnmarked[0]); i++){
+			if(randomRedUnmarked[i] == randomNumber)
+				randomNumber = GetRandomNumber();
+		}
+		for(int i = 0; i < sizeof(randomWhiteUnmarked) / sizeof(randomWhiteUnmarked[0]); i++){
+			if(randomWhiteUnmarked[i] == randomNumber)
+				randomNumber = GetRandomNumber();
+		}
+		for(int i = 0; i < sizeof(randomRedMarked) / sizeof(randomRedMarked[0]); i++){
+			if(randomRedMarked[i] == randomNumber)
+				randomNumber = GetRandomNumber();
+		}
+		for(int i = 0; i < sizeof(randomWhiteMarked) / sizeof(randomWhiteMarked[0]); i++){
+			if(randomWhiteMarked[i] == randomNumber)
+				randomNumber = GetRandomNumber();
+		}
+
+		return randomNumber;
 	}
 }

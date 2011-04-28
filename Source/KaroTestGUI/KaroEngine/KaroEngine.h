@@ -62,6 +62,15 @@ namespace KaroEngine
 		map<int,int> moveableTiles;
 		VisitedList * visitedList;
 
+		map<int, int> transpositionTable;
+		int randomTile[289];
+		int randomRedUnmarked[289];
+		int randomWhiteUnmarked[289];
+		int randomRedMarked[289];
+		int randomWhiteMarked[289];
+
+		int GetHash();
+		int GetRandomNumber();
 		/**
 		* Functions
 		*/
