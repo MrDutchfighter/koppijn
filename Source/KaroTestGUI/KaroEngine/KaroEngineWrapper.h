@@ -21,7 +21,7 @@ namespace KaroEngine {
 		void CalculateComputerMove();
 		String^ GetMessageLog();
 		int GetEvaluationScore();
-		array<array<int>^>^ GetPossibleMoves(int x, int y);
+		array<array<int>^>^ GetPossibleMoves(int x, int y,int tileFromX,int tileFromY);
 
 		void UndoLastMove();
 	};

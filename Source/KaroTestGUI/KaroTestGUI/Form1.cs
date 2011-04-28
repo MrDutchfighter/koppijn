@@ -199,7 +199,7 @@ namespace KaroTestGUI
                             {
                                 clickedFirst.X = (e.X - 1) / this.boxSize;
                                 clickedFirst.Y = (e.Y - 1) / this.boxSize;
-                                possibleMoves = engine.GetPossibleMoves(clickedFirst.X, clickedFirst.Y);
+                                possibleMoves = engine.GetPossibleMoves(clickedFirst.X, clickedFirst.Y, clickedTile.X, clickedTile.Y);
                             }
                         }
                     }
