@@ -78,6 +78,7 @@ namespace KaroEngine
 		Move * MiniMax(Player p, int depth, int alpha, int beta);
 		int GetAmmountConnectedTilesRecursive(int tileNumber);
 		int GetAmmountConnectedNeighbours(int tileNumber);
+		void TransformToMovableTiles(int tileNumber, bool checkNeighbours);
 
 		
 	public:
@@ -87,6 +88,7 @@ namespace KaroEngine
 		*/
 		static const int BOARDWIDTH = 17;	// Width of the board
 		int maxDepth;						// Max depth for minmax
+		Move * lastMove;
 
 		/**
 		* Functions

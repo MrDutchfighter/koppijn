@@ -62,3 +62,7 @@ array<array<int>^>^ KaroEngineWrapper::GetPossibleMoves(int x, int y){
 	}
 	return params;
 }
+
+void KaroEngineWrapper::UndoLastMove() {
+	_karoEngine->UndoMove(_karoEngine->lastMove);
+}

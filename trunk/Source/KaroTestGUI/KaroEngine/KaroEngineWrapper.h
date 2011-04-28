@@ -22,5 +22,7 @@ namespace KaroEngine {
 		String^ GetMessageLog();
 		int GetEvaluationScore();
 		array<array<int>^>^ GetPossibleMoves(int x, int y);
+
+		void UndoLastMove();
 	};
 }
