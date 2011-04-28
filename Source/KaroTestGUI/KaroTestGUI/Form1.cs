@@ -276,6 +276,12 @@ namespace KaroTestGUI
         }
         #endregion
 
+        private void btn_Click(object sender, EventArgs e)
+        {
+            engine.UndoLastMove();
+            UpdateGUI();
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             engine = new KaroEngineWrapper();

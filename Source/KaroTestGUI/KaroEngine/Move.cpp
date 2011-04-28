@@ -27,4 +27,5 @@ Move::Move(int from, int to, int tileFrom, bool isJumpMove)
 	this->positionFrom = from;
 	this->positionTo = to;
 	this->tileFrom = tileFrom;
+	this->isJumpMove = isJumpMove;
 }
