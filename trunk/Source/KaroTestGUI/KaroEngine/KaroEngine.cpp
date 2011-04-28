@@ -3,9 +3,34 @@
 #include "stdafx.h"
 
 #include "KaroEngine.h"
+/* example code for move ordering: for move ordering call getpossiblemoves, call the evaluation function, fill the moves with the score and then call sort (vectorList.begin(), vectorList.end(), bigger_than_second);
+		Move* move1 = new Move();
+		move1->score = 2;
+		Move* move2 = new Move();
+		move2->score = 1;
+		Move* move3 = new Move();
+		move3->score = 0;
+		Move* move4 = new Move();
+		move4->score = 4;
+	
+		vector<Move*> vectorList;
+		vectorList.push_back(move1);
+		vectorList.push_back(move2);
+		vectorList.push_back(move3);
+		vectorList.push_back(move4);
+		
+		for (int i=0; i<vectorList.size(); i++) {
+		 Console::WriteLine(vectorList[i]->score);
+		}
 
+		sort (vectorList.begin(), vectorList.end(), bigger_than_second);
+		for (int i=0; i<vectorList.size(); i++) {
+		 Console::WriteLine(vectorList[i]->score);
+		}
+		*/
 namespace KaroEngine 
 {
+
 	KaroEngine::KaroEngine(void)
 	{
 		this->board = new Tile[BOARDWIDTH * BOARDWIDTH];
