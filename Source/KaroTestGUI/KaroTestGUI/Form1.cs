@@ -7,56 +7,58 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using KaroEngine;
-using System.Runtime.InteropServices;    
+using System.Runtime.InteropServices;  
 
 namespace KaroTestGUI
 {
- 
+
     public partial class Form1 : Form
     {
-        KaroEngine.KaroEngineWrapper    engine;
-        Pen                             penBlack;
-        Pen                             penGray;
+        KaroEngine.KaroEngineWrapper engine;
+        Pen penBlack;
+        Pen penGray;
         Pen penGreen;
-        Brush                           brushBlack;
-        Brush                           brushWhite;
-        Brush                           brushRed;
-        Brush                           brushBlue;
-        int                             boxSize = 25;
-        bool                            gameOver = false;
-        const int                       BOARDWIDTH = 17;
-        Point                           clickedTile;
-        Point                           clickedFirst;
-        Point                           clickedSecond;
-        String                          lastMessage;
-        int[][]                         possibleMoves;
-                
+        Brush brushBlack;
+        Brush brushWhite;
+        Brush brushRed;
+        Brush brushBlue;
+        int boxSize = 25;
+        bool gameOver = false;
+        const int BOARDWIDTH = 17;
+        Point clickedTile;
+        Point clickedFirst;
+        Point clickedSecond;
+        String lastMessage;
+        int[][] possibleMoves;
+
         // Debug options
 
         public Form1()
         {
-            engine          = new KaroEngineWrapper();
-            penBlack        = new Pen(Color.Black, 1);
-            penGray         = new Pen(Color.Gray, 2);
-            penGreen        = new Pen(Color.Green, 2);
-            brushBlack      = Brushes.Black;            
-            brushRed        = Brushes.Red;
-            brushWhite      = Brushes.White;
-            brushBlue       = Brushes.Blue;
+            engine = new KaroEngineWrapper();
+            penBlack = new Pen(Color.Black, 1);
+            penGray = new Pen(Color.Gray, 2);
+            penGreen = new Pen(Color.Green, 2);
+            brushBlack = Brushes.Black;
+            brushRed = Brushes.Red;
+            brushWhite = Brushes.White;
+            brushBlue = Brushes.Blue;
 
-            clickedFirst    = new Point(-1, -1);
-            clickedSecond   = new Point(-1, -1);
-            clickedTile     = new Point(-1, -1);
-            possibleMoves   = null;
-            
+            clickedFirst = new Point(-1, -1);
+            clickedSecond = new Point(-1, -1);
+            clickedTile = new Point(-1, -1);
+            possibleMoves = null;
+
             InitializeComponent();
 
             UpdateGUI();
         }
 
-        private void UpdateGUI() {
+        private void UpdateGUI()
+        {
             string log = engine.GetMessageLog();
-            if (!log.Equals("")) {
+            if (!log.Equals(""))
+            {
                 this.lastMessage = log;
                 this.txtMessageLog.Text = this.lastMessage + this.txtMessageLog.Text;
             }
@@ -67,13 +69,13 @@ namespace KaroTestGUI
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;            
+            Graphics g = e.Graphics;
             Font drawFont = new Font("Arial", 10);
-          
+
             for (int y = 0; y < BOARDWIDTH; y++)
             {
-                for (int x = 0; x < BOARDWIDTH; x++) 
-                {                    
+                for (int x = 0; x < BOARDWIDTH; x++)
+                {
                     // Draw the board                    
                     bool drawn = false;
                     if (possibleMoves != null)
@@ -90,13 +92,15 @@ namespace KaroTestGUI
 
                     if (engine.GetByXY(x, y) != Tile.EMPTY)
                     {
-                        
-                        
-                        if(!drawn){
+
+
+                        if (!drawn)
+                        {
                             g.FillRectangle(brushBlack, x * boxSize, y * boxSize, boxSize, boxSize);
                         }
                     }
-                    else {
+                    else
+                    {
                         if (tileNumbersToolStripMenuItem.Checked)
                         {
                             g.DrawString(((y * BOARDWIDTH + x) + ""), drawFont, brushBlack, x * boxSize, y * boxSize);
@@ -118,7 +122,8 @@ namespace KaroTestGUI
                     }
 
                     // Check what kind of tiles, pawns etc are on the board.
-                    switch (engine.GetByXY(x, y)){ 
+                    switch (engine.GetByXY(x, y))
+                    {
                         case Tile.BORDER:
                             break;
                         case Tile.EMPTY:
@@ -128,19 +133,19 @@ namespace KaroTestGUI
                         case Tile.SOLIDTILE:
                             break;
                         case Tile.REDUNMARKED:
-                            g.FillEllipse(brushRed, x * boxSize+1, y * boxSize+1, boxSize-2, boxSize-2);                            
+                            g.FillEllipse(brushRed, x * boxSize + 1, y * boxSize + 1, boxSize - 2, boxSize - 2);
                             break;
                         case Tile.REDMARKED:
-                            g.FillEllipse(brushRed, x * boxSize + 1, y * boxSize + 1, boxSize - 2, boxSize -2 );
+                            g.FillEllipse(brushRed, x * boxSize + 1, y * boxSize + 1, boxSize - 2, boxSize - 2);
                             g.DrawEllipse(penGray, x * boxSize + 5, y * boxSize + 5, boxSize - 10, boxSize - 10);
                             break;
                         case Tile.WHITEUNMARKED:
-                            g.FillEllipse(brushWhite, x * boxSize + 1, y * boxSize + 1, boxSize - 2, boxSize - 2);                            
+                            g.FillEllipse(brushWhite, x * boxSize + 1, y * boxSize + 1, boxSize - 2, boxSize - 2);
                             break;
                         case Tile.WHITEMARKED:
                             g.FillEllipse(brushWhite, x * boxSize + 1, y * boxSize + 1, boxSize - 2, boxSize - 2);
                             g.DrawEllipse(penGray, x * boxSize + 5, y * boxSize + 5, boxSize - 10, boxSize - 10);
-                            break;                    
+                            break;
                     }
 
                     // Draw a grid
@@ -172,13 +177,14 @@ namespace KaroTestGUI
             if (!this.gameOver)
             {
                 if (clickedFirst.X == -1)
-                {                    
+                {
                     if (engine.GetGameState() == GameState.INSERTION)
-                    {                        
-                        engine.InsertByXY((e.X - 1) / this.boxSize,(e.Y - 1) / this.boxSize);
+                    {
+                        engine.InsertByXY((e.X - 1) / this.boxSize, (e.Y - 1) / this.boxSize);
                     }
-                    else if (engine.GetGameState() == GameState.PLAYING){
-                        Tile tempTile=engine.GetByXY((e.X - 1) / this.boxSize, (e.Y - 1) / this.boxSize);
+                    else if (engine.GetGameState() == GameState.PLAYING)
+                    {
+                        Tile tempTile = engine.GetByXY((e.X - 1) / this.boxSize, (e.Y - 1) / this.boxSize);
                         if (tempTile == Tile.MOVEABLETILE)
                         {
                             if (this.clickedTile.X == -1)
@@ -193,11 +199,11 @@ namespace KaroTestGUI
                             {
                                 clickedFirst.X = (e.X - 1) / this.boxSize;
                                 clickedFirst.Y = (e.Y - 1) / this.boxSize;
-                                possibleMoves=engine.GetPossibleMoves(clickedFirst.X, clickedFirst.Y);
+                                possibleMoves = engine.GetPossibleMoves(clickedFirst.X, clickedFirst.Y);
                             }
                         }
                     }
-                    
+
                 }
                 else if (clickedSecond.X == -1)
                 {
@@ -208,16 +214,17 @@ namespace KaroTestGUI
                     {
                         engine.DoMove((clickedFirst.Y * BOARDWIDTH) + clickedFirst.X, (clickedSecond.Y * BOARDWIDTH) + clickedSecond.X, -1);
                     }
-                    else {
+                    else
+                    {
                         engine.DoMove((clickedFirst.Y * BOARDWIDTH) + clickedFirst.X, (clickedSecond.Y * BOARDWIDTH) + clickedSecond.X, (clickedTile.Y * BOARDWIDTH) + clickedTile.X);
                     }
 
-                    clickedTile     = new Point(-1, -1);
-                    clickedFirst    = new Point(-1, -1);
-                    clickedSecond   = new Point(-1, -1);
+                    clickedTile = new Point(-1, -1);
+                    clickedFirst = new Point(-1, -1);
+                    clickedSecond = new Point(-1, -1);
                     possibleMoves = null;
                 }
-                else 
+                else
                 {
                     clickedFirst = new Point(-1, -1);
                     clickedSecond = new Point(-1, -1);
@@ -236,7 +243,7 @@ namespace KaroTestGUI
         }
 
         private void btnDoMove_Click(object sender, EventArgs e)
-        {            
+        {
             engine.CalculateComputerMove();
             UpdateGUI();
         }
@@ -248,7 +255,8 @@ namespace KaroTestGUI
             {
                 tileNumbersToolStripMenuItem.Checked = false;
             }
-            else {
+            else
+            {
                 tileNumbersToolStripMenuItem.Checked = true;
             }
             pictureBox1.Invalidate();
@@ -268,5 +276,41 @@ namespace KaroTestGUI
         }
         #endregion
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            engine = new KaroEngineWrapper();
+            UpdateGUI();
+
+            engine.InsertByXY(5, 4);
+            engine.InsertByXY(6, 4);
+            engine.InsertByXY(7, 4);
+            engine.InsertByXY(8, 4);
+            engine.InsertByXY(9, 4);
+
+            engine.InsertByXY(5, 5);
+            engine.InsertByXY(6, 5);
+            engine.InsertByXY(7, 5);
+            engine.InsertByXY(8, 5);
+            engine.InsertByXY(9, 5);
+
+            engine.InsertByXY(5, 6);
+            engine.InsertByXY(6, 6);
+
+            Application.DoEvents();
+
+            DateTime Start = DateTime.Now;
+
+            for (int i = 0; i < 5; i++)
+            {
+                engine.CalculateComputerMove();
+                UpdateGUI();
+                Application.DoEvents();
+            }
+
+            TimeSpan Elapsed = DateTime.Now - Start;
+
+            this.txtMessageLog.Text = "Total: " + Elapsed.Seconds.ToString() + "."+ Elapsed.Milliseconds.ToString() + " Seconds \r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Avarage: " + (Elapsed.Seconds / 5).ToString()  + "."+ (Elapsed.Milliseconds / 5).ToString() + " Seconds \r\n" + this.txtMessageLog.Text;
+        }
     }
 }
