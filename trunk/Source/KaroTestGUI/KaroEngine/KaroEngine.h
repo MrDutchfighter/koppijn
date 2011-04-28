@@ -92,6 +92,7 @@ namespace KaroEngine
 
 		// Algorithm functions
 		void CalculateComputerMove();
+		int EvaluateNumRows(Player p, int pieceIndex);
 
 		// 'Getters'
 		bool FreeForMove(int); // checks if a tile is empty

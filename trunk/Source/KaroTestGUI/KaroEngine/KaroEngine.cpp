@@ -398,6 +398,78 @@ namespace KaroEngine
 		return false;
 	}
 
+	int KaroEngine::EvaluateNumRows(Player p, int pieceIndex)
+	{
+		int score = 0;
+		Tile marked;
+		map<int,bool> pieces;
+
+		//Right player color 
+		if (p == Player::WHITE) 
+		{
+			marked = Tile::WHITEMARKED;
+			pieces = whitePieces;
+		}
+		if (p == Player::RED)
+		{
+			marked = Tile::REDMARKED;
+			pieces = redPieces;
+		}
+
+			//check if at least 2 pieces are Marked else return false
+			int countUnMarked = 0;
+			for each (pair<int, bool> p in pieces)
+			{
+				if(!p.second)
+					countUnMarked++;
+				if(countUnMarked > 5)
+					return 0;
+			}
+
+			for each (pair<int, bool> piece in pieces)
+			{
+				for(int i = 0; i < 8; i++)
+				{
+					//check if piece in possibleStep
+					if(piece.first == pieceIndex + possibleSteps[i])
+					{
+						//check if second is marked
+						int second = pieceIndex + possibleSteps[i];
+						if(board[second] != marked)
+						{
+							break;
+						}
+						
+						score = score + 2; // 2 in a row
+						int difference = second - pieceIndex;
+
+						//check if third is unmarked
+						int third = second + difference;
+						if(board[third] != marked)
+						{
+							//check if minfirst is unmarked 
+							int minFirst = pieceIndex - difference;
+							if(board[minFirst] != marked)
+							{
+								break;
+							}
+							else
+							{
+								score= score + 4; // 3 in a row
+							}
+						}
+					}
+				}
+			}		
+
+		return score;
+	}
+
+
+
+
+
+
 	/**
 	* Calculates the next computer move
 	*/
@@ -643,7 +715,11 @@ namespace KaroEngine
 				if(!this->whitePieces.empty()) {
 					for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
 						if (it->second == true)
+						{
 							calculatedScore += 2;
+							calculatedScore += this->EvaluateNumRows(p, it->first);
+						}
+							
 					}
 				}
 			break;
@@ -653,7 +729,10 @@ namespace KaroEngine
 				if(!this->redPieces.empty()) {
 					for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
 						if (it->second == true)
+						{
 							calculatedScore += 2;
+							calculatedScore += this->EvaluateNumRows(p, it->first);
+						}
 					}
 				}
 			break;
