@@ -51,14 +51,29 @@ String ^KaroEngineWrapper::GetMessageLog(){
 	return marshal_as<String ^>(_karoEngine->GetMessageLog());
 }
 
-array<array<int>^>^ KaroEngineWrapper::GetPossibleMoves(int x, int y){
+array<array<int>^>^ KaroEngineWrapper::GetPossibleMoves(int x, int y,int tileFromX,int tileFromY){
 	vector<Move*>* possibleMoves = _karoEngine->GetPossibleMoves((y*_karoEngine->BOARDWIDTH+x),false);
+	
+	int tilefrom=(tileFromY*_karoEngine->BOARDWIDTH+tileFromX);
+	if(tileFromX == -1){
+		tilefrom=-1;
+	}
 
-	array<array<int>^>^ params = gcnew array<array<int>^>(possibleMoves->size());
+	int index=0;
 	for(int i=0;i<possibleMoves->size();i++){
-		params[i]=gcnew array<int>(2);
-		params[i][0] = possibleMoves->at(i)->positionTo%_karoEngine->BOARDWIDTH;
-		params[i][1] = possibleMoves->at(i)->positionTo/_karoEngine->BOARDWIDTH;		
+		if(possibleMoves->at(i)->tileFrom ==tilefrom){
+			index++;
+		}
+	}
+	array<array<int>^>^ params = gcnew array<array<int>^>(index);
+	index=0;
+	for(int i=0;i<possibleMoves->size();i++){
+		if(possibleMoves->at(i)->tileFrom ==tilefrom){
+			params[index]=gcnew array<int>(2);
+			params[index][0] = possibleMoves->at(i)->positionTo%_karoEngine->BOARDWIDTH;
+			params[index][1] = possibleMoves->at(i)->positionTo/_karoEngine->BOARDWIDTH;
+			index++;
+		}
 	}
 	return params;
 }
