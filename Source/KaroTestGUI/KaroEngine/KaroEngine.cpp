@@ -474,6 +474,12 @@ namespace KaroEngine
 	* Calculates the next computer move
 	*/
 	void KaroEngine::CalculateComputerMove() {
+		
+		__int64 ctr1 = 0, ctr2 = 0, freq = 0;
+		int acc = 0, i = 0;
+
+		QueryPerformanceCounter((LARGE_INTEGER *)&ctr1);
+
 		// If the game is in insertion state, insert a random item on a tile
 		if(gameState == GameState::INSERTION) {
 			bool foundInsertPosition=false;
@@ -498,6 +504,17 @@ namespace KaroEngine
 				SetMessageLog("Geen move gevonden");
 			}
 		}
+		QueryPerformanceCounter((LARGE_INTEGER *)&ctr2);
+		QueryPerformanceFrequency((LARGE_INTEGER *)&freq);
+		
+		char* str = new char[30];
+ 
+		float flt = ((ctr2 - ctr1) * 1.0 / freq);
+		sprintf(str, "%.4g", flt );    
+		
+		std::string s((LPCSTR)str);
+		s = "Move took " + s + " seconds";
+		SetMessageLog(s);
 	}
 
 	/**

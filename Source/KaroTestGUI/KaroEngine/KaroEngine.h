@@ -8,6 +8,10 @@
 #include <map>
 #include "Move.h"
 #include "LIMITS.H"
+#include "time.h"
+#include <windows.h>
+#include <tchar.h>
+#include <stdio.h>
 using namespace std;
 using namespace System;
 
