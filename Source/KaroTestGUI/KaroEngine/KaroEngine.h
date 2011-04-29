@@ -77,9 +77,20 @@ namespace KaroEngine
 		*/
 		// Algorithm functions
 		Move * MiniMax(Player p, int depth, int alpha, int beta);
-		int GetAmmountConnectedTilesRecursive(int tileNumber);
-		int GetAmmountConnectedNeighbours(int tileNumber);
+		int GetAmountConnectedTilesRecursive(int tileNumber);
+		int GetAmountConnectedNeighbours(int tileNumber);
 		void TransformToMovableTiles(int tileNumber, bool checkNeighbours);
+
+
+		// Do Move
+		bool DoMove(int from);
+		bool DoMove(int from, int to, bool isJumpMove);
+		bool DoMove(int from, int to, int tileFrom, bool isJumpMove);
+
+		// Undo Move
+		bool UndoMove(int from);
+		bool UndoMove(int from, int to, bool isJumpMove);
+		bool UndoMove(int from, int to, int tileFrom, bool isJumpMove);
 
 		
 	public:
@@ -123,7 +134,7 @@ namespace KaroEngine
 		bool IsGameTile(int); // checks if a tile exists
 		GameState GetGameState();
 		Player GetTurn();
-		int GetAmmountConnectedTiles(int tileNumber);
+		int GetAmountConnectedTiles(int tileNumber);
 
 			
 		// Getters
