@@ -30,14 +30,13 @@
 		*/
 namespace KaroEngine 
 {
-
 	KaroEngine::KaroEngine(void)
 	{
 		this->board = new Tile[BOARDWIDTH * BOARDWIDTH];
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION; 
 		this->insertionCount = 0;	
-		this->maxDepth = 2;
+		this->maxDepth = 3;
 		this->evaluationScore = 0;
 		this->visitedList = new VisitedList();
 
@@ -101,44 +100,6 @@ namespace KaroEngine
 
 	KaroEngine::~KaroEngine(void)
 	{
-	}
-	
-	/**
-	* Executes a given move
-	* MOET EEN GELDIGE MOVE ZIJN!! (Geen checks in deze functie)!
-	*/
-	void KaroEngine::DoMove(Move *move)
-	{
-		map<int,bool> whitePieces2 = whitePieces;
-		map<int,bool> redPieces2 = redPieces;
-		map<int,int> moveableTiles2 = moveableTiles;
-
-		if(move->positionFrom > 0 && move->positionTo > 0 && move->tileFrom > 0) {
-			DoMove(move->positionFrom, move->positionTo, move->tileFrom, move->isJumpMove);
-
-			// Check all changed positions for a change in moveable tiles
-			TransformToMovableTiles(move->positionFrom, true);
-			TransformToMovableTiles(move->positionTo, true);
-			TransformToMovableTiles(move->tileFrom, true);
-
-		} else if(move->positionFrom > 0 && move->positionTo > 0) {
-			DoMove(move->positionFrom, move->positionTo, move->isJumpMove);
-
-			// Check all changed positions for a change in moveable tiles
-			TransformToMovableTiles(move->positionFrom, true);
-			TransformToMovableTiles(move->positionTo, true);
-
-		} else if(move->positionTo > 0) {
-			DoMove(move->positionTo);
-
-			// Check all changed positions for a change in moveable tiles
-			TransformToMovableTiles(move->positionTo, true);
-		} else {
-			SetMessageLog("Not a valid move given");
-		}
-
-		turn = Reverse(turn);
-		lastMove = move;
 	}
 	
 	/**
@@ -212,38 +173,6 @@ namespace KaroEngine
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	* Undo's the given move
-	*/
-	void KaroEngine::UndoMove(Move *move)
-	{
-		turn = Reverse(turn);
-
-		if(move->positionFrom > 0 && move->positionTo > 0 && move->tileFrom > 0) {
-			UndoMove(move->positionFrom, move->positionTo, move->tileFrom, move->isJumpMove);
-
-			// Check all changed positions for a change in moveable tiles
-			TransformToMovableTiles(move->positionFrom, true);
-			TransformToMovableTiles(move->positionTo, true);
-			TransformToMovableTiles(move->tileFrom, true);
-
-		} else if(move->positionFrom > 0 && move->positionTo > 0) {
-			UndoMove(move->positionFrom, move->positionTo, move->isJumpMove);
-
-			// Check all changed positions for a change in moveable tiles
-			TransformToMovableTiles(move->positionFrom, true);
-			TransformToMovableTiles(move->positionTo, true);
-
-		} else if(move->positionTo > 0) {
-			UndoMove(move->positionTo);
-
-			// Check all changed positions for a change in moveable tiles
-			TransformToMovableTiles(move->positionTo, true);
-		} else {
-			SetMessageLog("Not a valid undo move given");
-		}
 	}
 
 	/**
@@ -482,7 +411,6 @@ namespace KaroEngine
 		return score;
 	}
 
-
 	/**
 	* Calculates the next computer move
 	*/
@@ -644,7 +572,7 @@ namespace KaroEngine
 								board[j.first] = Tile::MOVEABLETILE;
 							}
 							if(neighbours > 0) {
-								possibleMoves->push_back(new Move(curTile, (curTile+possibleJumps[i]), j.first, false));
+								possibleMoves->push_back(new Move(curTile, (curTile+possibleJumps[i]), j.first, true));
 							}
 						}
 						} else {
@@ -831,15 +759,7 @@ namespace KaroEngine
 		if(depth == maxDepth) {
 			bestMove->score = evaluationScore;
 			return bestMove;
-		}
-		
-		// If a player won
-		//if(IsWinner(Reverse(p))) {
-		//	bestMove->score = p == Player::RED ? 10000000 : -1000000; // Does this work??
-		//	return bestMove;
-		//}
-
-		
+		}		
 
 		// Find next moves for the current player
 		vector<Move*> * possibleMoves = GetPossibleMoves(p);
@@ -853,9 +773,9 @@ namespace KaroEngine
 			if(IsWinner(p, possibleMoves->at(i)->positionTo)) {
 				bestMove = possibleMoves->at(i);
 				if(p == Player::RED) {
-					bestMove->score = INT_MAX;
+					bestMove->score = INT_MAX-10000;
 				} else if(p == Player::WHITE) {
-					bestMove->score = INT_MIN;
+					bestMove->score = INT_MIN+10000;
 				}
 				UndoMove(possibleMoves->at(i));
 				return bestMove;
@@ -879,13 +799,13 @@ namespace KaroEngine
 
 			// Is current player RED?
 			if(p == Player::RED) {
-				if(bestMove->score >= alpha) {
+				if(bestMove->score > alpha) {
 					alpha = bestMove->score;
 				}
 			}
 
 			if(p == Player::WHITE) {
-				if(bestMove->score <= beta) {
+				if(bestMove->score < beta) {
 					beta = bestMove->score;
 				}
 			}
@@ -923,7 +843,7 @@ namespace KaroEngine
 						if (it->second == true)
 						{
 							calculatedScore += 2;
-							calculatedScore += this->EvaluateNumRows(p, it->first);
+							calculatedScore += 0;//this->EvaluateNumRows(p, it->first);
 						}
 							
 					}
@@ -937,7 +857,7 @@ namespace KaroEngine
 						if (it->second == true)
 						{
 							calculatedScore += 2;
-							calculatedScore += this->EvaluateNumRows(p, it->first);
+							calculatedScore += 0;//this->EvaluateNumRows(p, it->first);
 						}
 					}
 				}
@@ -1048,6 +968,42 @@ namespace KaroEngine
 	/**													//
 	* --------------- DO MOVE ------------------------	//
 	*/													//
+	// Exectues the given move
+		// The move has to be valid!
+	void KaroEngine::DoMove(Move *move)
+	{
+		map<int,bool> whitePieces2 = whitePieces;
+		map<int,bool> redPieces2 = redPieces;
+		map<int,int> moveableTiles2 = moveableTiles;
+
+		if(move->positionFrom > 0 && move->positionTo > 0 && move->tileFrom > 0) {
+			DoMove(move->positionFrom, move->positionTo, move->tileFrom, move->isJumpMove);
+
+			// Check all changed positions for a change in moveable tiles
+			TransformToMovableTiles(move->positionFrom, true);
+			TransformToMovableTiles(move->positionTo, true);
+			TransformToMovableTiles(move->tileFrom, true);
+
+		} else if(move->positionFrom > 0 && move->positionTo > 0) {
+			DoMove(move->positionFrom, move->positionTo, move->isJumpMove);
+
+			// Check all changed positions for a change in moveable tiles
+			TransformToMovableTiles(move->positionFrom, true);
+			TransformToMovableTiles(move->positionTo, true);
+
+		} else if(move->positionTo > 0) {
+			DoMove(move->positionTo);
+
+			// Check all changed positions for a change in moveable tiles
+			TransformToMovableTiles(move->positionTo, true);
+		} else {
+			SetMessageLog("Not a valid move given");
+		}
+
+		turn = Reverse(turn);
+		lastMove = move;
+	}
+
 	// Do insert move
 	bool KaroEngine::DoMove(int to) {
 		if(board[to] == Tile::SOLIDTILE || board[to] == Tile::MOVEABLETILE) {
@@ -1154,6 +1110,36 @@ namespace KaroEngine
 	/**													//
 	* --------------- UNDO MOVE ----------------------	//
 	*/													//
+	// Undo's the given move
+	void KaroEngine::UndoMove(Move *move)
+	{
+		turn = Reverse(turn);
+
+		if(move->positionFrom > 0 && move->positionTo > 0 && move->tileFrom > 0) {
+			UndoMove(move->positionFrom, move->positionTo, move->tileFrom, move->isJumpMove);
+
+			// Check all changed positions for a change in moveable tiles
+			TransformToMovableTiles(move->positionFrom, true);
+			TransformToMovableTiles(move->positionTo, true);
+			TransformToMovableTiles(move->tileFrom, true);
+
+		} else if(move->positionFrom > 0 && move->positionTo > 0) {
+			UndoMove(move->positionFrom, move->positionTo, move->isJumpMove);
+
+			// Check all changed positions for a change in moveable tiles
+			TransformToMovableTiles(move->positionFrom, true);
+			TransformToMovableTiles(move->positionTo, true);
+
+		} else if(move->positionTo > 0) {
+			UndoMove(move->positionTo);
+
+			// Check all changed positions for a change in moveable tiles
+			TransformToMovableTiles(move->positionTo, true);
+		} else {
+			SetMessageLog("Not a valid undo move given");
+		}
+	}
+
 	// Undo insert move
 	bool KaroEngine::UndoMove(int to) {
 		if(board[to] == Tile::REDMARKED || board[to] == Tile::REDUNMARKED) {
