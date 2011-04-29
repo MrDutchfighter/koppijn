@@ -37,7 +37,7 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION; 
 		this->insertionCount = 0;	
-		this->maxDepth = 3;
+		this->maxDepth = 4;
 		this->evaluationScore = 0;
 		this->visitedList = new VisitedList();
 
@@ -57,7 +57,8 @@ namespace KaroEngine
 		for(int j = 4; j < 8; j++)
 			for( int k = 5; k < 10; k++ )
 				if((j == 4 && k == 5) || (j == 4 && k == 9) || (j == 7 && k == 5) || (j == 7 && k == 9)) {
-					board[j  *BOARDWIDTH + k] = Tile::MOVEABLETILE;
+					//board[j  *BOARDWIDTH + k] = Tile::MOVEABLETILE;
+					board[j  *BOARDWIDTH + k] = Tile::SOLIDTILE;
 					//moveableTiles.insert(std::pair<int,int>((j  *BOARDWIDTH + k),2));
 				}
 				else {
@@ -108,11 +109,24 @@ namespace KaroEngine
 	*/
 	void KaroEngine::DoMove(Move *move)
 	{
-		//Tile test1 = board[move->positionFrom];
-		//Tile test2 = board[move->positionTo];
-		//Tile test3 = board[move->positionFrom];
 
+		map<int,bool> whitePieces2 = whitePieces;
+		map<int,bool> redPieces2 = redPieces;
 
+		if(move->positionFrom > 0 && move->positionTo > 0 && move->tileFrom > 0) {
+			DoMove(move->positionFrom, move->positionTo, move->tileFrom, move->isJumpMove);
+		} else if(move->positionFrom > 0 && move->positionTo > 0) {
+			DoMove(move->positionFrom, move->positionTo, move->isJumpMove);
+		} else if(move->positionTo > 0) {
+			DoMove(move->positionTo);
+		} else {
+			SetMessageLog("Not a valid move given");
+		}
+
+		turn = Reverse(turn);
+		lastMove = move;
+
+		/*
 		bool validMove=false;
 		// Boolean is neccesairy for future things
 		if(turn== Player::RED){
@@ -202,7 +216,7 @@ namespace KaroEngine
 		}
 
 		turn = Reverse(turn);
-		lastMove = move;
+		lastMove = move;*/
 	}
 	
 	/**
@@ -241,12 +255,12 @@ namespace KaroEngine
 		}
 		else {
 			DoMove(move);
-			int connectedTiles = this->GetAmmountConnectedTiles(to);
+			int connectedTiles = this->GetAmountConnectedTiles(to);
 			std::string s;
 			std::stringstream stringstream;
 			stringstream << connectedTiles;
 			s = stringstream.str();
-			this->SetMessageLog("Ammount of connected tiles: "+s);
+			this->SetMessageLog("Amount of connected tiles: "+s);
 			if(this->IsWinner(Reverse(turn), to))
 			{
 				this->SetMessageLog("WIN!");
@@ -260,11 +274,15 @@ namespace KaroEngine
 	bool KaroEngine::InsertByXY(int position) {
 		if(board[position] == Tile::SOLIDTILE || board[position] == Tile::MOVEABLETILE ){
 		
+			map<int,bool> whitePieces2 = whitePieces;
+			map<int,bool> redPieces2 = redPieces;
+
 			//if(board[position] == Tile::MOVEABLETILE) {
 				//moveableTiles.erase(position);
 			//}
 
-			if(this->turn == Player::WHITE) {
+			DoMove(position);
+			/*if(this->turn == Player::WHITE) {
 				board[position] = Tile::WHITEUNMARKED;
 				whitePieces.insert(std::pair<int,bool>(position, false));
 			}
@@ -272,7 +290,7 @@ namespace KaroEngine
 			{
 				board[position] = Tile::REDUNMARKED;
 				redPieces.insert(std::pair<int,bool>(position, false));
-			}
+			}*/
 
 			turn = this->Reverse(turn);
 			insertionCount++;							
@@ -289,6 +307,21 @@ namespace KaroEngine
 	*/
 	void KaroEngine::UndoMove(Move *move)
 	{
+
+		turn = Reverse(turn);
+
+		if(move->positionFrom > 0 && move->positionTo > 0 && move->tileFrom > 0) {
+			UndoMove(move->positionFrom, move->positionTo, move->tileFrom, move->isJumpMove);
+		} else if(move->positionFrom > 0 && move->positionTo > 0) {
+			UndoMove(move->positionFrom, move->positionTo, move->isJumpMove);
+		} else if(move->positionTo > 0) {
+			UndoMove(move->positionTo);
+		} else {
+			SetMessageLog("Not a valid undo move given");
+		}
+
+		/*
+
 		turn = Reverse(turn);
 		// PLAYING STATE
 		if(move->positionFrom > 0) {
@@ -340,7 +373,7 @@ namespace KaroEngine
 		}
 		// INSERTION STATE
 		else {
-			int neighbours = GetAmmountConnectedNeighbours(move->positionTo);
+			int neighbours = GetAmountConnectedNeighbours(move->positionTo);
 			if(neighbours <= 2) {
 				board[move->positionTo] = Tile::MOVEABLETILE;
 				//moveableTiles.insert(std::pair<int,int>(move->positionTo,neighbours));
@@ -353,22 +386,22 @@ namespace KaroEngine
 			} else {
 				whitePieces.erase(move->positionTo);
 			}
-		}
+		}*/
 	}
 
 	/**
 	* Switches the turn
 	*/
-	Player KaroEngine::Reverse(Player turn)
+	Player KaroEngine::Reverse(Player turnPro)
 	{
-		switch(turn)
+		switch(turnPro)
 		{
 			case Player::WHITE:
 				return Player::RED;
 			case Player::RED:
 				return Player::WHITE;
 			default:
-				return turn;
+				return turnPro;
 		}
 	}
 
@@ -522,6 +555,9 @@ namespace KaroEngine
 		return false;
 	}
 
+	/**
+	* Evaluates the amount of rows
+	*/
 	int KaroEngine::EvaluateNumRows(Player p, int pieceIndex)
 	{
 		int score = 0;
@@ -651,6 +687,13 @@ namespace KaroEngine
 		if(forPlayer == Player::RED) {
 			if(!this->redPieces.empty()) {
 				for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
+					
+					int i = it->first;
+					Tile x = board[it->first];
+					if(board[it->first] != Tile::REDMARKED && board[it->first] != Tile::REDUNMARKED) {
+						return new vector<Move*>();
+					}
+					
 					vector<Move*> *moves = GetPossibleMoves(it->first, it->second);
 					possibleMoves->insert(possibleMoves->end(), moves->begin(), moves->end());
 				}
@@ -658,6 +701,13 @@ namespace KaroEngine
 		} else if(forPlayer == Player::WHITE) {
 			if(!this->whitePieces.empty()) {
 				for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
+
+					int i = it->first;
+					Tile x = board[it->first];
+					if(board[it->first] != Tile::WHITEMARKED && board[it->first] != Tile::WHITEUNMARKED) {
+						return new vector<Move*>();
+					}
+
 					vector<Move*> *moves = GetPossibleMoves(it->first, it->second);
 					possibleMoves->insert(possibleMoves->end(), moves->begin(), moves->end());
 				}
@@ -672,6 +722,9 @@ namespace KaroEngine
 	*/
 	vector<Move*>* KaroEngine::GetPossibleMoves(int curTile, bool isTurned) {
 
+		vector<Move*> *possibleMoves = new vector<Move*>();
+		vector<int> *moveableTileIndexes = new vector<int>();
+
 		if(this->board[curTile]==Tile::EMPTY || 
 			this->board[curTile]==Tile::BORDER ||
 			(turn==Player::RED && this->board[curTile]==Tile::WHITEMARKED) ||
@@ -681,9 +734,6 @@ namespace KaroEngine
 			){
 			return new vector<Move*>();
 		} 
-		vector<Move*> *possibleMoves = new vector<Move*>();
-		
-		vector<int> *moveableTileIndexes=new vector<int>();
 		
 		for(int i=0;i<289;i++){
 			if(board[i]==Tile::MOVEABLETILE){
@@ -696,7 +746,7 @@ namespace KaroEngine
 				// Kan ik verplaatsen naar deze tegel
 			if(board[curTile+possibleSteps[i]] == Tile::SOLIDTILE ||
 				board[curTile+possibleSteps[i]] == Tile::MOVEABLETILE ||
-				(moveableTileIndexes->size() > 0 && GetAmmountConnectedNeighbours(curTile+possibleSteps[i]) > 0 && board[curTile+possibleSteps[i]] == Tile::EMPTY)) {
+				(moveableTileIndexes->size() > 0 && GetAmountConnectedNeighbours(curTile+possibleSteps[i]) > 0 && board[curTile+possibleSteps[i]] == Tile::EMPTY)) {
 					
 					// Willen we een tegel mee verplaatsen?
 					if(board[curTile+possibleSteps[i]] == Tile::EMPTY) {
@@ -706,7 +756,7 @@ namespace KaroEngine
 							if(i == 0 || i == 2 || i == 5 || i == 7) {
 								//Tile tempTile= board[j.first];
 								board[moveableTileIndexes->at(j)] = Tile::EMPTY;
-								neighbours = GetAmmountConnectedNeighbours(curTile+possibleSteps[i]);
+								neighbours = GetAmountConnectedNeighbours(curTile+possibleSteps[i]);
 								//board[j.first] = Tile::MOVEABLETILE;
 								board[moveableTileIndexes->at(j)] = Tile::MOVEABLETILE;
 							}
@@ -718,8 +768,6 @@ namespace KaroEngine
 					} else {
 						possibleMoves->push_back(new Move(curTile, (curTile+possibleSteps[i]), false));
 					}
-					
-					//possibleMoves->push_back(new Move(curTile, (curTile+possibleSteps[i]), false));
 			}
 						// Kijken of er een pion tussenin staat
 			else if (board[curTile+possibleSteps[i]] != Tile::EMPTY &&
@@ -728,7 +776,7 @@ namespace KaroEngine
 					// Kijken of tegel vrij is
 				if(board[curTile+possibleJumps[i]] == Tile::SOLIDTILE ||
 					board[curTile+possibleJumps[i]] == Tile::MOVEABLETILE ||
-					(moveableTileIndexes->size() > 0 && GetAmmountConnectedNeighbours(curTile+possibleJumps[i]) > 0 && board[curTile+possibleJumps[i]] == Tile::EMPTY)) {
+					(moveableTileIndexes->size() > 0 && GetAmountConnectedNeighbours(curTile+possibleJumps[i]) > 0 && board[curTile+possibleJumps[i]] == Tile::EMPTY)) {
 						
 						// Willen we een tegel mee verplaatsen?
 						if(board[curTile+possibleJumps[i]] == Tile::EMPTY) {
@@ -738,7 +786,7 @@ namespace KaroEngine
 							if(i == 0 || i == 2 || i == 5 || i == 7) {
 								//Tile tempTile= board[j.first];
 								board[moveableTileIndexes->at(j)] = Tile::EMPTY;
-								neighbours = GetAmmountConnectedNeighbours(curTile+possibleJumps[i]);
+								neighbours = GetAmountConnectedNeighbours(curTile+possibleJumps[i]);
 								//board[j.first] = Tile::MOVEABLETILE;
 								board[moveableTileIndexes->at(j)] = Tile::MOVEABLETILE;
 							}
@@ -769,20 +817,20 @@ namespace KaroEngine
 			//}
 			board[tileNumber] = Tile::EMPTY;
 
-			int amountNeighbours = GetAmmountConnectedNeighbours(tileNumber);
+			int amountNeighbours = GetAmountConnectedNeighbours(tileNumber);
 			if(amountNeighbours <= 2 && amountNeighbours > 0) {
 				int totalConnected = 0;
 				if(this->board[tileNumber-1] != Tile::EMPTY && this->board[tileNumber-1] != Tile::BORDER) {
-					totalConnected = GetAmmountConnectedTiles(tileNumber-1);
+					totalConnected = GetAmountConnectedTiles(tileNumber-1);
 				}
 				else if(this->board[tileNumber-BOARDWIDTH] != Tile::EMPTY && this->board[tileNumber-BOARDWIDTH] != Tile::BORDER){
-					totalConnected = GetAmmountConnectedTiles(tileNumber-BOARDWIDTH);
+					totalConnected = GetAmountConnectedTiles(tileNumber-BOARDWIDTH);
 				}
 				else if(this->board[tileNumber+1] != Tile::EMPTY && this->board[tileNumber+1] != Tile::BORDER){
-					totalConnected = GetAmmountConnectedTiles(tileNumber+1);
+					totalConnected = GetAmountConnectedTiles(tileNumber+1);
 				}
 				else if(this->board[tileNumber+BOARDWIDTH] != Tile::EMPTY && this->board[tileNumber+BOARDWIDTH] != Tile::BORDER){
-					totalConnected = GetAmmountConnectedTiles(tileNumber+BOARDWIDTH);
+					totalConnected = GetAmountConnectedTiles(tileNumber+BOARDWIDTH);
 				}
 
 				// Het bord is nog compleet!
@@ -819,51 +867,51 @@ namespace KaroEngine
 	}
 
 	/**
-	* Make a call to find the ammount of ammount of connected tiles
+	* Make a call to find the Amount of Amount of connected tiles
 	*/
-	int KaroEngine::GetAmmountConnectedTiles(int tileNumber){
+	int KaroEngine::GetAmountConnectedTiles(int tileNumber){
 		visitedList->Clear();
-		return GetAmmountConnectedTilesRecursive(tileNumber);
+		return GetAmountConnectedTilesRecursive(tileNumber);
 	}
 
 	/**
-	* Make a recursive call to find the ammount of connected tiles
+	* Make a recursive call to find the Amount of connected tiles
 	*/
-	int KaroEngine::GetAmmountConnectedTilesRecursive(int tileNumber){
-		int ammountTiles=0;
+	int KaroEngine::GetAmountConnectedTilesRecursive(int tileNumber){
+		int AmountTiles=0;
 		if(this->board[tileNumber] == Tile::EMPTY ||this->board[tileNumber] == Tile::BORDER){
-			return ammountTiles;
+			return AmountTiles;
 		}
 		if(this->visitedList->isInArray(tileNumber)){
-			return ammountTiles;
+			return AmountTiles;
 		}
 		this->visitedList->insertAt(tileNumber);
-		ammountTiles+=1;
-		ammountTiles+=this->GetAmmountConnectedTilesRecursive(tileNumber-1);
-		ammountTiles+=this->GetAmmountConnectedTilesRecursive(tileNumber-BOARDWIDTH);
-		ammountTiles+=this->GetAmmountConnectedTilesRecursive(tileNumber+1);
-		ammountTiles+=this->GetAmmountConnectedTilesRecursive(tileNumber+BOARDWIDTH);
-		return ammountTiles;
+		AmountTiles+=1;
+		AmountTiles+=this->GetAmountConnectedTilesRecursive(tileNumber-1);
+		AmountTiles+=this->GetAmountConnectedTilesRecursive(tileNumber-BOARDWIDTH);
+		AmountTiles+=this->GetAmountConnectedTilesRecursive(tileNumber+1);
+		AmountTiles+=this->GetAmountConnectedTilesRecursive(tileNumber+BOARDWIDTH);
+		return AmountTiles;
 	}
 
 	/**
 	* Check how many neighbours the tile had
 	*/
-	int KaroEngine::GetAmmountConnectedNeighbours(int tileNumber){
-		int ammountTiles=0;
+	int KaroEngine::GetAmountConnectedNeighbours(int tileNumber){
+		int AmountTiles=0;
 		if(this->board[tileNumber-1] != Tile::EMPTY && this->board[tileNumber-1] != Tile::BORDER){
-			ammountTiles+=1;
+			AmountTiles+=1;
 		}
 		if(this->board[tileNumber-BOARDWIDTH] != Tile::EMPTY && this->board[tileNumber-BOARDWIDTH] != Tile::BORDER){
-			ammountTiles+=1;
+			AmountTiles+=1;
 		}
 		if(this->board[tileNumber+1] != Tile::EMPTY && this->board[tileNumber+1] != Tile::BORDER){
-			ammountTiles+=1;
+			AmountTiles+=1;
 		}
 		if(this->board[tileNumber+BOARDWIDTH] != Tile::EMPTY && this->board[tileNumber+BOARDWIDTH] != Tile::BORDER){
-			ammountTiles+=1;
+			AmountTiles+=1;
 		}
-		return ammountTiles;
+		return AmountTiles;
 	}
 
 	/**
@@ -884,8 +932,6 @@ namespace KaroEngine
 	{
 		return (board[tile] != Tile::EMPTY && board[tile] != Tile::BORDER);
 	}
-
-
 
 	/**													//
 	* --------------- Algorithm functions ---------		//
@@ -1089,7 +1135,7 @@ namespace KaroEngine
 	}
 
 	/**													//
-	* --------------- Setters ------------------------	//2
+	* --------------- Setters ------------------------	//
 	*/													//
 	void KaroEngine::SetMessageLog(std::string txt){
 		this->messageLog+=txt+ "\r\n";
@@ -1143,5 +1189,199 @@ namespace KaroEngine
 		}
 
 		return randomNumber;
+	}
+
+
+	/**													//
+	* --------------- DO MOVE ------------------------	//
+	*/													//
+	// Do insert move
+	bool KaroEngine::DoMove(int to) {
+		if(board[to] == Tile::SOLIDTILE || board[to] == Tile::MOVEABLETILE) {
+			board[to] = (turn == Player::RED) ? Tile::REDUNMARKED : Tile::WHITEUNMARKED;
+		} else {
+			SetMessageLog("[ERROR] You can't place a pawn here!");
+			return false;
+		}
+
+		// Put the whitePieces / redPieces into place
+		if(turn == Player::RED) {
+			redPieces.insert(std::pair<int,bool>(to,false));
+		}
+		else if(turn == Player::WHITE) {
+			whitePieces.insert(std::pair<int,bool>(to,false));
+		} else {
+			SetMessageLog("[ERROR] An invalid player inserted a piece!");
+			return false;
+		}
+		return true;
+	}
+
+	// Do a normal move (or jump move)
+	bool KaroEngine::DoMove(int from, int to, bool isJumpMove) {
+		
+		Tile x = board[from];
+		Tile y = board[to];
+
+		if((board[to] == Tile::SOLIDTILE || board[to] == Tile::MOVEABLETILE) && board[from] != Tile::EMPTY && board[from] != Tile::BORDER) {
+			if(!isJumpMove) {
+				board[to] = board[from];
+
+				bool isTurned = (board[to] == Tile::WHITEMARKED || board[to] == Tile::REDMARKED) ? true : false;
+				if(board[to] == Tile::WHITEMARKED || board[to] == Tile::WHITEUNMARKED) {
+					whitePieces.erase(from);
+					whitePieces.insert(std::pair<int,bool>(to,isTurned));
+				} else if(board[to] == Tile::REDMARKED || board[to] == Tile::REDUNMARKED) {
+					redPieces.erase(from);
+					redPieces.insert(std::pair<int,bool>(to,isTurned));
+				} else {
+					SetMessageLog("[ERROR] No valid tile placed on the board[to].");
+					return false;
+				}
+
+			} else {
+					// Was the old pawn from player white?
+				if(board[from] == Tile::WHITEUNMARKED || board[from] == Tile::WHITEMARKED) {
+					board[to] = (board[from] == Tile::WHITEUNMARKED) ? Tile::WHITEMARKED : Tile::WHITEUNMARKED;
+
+					bool isTurned = (board[to] == Tile::WHITEMARKED) ? true : false;
+					whitePieces.erase(from);
+					whitePieces.insert(std::pair<int,bool>(to,isTurned));
+					
+					// Was the old pawn from player red?
+				} else if(board[from] == Tile::REDUNMARKED || board[from] == Tile::REDMARKED) {
+					board[to] = (board[from] == Tile::REDUNMARKED) ? Tile::REDMARKED : Tile::REDUNMARKED;
+
+					bool isTurned = (board[to] == Tile::REDMARKED) ? true : false;
+					redPieces.erase(from);
+					redPieces.insert(std::pair<int,bool>(to,isTurned));
+					
+					// Was it an invalid pawn?
+				} else {
+					SetMessageLog("[ERROR] Position from is not valid a valid tile!");
+					return false;
+				}
+			}
+
+			// Remove the tile from the 'from' position
+			board[from] = Tile::SOLIDTILE;
+		} else {
+			SetMessageLog("[ERROR] You can't place a pawn here, or the 'from' place is empty!");
+			return false;
+		}
+
+		return true;
+	}
+
+	// Do a normal move and replace the tile (including jumpMove)
+	bool KaroEngine::DoMove(int from, int to, int tileFrom, bool isJumpMove) {
+		
+		if(board[tileFrom] != Tile::MOVEABLETILE) {
+			SetMessageLog("[ERROR] This is not a moveable tile!");
+			return false;
+		}
+		
+		// The same as a normal move, only empty the "tileFrom"
+		if(DoMove(from, to, isJumpMove)) {
+			board[tileFrom] = Tile::EMPTY;
+		} else {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**													//
+	* --------------- UNDO MOVE ----------------------	//
+	*/													//
+	// Undo insert move
+	bool KaroEngine::UndoMove(int to) {
+		if(board[to] == Tile::REDMARKED || board[to] == Tile::REDUNMARKED) {
+			board[to] = Tile::SOLIDTILE;
+			redPieces.erase(to);			// Removes the pawn from the redPieces list
+		} else if(board[to] == Tile::WHITEMARKED || board[to] == Tile::WHITEUNMARKED) {
+			board[to] = Tile::SOLIDTILE;
+			whitePieces.erase(to);			// Removes the pawn from the whitePieces list
+		} else {
+			SetMessageLog("[ERROR] Can't remove this pawn because it was not there.");
+			return false;
+		}
+
+		return true;
+	}
+
+	// Undo a normal move (or jump move)
+	bool KaroEngine::UndoMove(int from, int to, bool isJumpMove) {
+
+		Tile x = board[from];
+		Tile y = board[to];
+
+		// Quick check board[from] is a valid tile
+		if(board[from] != Tile::SOLIDTILE && board[from] != Tile::MOVEABLETILE) {
+			SetMessageLog("[ERROR] Can't undo this move bacause board[from] is not a solidtile or moveabletile.");
+			return false;
+		}
+
+		// Switch the pawns
+		if(board[to] == Tile::REDMARKED || board[to] == Tile::REDUNMARKED) {
+			if(isJumpMove)
+				board[from] = (board[to] == Tile::REDMARKED) ? Tile::REDUNMARKED : Tile::REDMARKED;
+			else
+				board[from] = board[to];
+
+			// Remove & add pawn in redPieces
+			bool isTurned = (board[from] == Tile::REDMARKED) ? true : false;
+			redPieces.erase(to);
+			redPieces.insert(std::pair<int,bool>(from, isTurned));
+		} 
+		else if(board[to] == Tile::WHITEMARKED || board[to] == Tile::WHITEUNMARKED) {
+			if(isJumpMove)
+				board[from] = (board[to] == Tile::WHITEMARKED) ? Tile::WHITEUNMARKED : Tile::WHITEMARKED;
+			else
+				board[from] = board[to];
+
+			// Remove & add pawn in whitePieces
+			bool isTurned = (board[from] == Tile::WHITEMARKED) ? true : false;
+			whitePieces.erase(to);
+			whitePieces.insert(std::pair<int,bool>(from, isTurned));
+		} 
+		else {
+			SetMessageLog("[ERROR] Can't undo this move bacause there is not a valid pawn on the board[to].");
+			return false;
+		}
+
+		// Clear the old to
+		board[to] = Tile::SOLIDTILE;
+
+		return true;
+	}
+
+	// Undo a normal move and place the tile back (including jumpMove)
+	bool KaroEngine::UndoMove(int from, int to, int tileFrom, bool isJumpMove) {
+
+		// First put the old piece back in place
+		if(UndoMove(from, to, isJumpMove)) {
+			
+			// Now remove the 'to'
+			if(board[to] == Tile::SOLIDTILE || board[to] == Tile::MOVEABLETILE) {
+				board[to] = Tile::EMPTY;
+			} else {
+				SetMessageLog("[ERROR] Can't remove the tile because the spot isn't empty!");
+				return false;
+			}
+
+			// And place back the tileFrom
+			if(board[tileFrom] == Tile::EMPTY) {
+				board[tileFrom] = Tile::SOLIDTILE;
+			} else {
+				SetMessageLog("[ERROR] Can't put back the tile because the spot isn't empty!");
+				return false;
+			}
+
+		} else {
+			return false;	
+		}
+
+		return true;
 	}
 }
