@@ -175,6 +175,7 @@
             this.txtMessageLog.Location = new System.Drawing.Point(476, 275);
             this.txtMessageLog.Multiline = true;
             this.txtMessageLog.Name = "txtMessageLog";
+            this.txtMessageLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtMessageLog.Size = new System.Drawing.Size(221, 187);
             this.txtMessageLog.TabIndex = 8;
             // 
