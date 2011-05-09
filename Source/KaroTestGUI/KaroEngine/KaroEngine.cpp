@@ -98,7 +98,7 @@ namespace KaroEngine
 		this->_leftBoundairy.second=4;
 		this->_topBoundairy.first=4;
 		this->_topBoundairy.second=5;
-		this->SetMessageLog("Engine Initialized");
+		this->SetMessageLog("Engine Initialized\r\n");
 	}
 
 	KaroEngine::~KaroEngine(void)
@@ -900,7 +900,7 @@ namespace KaroEngine
 					transpositionTableRed.insert(pair<int,int>(hash, bestMove->score));
 				}else{
 					if(it->second != bestMove->score){
-						SetMessageLog("Tried to insert a double hash value for different value..");
+						SetMessageLog("\r\nTried to insert a double hash value for different value..\r\n");
 					}
 				}
 			}else{
