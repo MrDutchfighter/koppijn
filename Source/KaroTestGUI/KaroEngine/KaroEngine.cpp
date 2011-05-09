@@ -36,7 +36,7 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION; 
 		this->insertionCount = 0;	
-		this->maxDepth = 3;
+		this->maxDepth = 6;
 		this->evaluationScore = 0;
 		this->visitedList = new VisitedList();
 
@@ -94,7 +94,10 @@ namespace KaroEngine
 			randomWhiteMarked[i] = GetRandomNumber();
 			randomRedMarked[i] = GetRandomNumber();
 		}
-
+		this->_leftBoundairy.first=5;
+		this->_leftBoundairy.second=4;
+		this->_topBoundairy.first=4;
+		this->_topBoundairy.second=5;
 		this->SetMessageLog("Engine Initialized");
 	}
 
@@ -428,7 +431,8 @@ namespace KaroEngine
 			}
 		} else if(gameState == GameState::PLAYING) {
 			// Generate a real computer move with minmax
-			Move * theMove = MiniMax(GetTurn(), 0, INT_MIN, INT_MAX);
+			int hash= GetHash();
+			Move * theMove = MiniMax(GetTurn(), 0, INT_MIN, INT_MAX,hash);
 
 			// Execute the final move
 			if(theMove->positionFrom > 0) {
@@ -731,7 +735,7 @@ namespace KaroEngine
 	/**
 	* MinMax function
 	*/
-	Move * KaroEngine::MiniMax(Player p, int depth, int alpha, int beta)
+	Move * KaroEngine::MiniMax(Player p, int depth, int alpha, int beta,int hash)
 	{
 		// Hash the current board?
 		//Position currentPosition = new Position(board);
@@ -746,12 +750,9 @@ namespace KaroEngine
 
 
 		//First check if the score is already know, then evaluate. 
-		if(depth == 0) {
-			//transpositionTable.clear();
-			//DONT CLEAR THE TRANSPOSITION TABLE...
-		} else{
+		if(depth != 0) {
 			// Is this move in the transposition table?
-			int hash = GetHash();
+			//int hash = GetHash();
 			map<int,int>::iterator it = transpositionTable.find(hash);
             if (it != transpositionTable.end())
             {
@@ -778,6 +779,63 @@ namespace KaroEngine
 		for(int i=0; i < possibleMoves->size(); i++) {
 			// Execute the move
 			DoMove(possibleMoves->at(i));
+			_boundairyChanged=false;
+			//Check the boundairies
+			//boundairy left check the FROM position
+			if(possibleMoves->at(i)->positionFrom%BOARDWIDTH == this->_leftBoundairy.first ){
+				this->_leftBoundairy.second-=1;
+				if(this->_leftBoundairy.second==0){ //if zero reset the left boundairy
+					this->_leftBoundairy.first+=1;
+					this->_leftBoundairy.second=0;
+					for(int i=0;i<BOARDWIDTH;i++){
+						if(board[this->_leftBoundairy.first+(i*BOARDWIDTH)] != Tile::EMPTY || board[this->_leftBoundairy.first+(i*BOARDWIDTH)] != Tile::BORDER){
+							this->_leftBoundairy.second+=1;
+						}						
+					}
+					_boundairyChanged=true;
+				}
+			}
+
+			//boundairy Top check the FROM position
+			if(possibleMoves->at(i)->positionFrom/BOARDWIDTH == this->_topBoundairy.first ){
+				this->_topBoundairy.second-=1;
+				if(this->_topBoundairy.second==0){ //if zero reset the left boundairy
+					this->_topBoundairy.first+=1;
+					this->_topBoundairy.second=0;
+					for(int i=0;i<BOARDWIDTH;i++){
+						if(board[i+(this->_leftBoundairy.first*BOARDWIDTH)] != Tile::EMPTY || board[i+(this->_leftBoundairy.first*BOARDWIDTH)] != Tile::BORDER){
+							this->_leftBoundairy.second+=1;
+						}
+					}
+					_boundairyChanged=true;
+				}
+			}
+			
+			//Check the TO position
+			//boundairy left
+			if(possibleMoves->at(i)->positionTo%BOARDWIDTH < this->_leftBoundairy.first ){
+				this->_leftBoundairy.first=possibleMoves->at(i)->positionTo%BOARDWIDTH;
+				this->_leftBoundairy.second=1;
+				_boundairyChanged=true;
+			}
+			if(possibleMoves->at(i)->positionTo%BOARDWIDTH == this->_leftBoundairy.first ){
+				this->_leftBoundairy.second+=1;
+			}
+
+			//boundairy top
+			if(possibleMoves->at(i)->positionTo/BOARDWIDTH < this->_topBoundairy.first ){
+				this->_topBoundairy.first=possibleMoves->at(i)->positionTo/BOARDWIDTH;
+				this->_topBoundairy.second=1;
+				_boundairyChanged=true;
+			}
+			if(possibleMoves->at(i)->positionTo/BOARDWIDTH == this->_topBoundairy.first ){
+				this->_topBoundairy.second+=1;
+			}
+			if(_boundairyChanged){
+				hash=GetHash();
+			}else{
+				hash=GetHash(hash,possibleMoves->at(i));
+			}
 
 			// Was this the winning move? (has to be here, because IsWinner needs the last move...)
 			if(IsWinner(p, possibleMoves->at(i)->positionTo)) {
@@ -793,7 +851,7 @@ namespace KaroEngine
 
 			// Get the last best move
 			//Move * lastBestMove = possibleMoves->at(i);
-			Move * lastBestMove = MiniMax(Reverse(p), depth+1, alpha, beta);
+			Move * lastBestMove = MiniMax(Reverse(p), depth+1, alpha, beta,hash);
 
 			// Directly undo this move
 			UndoMove(possibleMoves->at(i));
@@ -827,11 +885,15 @@ namespace KaroEngine
 		}
 
 		// Put best score in transposition table
-		if(depth == 1 || depth == 2) {
-			int hash = GetHash();
+		if(depth == 1 || depth == 2) {		
+			//hash=GetHash();
 			map<int,int>::iterator it = transpositionTable.find(hash);
 			if (it == transpositionTable.end()){
                 transpositionTable.insert(pair<int,int>(hash, bestMove->score));
+			}else{
+				if(it->second != bestMove->score){
+					SetMessageLog("Tried to insert a double hash value for different value..");
+				}
 			}
 		}
 
@@ -927,6 +989,7 @@ namespace KaroEngine
 
 	int KaroEngine::GetHash()
 	{
+		/*
 		vector<int> tileIndexes; // found tiles
 		int left = BOARDWIDTH; // most left tile
 		int right = 0; // most right tile
@@ -980,9 +1043,9 @@ namespace KaroEngine
 			}
 		}
 
-		
+		*/
 
-		/*int hash = 0;
+		int hash = 0;
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH; i++)
 		{
 			if(board[i] != Tile::EMPTY)
@@ -998,13 +1061,53 @@ namespace KaroEngine
 				else if(board[i] == Tile::WHITEUNMARKED)
 					hash ^= randomWhiteUnmarked[i];
 			}
-		}*/
+		}
+		return hash;
+	}
+	
+	int KaroEngine::GetHash(int hash,Move *move){
+		if(board[move->positionTo] == Tile::REDMARKED){
+			hash ^= randomRedMarked[move->positionTo];
+			if(move->isJumpMove){
+				hash ^= randomRedUnmarked[move->positionFrom];
+			}
+			else{
+				hash ^= randomRedMarked[move->positionFrom];
+			}
+		}
+		else if(board[move->positionTo] == Tile::REDUNMARKED){
+			hash ^= randomRedUnmarked[move->positionTo];
+			if(move->isJumpMove){
+				hash ^= randomRedMarked[move->positionFrom];
+			}
+			else{
+				hash ^= randomRedUnmarked[move->positionFrom];
+			}
+		}
+		else if(board[move->positionTo] == Tile::WHITEMARKED){
+			hash ^= randomWhiteMarked[move->positionTo];
+			if(move->isJumpMove){
+				hash ^= randomWhiteUnmarked[move->positionFrom];
+			}
+			else{
+				hash ^= randomWhiteMarked[move->positionFrom];
+			}
+		}
+		else if(board[move->positionTo] == Tile::WHITEUNMARKED){
+			hash ^= randomWhiteUnmarked[move->positionTo];
+			if(move->isJumpMove){
+				hash ^= randomWhiteMarked[move->positionFrom];
+			}
+			else{
+				hash ^= randomWhiteUnmarked[move->positionFrom];
+			}
+		}
 		return hash;
 	}
 
 	int KaroEngine::GetRandomNumber()
 	{
-		int randomNumber = rand() % 99999 + 10000;
+		int randomNumber = rand() % 899999 + 100000;
 
 		for(int i = 0; i < sizeof(randomTile) / sizeof(randomTile[0]); i++){
 			if(randomTile[i] == randomNumber)
@@ -1065,6 +1168,8 @@ namespace KaroEngine
 		} else {
 			SetMessageLog("Not a valid move given");
 		}
+
+		
 
 		turn = Reverse(turn);
 		lastMove = move;

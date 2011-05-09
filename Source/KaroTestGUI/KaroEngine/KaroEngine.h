@@ -57,6 +57,12 @@ namespace KaroEngine
 		int evaluationScore;		
 		int possibleSteps[8];
 		int possibleJumps[8];
+		
+		pair<int,int> _leftBoundairy;
+		pair<int,int> _topBoundairy;
+		bool _boundairyChanged;
+		//pair<int,int> _rightBoundairy;
+		//pair<int,int> _bottomBoundairy;
 
 		map<int,bool> redPieces;
 		map<int,bool> whitePieces;
@@ -71,12 +77,13 @@ namespace KaroEngine
 		int randomWhiteMarked[289];
 
 		int GetHash();
+		int GetHash(int hash,Move *move);
 		int GetRandomNumber();
 		/**
 		* Functions
 		*/
 		// Algorithm functions
-		Move * MiniMax(Player p, int depth, int alpha, int beta);
+		Move * MiniMax(Player p, int depth, int alpha, int beta,int hash);
 		int GetAmountConnectedTilesRecursive(int tileNumber);
 		int GetAmountConnectedNeighbours(int tileNumber);
 		void TransformToMovableTiles(int tileNumber, bool checkNeighbours, bool checkDiagonalNeighbours);
