@@ -315,8 +315,8 @@ namespace KaroTestGUI
 
             TimeSpan Elapsed = DateTime.Now - Start;
 
-            this.txtMessageLog.Text = "Total: " + Elapsed.Seconds.ToString() + "."+ Elapsed.Milliseconds.ToString() + " Seconds \r\n" + this.txtMessageLog.Text;
-            this.txtMessageLog.Text = "Avarage: " + (Elapsed.Seconds / 5).ToString()  + "."+ (Elapsed.Milliseconds / 5).ToString() + " Seconds \r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Total: " + Elapsed.TotalSeconds + " Seconds \r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Avarage: " + (Elapsed.TotalSeconds/5) + " Seconds \r\n" + this.txtMessageLog.Text;
         }
     }
 }
