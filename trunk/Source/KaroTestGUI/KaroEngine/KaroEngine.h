@@ -70,8 +70,8 @@ namespace KaroEngine
 		map<int,int> moveableTiles;
 		VisitedList * visitedList;
 
-		map<int, int> transpositionTableWhite;
-		map<int, int> transpositionTableRed;
+		map<int, pair<int,int>> transpositionTableWhite; //<hash, <depth,score>>
+		map<int, pair<int,int>> transpositionTableRed; //<hash, <depth,score>>
 		int randomTile[289];
 		int randomRedUnmarked[289];
 		int randomWhiteUnmarked[289];
