@@ -51,6 +51,7 @@ namespace KaroTestGUI
 
             InitializeComponent();
             textBox1.Text = "5";
+            textBox2.Text = "1";
             UpdateGUI();
         }
 
@@ -325,31 +326,45 @@ namespace KaroTestGUI
                 }
             }
 
-            this.txtMessageLog.Text = "Moves: " + moves + "\r\n\r\n" + this.txtMessageLog.Text; 
-            this.txtMessageLog.Text = "Avarage: " + total / times + " Seconds \r\n" + this.txtMessageLog.Text;
-            this.txtMessageLog.Text = "Total: " + total + " Seconds \r\n" + this.txtMessageLog.Text;
-           
-            
-            
+            this.txtMessageLog.Text = "Moves:\t" + moves + "\r\n\r\n" + this.txtMessageLog.Text; 
+            this.txtMessageLog.Text = "Avarage:\t" + total / times + " Seconds \r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Total:\t" + total + " Seconds \r\n" + this.txtMessageLog.Text;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            engine = new KaroEngineWrapper();
             UpdateGUI();
 
-            float total = 0;
-            int moves = 0;
-
-            while (engine.GetGameState() != GameState.GAMEFINISHED)
+            int white = 0;
+            int red = 0;
+            
+            for (int i = 0; i < int.Parse(textBox2.Text); i++)
             {
-                total += engine.CalculateComputerMove();
-                moves++;
-                UpdateGUI();
-                Application.DoEvents();
+                newGameToolStripMenuItem_Click(sender, e);
+
+                float total = 0;
+                int moves = 0;
+
+                while (engine.GetGameState() != GameState.GAMEFINISHED)
+                {
+                    total += engine.CalculateComputerMove();
+                    moves++;
+                    UpdateGUI();
+                    Application.DoEvents();
+                }
+
+                if (engine.GetTurn() == Player.WHITE)
+                    red++;
+                else
+                    white++;
+
+                ShowWinning(moves, total);
             }
 
-            ShowWinning(moves, total);
+            this.txtMessageLog.Text = "RED:\t"+ red + "\r\n\r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "WHITE:\t" + white + " \r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Played:\t" + textBox2.Text + "\r\n" + this.txtMessageLog.Text;
+            
         }
 
         private void ShowWinning(int moves, float total)
@@ -365,7 +380,10 @@ namespace KaroTestGUI
                     break;
             }
 
-            this.txtMessageLog.Text = "Player " + winningPlayer + " wins in " + moves + " moves and " + total + " seconds! \r\n\r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Moves:\t" + moves + "\r\n\r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Seconds:\t" + total + "\r\n" +this.txtMessageLog.Text;
+            this.txtMessageLog.Text = winningPlayer + " WINS\r\n" + this.txtMessageLog.Text;
+
             btnDoMove.Enabled = false;
             btn.Enabled = false;
         }
