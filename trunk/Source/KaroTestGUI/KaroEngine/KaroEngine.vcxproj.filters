@@ -33,6 +33,9 @@
     <ClInclude Include="VisitedList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\mtrand\mtrand\mtrand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="KaroEngine.cpp">
@@ -51,6 +54,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VisitedList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\mtrand\mtrand\mtrand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
