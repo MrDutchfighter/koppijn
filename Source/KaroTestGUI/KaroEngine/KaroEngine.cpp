@@ -749,17 +749,17 @@ namespace KaroEngine
 			//int hash = GetHash();
 
 			if(turn == Player::RED){
-				map<int,int>::iterator it = transpositionTableRed.find(hash);
+				map<int,pair<int,int>>::iterator it = transpositionTableRed.find(hash);
 				if (it != transpositionTableRed.end())
 				{
-					bestMove->score = it->second;
+					bestMove->score = it->second.second;
 					return bestMove;
 				}
 			}else{
-				map<int,int>::iterator it = transpositionTableWhite.find(hash);
+				map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(hash);
 				if (it != transpositionTableWhite.end())
 				{
-					bestMove->score = it->second;
+					bestMove->score = it->second.second;
 					return bestMove;
 				}
 			}
@@ -894,23 +894,24 @@ namespace KaroEngine
 		// Put best score in transposition table
 		if(depth == 1 || depth == 3) {		
 			//hash=GetHash();
+
+			pair<int,int> depthScore = make_pair(depth, bestMove->score);
+
 			if(turn == Player::RED){
-				map<int,int>::iterator it = transpositionTableRed.find(hash);
+				map<int,pair<int,int>>::iterator it = transpositionTableRed.find(hash);
 				if (it == transpositionTableRed.end()){
-					transpositionTableRed.insert(pair<int,int>(hash, bestMove->score));
+					transpositionTableRed.insert(pair<int, pair<int,int>>(hash, depthScore));
 				}else{
-					if(it->second != bestMove->score){
-						SetMessageLog("\r\nTried to insert a double hash value for different value..\r\n");
-					}
+					if(it->second.first > depth)
+						it->second = depthScore;
 				}
 			}else{
-				map<int,int>::iterator it = transpositionTableWhite.find(hash);
+				map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(hash);
 				if (it == transpositionTableWhite.end()){
-					transpositionTableWhite.insert(pair<int,int>(hash, bestMove->score));
+					transpositionTableWhite.insert(pair<int, pair<int,int>>(hash, depthScore));
 				}else{
-					if(it->second != bestMove->score){
-						SetMessageLog("Tried to insert a double hash value for different value..");
-					}
+					if(it->second.first > depth)
+						it->second = depthScore;
 				}
 			}
 			
@@ -1086,7 +1087,6 @@ namespace KaroEngine
 	}
 	
 	void KaroEngine::SetHash(int &hash,Move *move){
-		//return GetHash();
 		if(board[move->positionTo] == Tile::REDMARKED){
 			hash ^= randomRedMarked[move->positionTo];
 			if(move->isJumpMove){
