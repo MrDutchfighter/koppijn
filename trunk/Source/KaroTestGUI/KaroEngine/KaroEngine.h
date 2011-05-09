@@ -79,7 +79,7 @@ namespace KaroEngine
 		int randomWhiteMarked[289];
 
 		int GetHash();
-		int GetHash(int hash,Move *move);
+		void SetHash(int &hash,Move *move);
 		int GetRandomNumber();
 		/**
 		* Functions

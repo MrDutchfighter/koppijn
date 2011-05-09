@@ -840,7 +840,7 @@ namespace KaroEngine
 			if(_boundairyChanged){
 				hash=GetHash();
 			}else{
-				hash=GetHash(hash,possibleMoves->at(i));
+				SetHash(hash,possibleMoves->at(i));
 			}
 
 			// Was this the winning move? (has to be here, because IsWinner needs the last move...)
@@ -1085,8 +1085,8 @@ namespace KaroEngine
 		return hash;
 	}
 	
-	int KaroEngine::GetHash(int hash,Move *move){
-		return GetHash();
+	void KaroEngine::SetHash(int &hash,Move *move){
+		//return GetHash();
 		if(board[move->positionTo] == Tile::REDMARKED){
 			hash ^= randomRedMarked[move->positionTo];
 			if(move->isJumpMove){
@@ -1123,7 +1123,7 @@ namespace KaroEngine
 				hash ^= randomWhiteUnmarked[move->positionFrom];
 			}
 		}
-		return hash;
+		//return hash;
 	}
 
 	int KaroEngine::GetRandomNumber()
