@@ -739,7 +739,7 @@ namespace KaroEngine
 		if(depth == 0) {
 			//transpositionTable.clear();
 			//DONT CLEAR THE TRANSPOSITION TABLE...
-		} else if(depth > 1 ) {
+		} else{
 			// Is this move in the transposition table?
 			int hash = GetHash();
 			map<int,int>::iterator it = transpositionTable.find(hash);
@@ -843,7 +843,8 @@ namespace KaroEngine
 						if (it->second == true)
 						{
 							calculatedScore += 2;
-							calculatedScore += 0;//this->EvaluateNumRows(p, it->first);
+							calculatedScore += 0;
+							//calculatedScore += this->EvaluateNumRows(p, it->first);
 						}
 							
 					}
@@ -916,7 +917,62 @@ namespace KaroEngine
 
 	int KaroEngine::GetHash()
 	{
+		vector<int> tileIndexes; // found tiles
+		int left = BOARDWIDTH; // most left tile
+		int right = 0; // most right tile
+
+		int count = 0; // tile index for iterating
+
+		while(tileIndexes.size() != 20)
+		{
+			if(board[count] != Tile::EMPTY && board[count] != Tile::BORDER)
+			{
+				int tempCol = count % BOARDWIDTH;
+				
+				if(tempCol < left)
+					left = tempCol;
+				if(tempCol > right)
+					right = tempCol;
+
+				tileIndexes.push_back(count);
+			}
+			count ++;
+		}
+
+		int topRow = ceil((float)tileIndexes[0] / BOARDWIDTH) - 1;
+		int topLeftCorner = (topRow * BOARDWIDTH) + left;
+		int bottomRow = ceil((float)tileIndexes[19] / BOARDWIDTH) - 1;
+		int bottomLeftCorner = (bottomRow * BOARDWIDTH) + left;
+
+		int squareWidth = right - left;
+
 		int hash = 0;
+		for(int i = topLeftCorner; i < bottomLeftCorner; i += BOARDWIDTH)
+		{
+			for(int k = 0; k < squareWidth; k++)
+			{
+				int index = i + k;
+				int randomIndex = (index - (left -1 )) - (topRow * BOARDWIDTH);
+
+				if(board[index] != Tile::EMPTY)
+				{
+					if(board[index] == Tile::SOLIDTILE || board[index] == Tile::MOVEABLETILE)
+						hash ^= randomTile[randomIndex];
+					else if(board[index] == Tile::REDMARKED)
+						hash ^= randomRedMarked[randomIndex];
+					else if(board[index] == Tile::WHITEMARKED)
+						hash ^= randomWhiteMarked[randomIndex];
+					else if(board[index] == Tile::REDUNMARKED)
+						hash ^= randomRedUnmarked[randomIndex];
+					else if(board[index] == Tile::WHITEUNMARKED)
+						hash ^= randomWhiteUnmarked[randomIndex];
+				}
+			}
+		}
+
+		
+
+		/*int hash = 0;
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH; i++)
 		{
 			if(board[i] != Tile::EMPTY)
@@ -932,7 +988,7 @@ namespace KaroEngine
 				else if(board[i] == Tile::WHITEUNMARKED)
 					hash ^= randomWhiteUnmarked[i];
 			}
-		}
+		}*/
 		return hash;
 	}
 
