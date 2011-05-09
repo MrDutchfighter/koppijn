@@ -309,16 +309,28 @@ namespace KaroTestGUI
 
             int times = int.Parse(textBox1.Text);
             float total = 0;
+            int moves = 0;
 
             for (int i = 0; i < times; i++)
             {
                 total += engine.CalculateComputerMove();
+                moves++;
                 UpdateGUI();
                 Application.DoEvents();
+
+                if (engine.GetGameState() == GameState.GAMEFINISHED)
+                {
+                    ShowWinning(moves, total);
+                    break;
+                }
             }
 
-            this.txtMessageLog.Text = "Total: " + total + " Seconds \r\n\r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Moves: " + moves + "\r\n\r\n" + this.txtMessageLog.Text; 
             this.txtMessageLog.Text = "Avarage: " + total / times + " Seconds \r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Total: " + total + " Seconds \r\n" + this.txtMessageLog.Text;
+           
+            
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -337,9 +349,14 @@ namespace KaroTestGUI
                 Application.DoEvents();
             }
 
+            ShowWinning(moves, total);
+        }
+
+        private void ShowWinning(int moves, float total)
+        {
             Player winningPlayer = engine.GetTurn();
             switch (winningPlayer)
-            { 
+            {
                 case Player.RED:
                     winningPlayer = Player.WHITE;
                     break;
@@ -347,8 +364,8 @@ namespace KaroTestGUI
                     winningPlayer = Player.RED;
                     break;
             }
-            
-            this.txtMessageLog.Text = "Player " + winningPlayer + " wins in " + moves + " moves and "+ total + " seconds! \r\n\r\n" + this.txtMessageLog.Text;
+
+            this.txtMessageLog.Text = "Player " + winningPlayer + " wins in " + moves + " moves and " + total + " seconds! \r\n\r\n" + this.txtMessageLog.Text;
             btnDoMove.Enabled = false;
             btn.Enabled = false;
         }
