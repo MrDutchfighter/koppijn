@@ -18,7 +18,7 @@ namespace KaroEngine {
 		void DoMove(int from,int to,int tile);
 		GameState GetGameState();
 		Player GetTurn();
-		void CalculateComputerMove();
+		float CalculateComputerMove();
 		String^ GetMessageLog();
 		int GetEvaluationScore();
 		array<array<int>^>^ GetPossibleMoves(int x, int y,int tileFromX,int tileFromY);

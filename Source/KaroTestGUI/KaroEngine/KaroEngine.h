@@ -120,13 +120,14 @@ namespace KaroEngine
 		void SetMessageLog(std::string s);
 
 		int EvaluateBoard(Player p);
+		map<int,bool> KaroEngine::GetPlayerPieces(Player p);
 
 		// Get possible moves
 		vector<Move*> * GetPossibleMoves(Player forPlayer);
 		vector<Move*> * GetPossibleMoves(int tile, bool isTurned);
 
 		// Algorithm functions
-		void CalculateComputerMove();
+		float CalculateComputerMove();
 		int EvaluateNumRows(Player p, int pieceIndex);
 
 		// 'Getters'
