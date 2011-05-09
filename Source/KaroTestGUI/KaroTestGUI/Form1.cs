@@ -50,7 +50,7 @@ namespace KaroTestGUI
             possibleMoves = null;
 
             InitializeComponent();
-
+            textBox1.Text = "5";
             UpdateGUI();
         }
 
@@ -170,6 +170,9 @@ namespace KaroTestGUI
             engine = new KaroEngineWrapper();
 
             pictureBox1.Invalidate();
+
+            btnDoMove.Enabled = true;
+            btn.Enabled = true;
         }
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
@@ -304,7 +307,7 @@ namespace KaroTestGUI
 
             Application.DoEvents();
 
-            int times = 5;
+            int times = int.Parse(textBox1.Text);
             float total = 0;
 
             for (int i = 0; i < times; i++)
@@ -314,7 +317,7 @@ namespace KaroTestGUI
                 Application.DoEvents();
             }
 
-            this.txtMessageLog.Text = "Total: " + total + " Seconds \r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Total: " + total + " Seconds \r\n\r\n" + this.txtMessageLog.Text;
             this.txtMessageLog.Text = "Avarage: " + total / times + " Seconds \r\n" + this.txtMessageLog.Text;
         }
 
@@ -345,7 +348,9 @@ namespace KaroTestGUI
                     break;
             }
             
-            MessageBox.Show("Player " + winningPlayer + " wins in " + moves + " moves and "+ total + " seconds!");
+            this.txtMessageLog.Text = "Player " + winningPlayer + " wins in " + moves + " moves and "+ total + " seconds! \r\n\r\n" + this.txtMessageLog.Text;
+            btnDoMove.Enabled = false;
+            btn.Enabled = false;
         }
     }
 }

@@ -429,7 +429,6 @@ namespace KaroEngine
 
 				if(this->IsWinner(Reverse(turn), theMove->positionTo))
 				{
-					this->SetMessageLog("WIN!");
 					gameState = GameState::GAMEFINISHED;
 				}
 			} else {
