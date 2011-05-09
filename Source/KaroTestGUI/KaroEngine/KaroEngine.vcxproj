@@ -57,6 +57,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>
       </AdditionalDependencies>
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -77,6 +78,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\mtrand\mtrand\mtrand.h" />
     <ClInclude Include="KaroEngine.h" />
     <ClInclude Include="KaroEngineWrapper.h" />
     <ClInclude Include="Move.h" />
@@ -85,6 +87,7 @@
     <ClInclude Include="VisitedList.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\mtrand\mtrand\mtrand.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="KaroEngine.cpp" />
     <ClCompile Include="KaroEngineWrapper.cpp" />
