@@ -343,44 +343,33 @@ namespace KaroEngine
 	{
 		int score = 0;
 		Tile marked;
-		map<int,bool> pieces;
-
+		
 		//Right player color 
 		if (p == Player::WHITE) 
-		{
 			marked = Tile::WHITEMARKED;
-			pieces = whitePieces;
-		}
 		if (p == Player::RED)
-		{
 			marked = Tile::REDMARKED;
-			pieces = redPieces;
-		}
 
-			//check if at least 2 pieces are Marked else return false
-			int countUnMarked = 0;
-			for each (pair<int, bool> p in pieces)
-			{
-				if(!p.second)
-					countUnMarked++;
-				if(countUnMarked > 5)
-					return 0;
-			}
+		int countUnMarked = 0;
+		for each (pair<int, bool> piece in GetPlayerPieces(p))
+		{
+			//check if at least 5 pieces are Marked else return 0
+			if(!piece.second)
+				countUnMarked++;
+			if(countUnMarked > 5)
+				return 0;
 
-			for each (pair<int, bool> piece in pieces)
+			for(int i = 0; i < 8; i++)
 			{
-				for(int i = 0; i < 8; i++)
+				//check if piece in possibleStep
+				if(piece.first == pieceIndex + possibleSteps[i])
 				{
-					//check if piece in possibleStep
-					if(piece.first == pieceIndex + possibleSteps[i])
+					//check if second is marked
+					int second = pieceIndex + possibleSteps[i];
+					if(board[second] != marked)
+						break;
+					else
 					{
-						//check if second is marked
-						int second = pieceIndex + possibleSteps[i];
-						if(board[second] != marked)
-						{
-							break;
-						}
-						
 						score = score + 2; // 2 in a row
 						int difference = second - pieceIndex;
 
@@ -391,17 +380,16 @@ namespace KaroEngine
 							//check if minfirst is unmarked 
 							int minFirst = pieceIndex - difference;
 							if(board[minFirst] != marked)
-							{
 								break;
-							}
-							else
-							{
-								score= score + 4; // 3 in a row
-							}
+							else						
+								score = score + 4; // 4 in a row
 						}
+						else
+							score = score + 3; // 3 in a row
 					}
 				}
-			}		
+			}
+		}		
 
 		return score;
 	}
@@ -915,8 +903,8 @@ namespace KaroEngine
 						if (it->second == true)
 						{
 							calculatedScore += 2;
-							calculatedScore += 0;
-							//calculatedScore += this->EvaluateNumRows(p, it->first);
+							//calculatedScore += 0;
+							calculatedScore += this->EvaluateNumRows(p, it->first);
 						}
 							
 					}
@@ -930,7 +918,8 @@ namespace KaroEngine
 						if (it->second == true)
 						{
 							calculatedScore += 2;
-							calculatedScore += 0;//this->EvaluateNumRows(p, it->first);
+							//calculatedScore += 0;
+							this->EvaluateNumRows(p, it->first);
 						}
 					}
 				}
