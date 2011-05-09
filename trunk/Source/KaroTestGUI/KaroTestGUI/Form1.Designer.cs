@@ -211,15 +211,15 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(524, 178);
+            this.textBox1.Location = new System.Drawing.Point(524, 180);
             this.textBox1.MaxLength = 2;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(27, 20);
+            this.textBox1.Size = new System.Drawing.Size(29, 20);
             this.textBox1.TabIndex = 12;
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(524, 204);
+            this.textBox2.Location = new System.Drawing.Point(524, 209);
             this.textBox2.MaxLength = 2;
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(29, 20);

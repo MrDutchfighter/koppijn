@@ -321,7 +321,7 @@ namespace KaroTestGUI
 
                 if (engine.GetGameState() == GameState.GAMEFINISHED)
                 {
-                    ShowWinning(moves, total);
+                    ShowWinning(moves, total, false);
                     break;
                 }
             }
@@ -337,8 +337,13 @@ namespace KaroTestGUI
 
             int white = 0;
             int red = 0;
+            int draw = 0;
+
+            bool bdraw = false;
+
+            int games = int.Parse(textBox2.Text);
             
-            for (int i = 0; i < int.Parse(textBox2.Text); i++)
+            for (int i = 0; i < games; i++)
             {
                 newGameToolStripMenuItem_Click(sender, e);
 
@@ -347,39 +352,55 @@ namespace KaroTestGUI
 
                 while (engine.GetGameState() != GameState.GAMEFINISHED)
                 {
+                    if (moves >= 80)
+                    {
+                        bdraw = true;
+                        break;
+                    }
+
                     total += engine.CalculateComputerMove();
                     moves++;
                     UpdateGUI();
                     Application.DoEvents();
                 }
 
-                if (engine.GetTurn() == Player.WHITE)
-                    red++;
-                else
-                    white++;
 
-                ShowWinning(moves, total);
+                textBox2.Text = "" + (int.Parse(textBox2.Text) -1);
+
+                if (bdraw)
+                    draw++;
+                else
+                {
+                    if (engine.GetTurn() == Player.WHITE)
+                        red++;
+                    if (engine.GetTurn() == Player.RED)
+                        white++;
+                }
+
+                ShowWinning(moves, total, bdraw);
             }
 
-            this.txtMessageLog.Text = "RED:\t"+ red + "\r\n\r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Draw\t" + draw + "\r\n\r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "RED:\t"+ red + "\r\n" + this.txtMessageLog.Text;
             this.txtMessageLog.Text = "WHITE:\t" + white + " \r\n" + this.txtMessageLog.Text;
-            this.txtMessageLog.Text = "Played:\t" + textBox2.Text + "\r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Played:\t" + games + "\r\n" + this.txtMessageLog.Text;
+
+            textBox2.Text = "" + games;
+            bdraw = false;
             
         }
 
-        private void ShowWinning(int moves, float total)
+        private void ShowWinning(int moves, float total, bool draw)
         {
-            Player winningPlayer = engine.GetTurn();
-            switch (winningPlayer)
-            {
-                case Player.RED:
-                    winningPlayer = Player.WHITE;
-                    break;
-                case Player.WHITE:
-                    winningPlayer = Player.RED;
-                    break;
-            }
+            String winningPlayer = "";
 
+            if(engine.GetTurn() == Player.WHITE)
+                winningPlayer = "RED";
+            if(engine.GetTurn() == Player.RED)
+                winningPlayer = "WHITE";
+            if (draw)
+                winningPlayer = "DRAW";
+            
             this.txtMessageLog.Text = "Moves:\t" + moves + "\r\n\r\n" + this.txtMessageLog.Text;
             this.txtMessageLog.Text = "Seconds:\t" + total + "\r\n" +this.txtMessageLog.Text;
             this.txtMessageLog.Text = winningPlayer + " WINS\r\n" + this.txtMessageLog.Text;
