@@ -79,7 +79,7 @@ namespace KaroEngine
 		Move * MiniMax(Player p, int depth, int alpha, int beta);
 		int GetAmountConnectedTilesRecursive(int tileNumber);
 		int GetAmountConnectedNeighbours(int tileNumber);
-		void TransformToMovableTiles(int tileNumber, bool checkNeighbours);
+		void TransformToMovableTiles(int tileNumber, bool checkNeighbours, bool checkDiagonalNeighbours);
 
 
 		// Do Move

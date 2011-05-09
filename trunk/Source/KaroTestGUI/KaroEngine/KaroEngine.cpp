@@ -588,7 +588,7 @@ namespace KaroEngine
 	/**
 	* Checks & transforms neighbours and self for movable tiles
 	*/
-	void KaroEngine::TransformToMovableTiles(int tileNumber, bool checkNeighbours = true) {
+	void KaroEngine::TransformToMovableTiles(int tileNumber, bool checkNeighbours = true, bool checkDiagonalNeighbours = false) {
 		//return;
 		// Staat er niks op deze tile?
 		if(board[tileNumber] == Tile::SOLIDTILE || board[tileNumber] == Tile::MOVEABLETILE) {
@@ -645,6 +645,22 @@ namespace KaroEngine
 				TransformToMovableTiles(tileNumber+BOARDWIDTH, false);
 			}
 		}
+
+		// Check the awesome neighbours
+		if(checkDiagonalNeighbours) {
+			if(this->board[tileNumber-(BOARDWIDTH+1)] != Tile::BORDER) {
+				TransformToMovableTiles(tileNumber-(BOARDWIDTH+1), false);
+			}
+			if(this->board[tileNumber-(BOARDWIDTH-1)] != Tile::BORDER){
+				TransformToMovableTiles(tileNumber-(BOARDWIDTH-1), false);
+			}
+			if(this->board[tileNumber+(BOARDWIDTH+1)] != Tile::BORDER){
+				TransformToMovableTiles(tileNumber+(BOARDWIDTH+1), false);
+			}
+			if(this->board[tileNumber+(BOARDWIDTH-1)] != Tile::BORDER){
+				TransformToMovableTiles(tileNumber+(BOARDWIDTH-1), false);
+			}
+		}
 	}
 
 	/**
@@ -659,8 +675,8 @@ namespace KaroEngine
 	* Make a recursive call to find the Amount of connected tiles
 	*/
 	int KaroEngine::GetAmountConnectedTilesRecursive(int tileNumber){
-		int AmountTiles=0;
-		if(this->board[tileNumber] == Tile::EMPTY ||this->board[tileNumber] == Tile::BORDER){
+		int AmountTiles = 0;
+		if(this->board[tileNumber] == Tile::EMPTY || this->board[tileNumber] == Tile::BORDER){
 			return AmountTiles;
 		}
 		if(this->visitedList->isInArray(tileNumber)){
@@ -1036,22 +1052,22 @@ namespace KaroEngine
 			DoMove(move->positionFrom, move->positionTo, move->tileFrom, move->isJumpMove);
 
 			// Check all changed positions for a change in moveable tiles
-			TransformToMovableTiles(move->positionFrom, true);
-			TransformToMovableTiles(move->positionTo, true);
-			TransformToMovableTiles(move->tileFrom, true);
+			TransformToMovableTiles(move->positionFrom, true, false);
+			TransformToMovableTiles(move->positionTo, true, true);
+			TransformToMovableTiles(move->tileFrom, true, true);
 
 		} else if(move->positionFrom > 0 && move->positionTo > 0) {
 			DoMove(move->positionFrom, move->positionTo, move->isJumpMove);
 
 			// Check all changed positions for a change in moveable tiles
-			TransformToMovableTiles(move->positionFrom, true);
-			TransformToMovableTiles(move->positionTo, true);
+			TransformToMovableTiles(move->positionFrom, true, false);
+			TransformToMovableTiles(move->positionTo, true, false);
 
 		} else if(move->positionTo > 0) {
 			DoMove(move->positionTo);
 
 			// Check all changed positions for a change in moveable tiles
-			TransformToMovableTiles(move->positionTo, true);
+			TransformToMovableTiles(move->positionTo, true, false);
 		} else {
 			SetMessageLog("Not a valid move given");
 		}
@@ -1175,22 +1191,22 @@ namespace KaroEngine
 			UndoMove(move->positionFrom, move->positionTo, move->tileFrom, move->isJumpMove);
 
 			// Check all changed positions for a change in moveable tiles
-			TransformToMovableTiles(move->positionFrom, true);
-			TransformToMovableTiles(move->positionTo, true);
-			TransformToMovableTiles(move->tileFrom, true);
+			TransformToMovableTiles(move->positionFrom, true, false);
+			TransformToMovableTiles(move->positionTo, true, true);
+			TransformToMovableTiles(move->tileFrom, true, true);
 
 		} else if(move->positionFrom > 0 && move->positionTo > 0) {
 			UndoMove(move->positionFrom, move->positionTo, move->isJumpMove);
 
 			// Check all changed positions for a change in moveable tiles
-			TransformToMovableTiles(move->positionFrom, true);
-			TransformToMovableTiles(move->positionTo, true);
+			TransformToMovableTiles(move->positionFrom, true, false);
+			TransformToMovableTiles(move->positionTo, true, false);
 
 		} else if(move->positionTo > 0) {
 			UndoMove(move->positionTo);
 
 			// Check all changed positions for a change in moveable tiles
-			TransformToMovableTiles(move->positionTo, true);
+			TransformToMovableTiles(move->positionTo, true, false);
 		} else {
 			SetMessageLog("Not a valid undo move given");
 		}
