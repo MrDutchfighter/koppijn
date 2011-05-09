@@ -15,6 +15,7 @@
 #include "VisitedList.h"
 #include <sstream>
 #include <algorithm>
+#include "mtrand.h"
 using namespace std;
 using namespace System;
 
@@ -69,7 +70,8 @@ namespace KaroEngine
 		map<int,int> moveableTiles;
 		VisitedList * visitedList;
 
-		map<int, int> transpositionTable;
+		map<int, int> transpositionTableWhite;
+		map<int, int> transpositionTableRed;
 		int randomTile[289];
 		int randomRedUnmarked[289];
 		int randomWhiteUnmarked[289];

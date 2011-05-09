@@ -747,12 +747,24 @@ namespace KaroEngine
 		if(depth != 0) {
 			// Is this move in the transposition table?
 			//int hash = GetHash();
-			map<int,int>::iterator it = transpositionTable.find(hash);
-            if (it != transpositionTable.end())
-            {
-                bestMove->score = it->second;
-                return bestMove;
-            }
+
+			if(turn == Player::RED){
+				map<int,int>::iterator it = transpositionTableRed.find(hash);
+				if (it != transpositionTableRed.end())
+				{
+					bestMove->score = it->second;
+					return bestMove;
+				}
+			}else{
+				map<int,int>::iterator it = transpositionTableWhite.find(hash);
+				if (it != transpositionTableWhite.end())
+				{
+					bestMove->score = it->second;
+					return bestMove;
+				}
+			}
+			
+            
 		}
 
 		// Evaluate the current board, game ended? Return empty move with the max/min score
@@ -880,16 +892,28 @@ namespace KaroEngine
 		}
 
 		// Put best score in transposition table
-		if(depth == 1 || depth == 2) {		
+		if(depth == 1 || depth == 3) {		
 			//hash=GetHash();
-			map<int,int>::iterator it = transpositionTable.find(hash);
-			if (it == transpositionTable.end()){
-                transpositionTable.insert(pair<int,int>(hash, bestMove->score));
+			if(turn == Player::RED){
+				map<int,int>::iterator it = transpositionTableRed.find(hash);
+				if (it == transpositionTableRed.end()){
+					transpositionTableRed.insert(pair<int,int>(hash, bestMove->score));
+				}else{
+					if(it->second != bestMove->score){
+						SetMessageLog("Tried to insert a double hash value for different value..");
+					}
+				}
 			}else{
-				if(it->second != bestMove->score){
-					SetMessageLog("Tried to insert a double hash value for different value..");
+				map<int,int>::iterator it = transpositionTableWhite.find(hash);
+				if (it == transpositionTableWhite.end()){
+					transpositionTableWhite.insert(pair<int,int>(hash, bestMove->score));
+				}else{
+					if(it->second != bestMove->score){
+						SetMessageLog("Tried to insert a double hash value for different value..");
+					}
 				}
 			}
+			
 		}
 
 		return bestMove;
@@ -1044,7 +1068,7 @@ namespace KaroEngine
 		int hash = 0;
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH; i++)
 		{
-			if(board[i] != Tile::EMPTY)
+			if(board[i] != Tile::EMPTY && board[i] != Tile::BORDER)
 			{
 				if(board[i] == Tile::SOLIDTILE || board[i] == Tile::MOVEABLETILE)
 					hash ^= randomTile[i];
@@ -1062,6 +1086,7 @@ namespace KaroEngine
 	}
 	
 	int KaroEngine::GetHash(int hash,Move *move){
+		return GetHash();
 		if(board[move->positionTo] == Tile::REDMARKED){
 			hash ^= randomRedMarked[move->positionTo];
 			if(move->isJumpMove){
@@ -1103,7 +1128,11 @@ namespace KaroEngine
 
 	int KaroEngine::GetRandomNumber()
 	{
-		int randomNumber = rand() % 899999 + 100000;
+		MTRand drand;
+		int randomNumber2 = (int)(drand() * 1000000) + 1000000;
+		int randomNumber = rand() % 8999 + 1000;
+		
+
 
 		for(int i = 0; i < sizeof(randomTile) / sizeof(randomTile[0]); i++){
 			if(randomTile[i] == randomNumber)
