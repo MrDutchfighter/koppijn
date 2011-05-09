@@ -151,6 +151,7 @@ namespace KaroEngine
 			if(this->IsWinner(Reverse(turn), to))
 			{
 				this->SetMessageLog("WIN!");
+				gameState == GameState::GAMEFINISHED;
 			}
 		}
 	}
@@ -425,6 +426,12 @@ namespace KaroEngine
 			// Execute the final move
 			if(theMove->positionFrom > 0) {
 				DoMove(theMove);
+
+				if(this->IsWinner(Reverse(turn), theMove->positionTo))
+				{
+					this->SetMessageLog("WIN!");
+					gameState = GameState::GAMEFINISHED;
+				}
 			} else {
 				SetMessageLog("Geen move gevonden");
 			}
