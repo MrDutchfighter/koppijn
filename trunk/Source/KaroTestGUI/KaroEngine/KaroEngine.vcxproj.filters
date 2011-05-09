@@ -33,7 +33,7 @@
     <ClInclude Include="VisitedList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\mtrand\mtrand\mtrand.h">
+    <ClInclude Include="mtrand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,7 +56,7 @@
     <ClCompile Include="VisitedList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\mtrand\mtrand\mtrand.cpp">
+    <ClCompile Include="mtrand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
