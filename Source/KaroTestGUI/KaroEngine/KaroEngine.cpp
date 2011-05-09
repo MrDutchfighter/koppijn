@@ -834,6 +834,7 @@ namespace KaroEngine
 					bestMove->score = INT_MIN+10000;
 				}
 				UndoMove(possibleMoves->at(i));
+				break;
 				return bestMove;
 			}
 
@@ -867,7 +868,7 @@ namespace KaroEngine
 			}
 
 			// Prunning
-			if(beta <= alpha) {
+			if(beta <= alpha) {				
 				return bestMove;
 			}
 		}
@@ -978,9 +979,9 @@ namespace KaroEngine
 
 	int KaroEngine::GetHash()
 	{
-		/*
+		
 		vector<int> tileIndexes; // found tiles
-		int left = BOARDWIDTH; // most left tile
+		int left = this->_leftBoundairy.first; // most left tile
 		int right = 0; // most right tile
 
 		int count = 0; // tile index for iterating
@@ -1032,7 +1033,7 @@ namespace KaroEngine
 			}
 		}
 
-		*/
+		/*
 
 		int hash = 0;
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH; i++)
@@ -1050,7 +1051,7 @@ namespace KaroEngine
 				else if(board[i] == Tile::WHITEUNMARKED)
 					hash ^= randomWhiteUnmarked[i];
 			}
-		}
+		}*/
 		return hash;
 	}
 	
