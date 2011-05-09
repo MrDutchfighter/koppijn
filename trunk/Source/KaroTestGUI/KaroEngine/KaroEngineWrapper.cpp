@@ -43,8 +43,8 @@ int KaroEngineWrapper::GetEvaluationScore(){
 	return _karoEngine->GetEvaluationScore();
 }
 
-void KaroEngineWrapper::CalculateComputerMove(){
-	_karoEngine->CalculateComputerMove();
+float KaroEngineWrapper::CalculateComputerMove(){
+	return _karoEngine->CalculateComputerMove();
 }
 
 String ^KaroEngineWrapper::GetMessageLog(){

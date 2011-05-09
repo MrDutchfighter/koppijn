@@ -304,19 +304,18 @@ namespace KaroTestGUI
 
             Application.DoEvents();
 
-            DateTime Start = DateTime.Now;
+            int times = 5;
+            float total = 0;
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < times; i++)
             {
-                engine.CalculateComputerMove();
+                total += engine.CalculateComputerMove();
                 UpdateGUI();
                 Application.DoEvents();
             }
 
-            TimeSpan Elapsed = DateTime.Now - Start;
-
-            this.txtMessageLog.Text = "Total: " + Elapsed.TotalSeconds + " Seconds \r\n" + this.txtMessageLog.Text;
-            this.txtMessageLog.Text = "Avarage: " + (Elapsed.TotalSeconds/5) + " Seconds \r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Total: " + total + " Seconds \r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Avarage: " + total / times + " Seconds \r\n" + this.txtMessageLog.Text;
         }
     }
 }

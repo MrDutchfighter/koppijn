@@ -254,6 +254,16 @@ namespace KaroEngine
 
 		return false; // VICTORIOUSSSSS
 	}	
+	/**
+	*returns the pieces from the Player (p)
+	**/
+	map<int,bool> KaroEngine::GetPlayerPieces(Player p)
+	{
+		if(p == Player::WHITE)
+			return whitePieces;
+		else if(p == Player::RED)
+			return redPieces;
+	}
 
 	/**
 	* Checks if the player (p) has won the game by moving his last tile
@@ -261,35 +271,25 @@ namespace KaroEngine
 	bool KaroEngine::IsWinner(Player p, int lastMove)
 	{
 		Tile marked;
-		map<int,bool> pieces;
 
 		//Right player color 
 		if (p == Player::WHITE) 
-		{
 			marked = Tile::WHITEMARKED;
-			pieces = whitePieces;
-		}
 		if (p == Player::RED)
-		{
 			marked = Tile::REDMARKED;
-			pieces = redPieces;
-		}
 
 		//check if first piece is marked
 		if(board[lastMove] == marked)
-		{
-			//check if four pieces are Marked else return false
+		{			
 			int countUnMarked = 0;
-			for each (pair<int, bool> p in pieces)
+			for each (pair<int, bool> piece in GetPlayerPieces(p))
 			{
-				if(!p.second)
+				//check if four pieces are Marked else return false
+				if(!piece.second)
 					countUnMarked++;
 				if(countUnMarked > 2)
 					return false;
-			}
 
-			for each (pair<int, bool> piece in pieces)
-			{
 				for(int i = 0; i < 8; i++)
 				{
 					//check if piece in possibleStep
@@ -298,10 +298,8 @@ namespace KaroEngine
 						//check if second is marked
 						int second = lastMove + possibleSteps[i];
 						if(board[second] != marked)
-						{
 							break;
-						}
-						
+												
 						int difference = second - lastMove;
 
 						//check if third is unmarked
@@ -311,17 +309,13 @@ namespace KaroEngine
 							//check if minfirst is unmarked 
 							int minFirst = lastMove - difference;
 							if(board[minFirst] != marked)
-							{
 								break;
-							}
 							else
 							{
 								//check if minfirst is marked and is winning
 								int minSecond = minFirst - difference;
 								if(board[minSecond] == marked)
-								{
 									return true;
-								}
 							}
 						}
 						else
@@ -329,9 +323,7 @@ namespace KaroEngine
 							//check if fourth is marked and is winning
 							int fourth = third + difference;
 							if(board[fourth] == marked)
-							{
 								return true;
-							}
 						}
 					}
 				}
@@ -414,7 +406,7 @@ namespace KaroEngine
 	/**
 	* Calculates the next computer move
 	*/
-	void KaroEngine::CalculateComputerMove() {
+	float KaroEngine::CalculateComputerMove() {
 		
 		__int64 ctr1 = 0, ctr2 = 0, freq = 0;
 		int acc = 0, i = 0;
@@ -456,6 +448,8 @@ namespace KaroEngine
 		std::string s((LPCSTR)str);
 		s = "Move took " + s + " seconds";
 		SetMessageLog(s);
+
+		return flt;
 	}
 
 	/**
