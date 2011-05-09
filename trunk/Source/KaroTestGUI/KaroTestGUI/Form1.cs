@@ -317,5 +317,35 @@ namespace KaroTestGUI
             this.txtMessageLog.Text = "Total: " + total + " Seconds \r\n" + this.txtMessageLog.Text;
             this.txtMessageLog.Text = "Avarage: " + total / times + " Seconds \r\n" + this.txtMessageLog.Text;
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            engine = new KaroEngineWrapper();
+            UpdateGUI();
+
+            float total = 0;
+            int moves = 0;
+
+            while (engine.GetGameState() != GameState.GAMEFINISHED)
+            {
+                total += engine.CalculateComputerMove();
+                moves++;
+                UpdateGUI();
+                Application.DoEvents();
+            }
+
+            Player winningPlayer = engine.GetTurn();
+            switch (winningPlayer)
+            { 
+                case Player.RED:
+                    winningPlayer = Player.WHITE;
+                    break;
+                case Player.WHITE:
+                    winningPlayer = Player.RED;
+                    break;
+            }
+            
+            MessageBox.Show("Player " + winningPlayer + " wins in " + moves + " moves and "+ total + " seconds!");
+        }
     }
 }
