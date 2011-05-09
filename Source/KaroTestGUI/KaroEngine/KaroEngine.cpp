@@ -824,7 +824,7 @@ namespace KaroEngine
 				this->_leftBoundairy.second=1;
 				_boundairyChanged=true;
 			}
-			if(possibleMoves->at(i)->positionTo%BOARDWIDTH == this->_leftBoundairy.first ){
+			else if(possibleMoves->at(i)->positionTo%BOARDWIDTH == this->_leftBoundairy.first && possibleMoves->at(i)->positionFrom%BOARDWIDTH != this->_leftBoundairy.first ){
 				this->_leftBoundairy.second+=1;
 			}
 
@@ -834,7 +834,7 @@ namespace KaroEngine
 				this->_topBoundairy.second=1;
 				_boundairyChanged=true;
 			}
-			if(possibleMoves->at(i)->positionTo/BOARDWIDTH == this->_topBoundairy.first ){
+			else if( (int)(possibleMoves->at(i)->positionTo/BOARDWIDTH == this->_topBoundairy.first) && (int)(possibleMoves->at(i)->positionFrom/BOARDWIDTH != this->_topBoundairy.first) ){
 				this->_topBoundairy.second+=1;
 			}
 			if(_boundairyChanged){
