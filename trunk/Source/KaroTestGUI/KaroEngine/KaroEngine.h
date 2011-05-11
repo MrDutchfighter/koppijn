@@ -81,6 +81,8 @@ namespace KaroEngine
 		int GetHash();
 		void SetHash(int &hash,Move *move);
 		int GetRandomNumber();
+		int CountMarkedPieces(map<int,bool>);
+
 		/**
 		* Functions
 		*/

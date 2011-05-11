@@ -347,43 +347,37 @@ namespace KaroEngine
 		if (p == Player::RED)
 			marked = Tile::REDMARKED;
 
-		int countUnMarked = 0;
-		for each (pair<int, bool> piece in GetPlayerPieces(p))
+		for(int i = 0; i < 4; i++)
 		{
-			//check if at least 5 pieces are Marked else return 0
-			if(!piece.second)
-				countUnMarked++;
-			if(countUnMarked > 5)
-				return 0;
+			//check if second is marked
+			int second = pieceIndex + possibleSteps[i];
+			int previous = pieceIndex - possibleSteps[i];
 
-			for(int i = 0; i < 8; i++)
+			if(board[second] == marked)
 			{
-				//check if piece in possibleStep
-				if(piece.first == pieceIndex + possibleSteps[i])
-				{
-					//check if second is marked
-					int second = pieceIndex + possibleSteps[i];
-					if(board[second] != marked)
-						break;
-					else
-					{
-						score = score + 2; // 2 in a row
-						int difference = second - pieceIndex;
+				score += 2; // 2 in a row
 
-						//check if third is unmarked
-						int third = second + difference;
-						if(board[third] != marked)
-						{
-							//check if minfirst is unmarked 
-							int minFirst = pieceIndex - difference;
-							if(board[minFirst] != marked)
-								break;
-							else						
-								score = score + 4; // 4 in a row
-						}
-						else
-							score = score + 3; // 3 in a row
-					}
+				//check if third is unmarked
+				int third = second + possibleSteps[i];
+				if(board[third] == marked)
+					score += 3; // 3 in a row
+				else
+				{
+					//check if opposite is marked
+					if(board[previous] == marked)
+						score += 3; // 3 in a row
+				}
+			}
+			else
+			{
+				//check opposite direction
+				if(board[previous] == marked)
+				{
+					score += 2; // 2 in a row
+
+					int previous2 = previous - possibleSteps[i];
+					if(board[previous2] == marked)
+						score += 3; // 3 in a row
 				}
 			}
 		}		
@@ -922,24 +916,33 @@ namespace KaroEngine
 	int KaroEngine::EvaluateBoard(Player p)
 	{
 		int calculatedScore = 0;
-		if(p == Player::WHITE)
-		{
-			for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
-				if (it->second == true)
-				{
-					calculatedScore += 2;
-					calculatedScore += this->EvaluateNumRows(p, it->first);
-				}	
-			}	
-		}
-		if (p == Player::RED)
-		{
-			for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
-				if (it->second == true)
-				{
-					calculatedScore += 2;
-					this->EvaluateNumRows(p, it->first);
+		switch(p){
+			case Player::WHITE:
+			{
+				int markedPieces = CountMarkedPieces(whitePieces);
+				for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
+					if (it->second == true)
+					{
+						calculatedScore += 2;
+
+						if(markedPieces > 1)
+							calculatedScore += this->EvaluateNumRows(p, it->first);
+					}
 				}
+			break;
+			}
+			case Player::RED:
+			{
+				int markedPieces = CountMarkedPieces(redPieces);
+				for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
+					if (it->second == true)
+					{
+						calculatedScore += 2;
+						if(markedPieces > 1)
+							this->EvaluateNumRows(p, it->first);
+					}
+				}
+			break;
 			}
 		}
 
@@ -1141,6 +1144,17 @@ namespace KaroEngine
 		}
 
 		return randomNumber;
+	}
+
+	int KaroEngine::CountMarkedPieces(map<int,bool> pieces)
+	{
+		int countMarked = 0;
+		for each (pair<int, bool> piece in pieces)
+		{
+			if(piece.second)
+				countMarked++;
+		}
+		return countMarked;
 	}
 
 
