@@ -182,16 +182,12 @@ namespace KaroEngine
 	/**
 	* Switches the turn
 	*/
-	Player KaroEngine::Reverse(Player turnPro)
+	Player KaroEngine::Reverse(Player &turnPro)
 	{
-		switch(turnPro)
-		{
-			case Player::WHITE:
-				return Player::RED;
-			case Player::RED:
-				return Player::WHITE;
-			default:
-				return turnPro;
+		if(turnPro == Player::WHITE){
+			return Player::RED;
+		}else{
+			return Player::WHITE;
 		}
 	}
 
