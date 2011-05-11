@@ -69,6 +69,7 @@ namespace KaroEngine
 		map<int,bool> redPieces;
 		map<int,bool> whitePieces;
 		map<int,int> moveableTiles;
+		map<int,int> allEmptyTiles;
 		VisitedList * visitedList;
 
 		map<int, pair<int,int>> transpositionTableWhite; //<hash, <depth,score>>
@@ -92,7 +93,7 @@ namespace KaroEngine
 		int GetAmountConnectedTilesRecursive(int tileNumber);
 		int GetAmountConnectedNeighbours(int tileNumber);
 		void TransformToMovableTiles(int tileNumber, bool checkNeighbours, bool checkDiagonalNeighbours);
-
+		void TransformToMoveableTiles();
 
 		// Do Move
 		bool DoMove(int from);
