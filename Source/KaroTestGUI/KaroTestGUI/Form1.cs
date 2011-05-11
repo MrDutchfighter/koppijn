@@ -376,6 +376,7 @@ namespace KaroTestGUI
                     if (engine.GetTurn() == Player.RED)
                         white++;
                 }
+                bdraw = false;
 
                 ShowWinning(moves, total, bdraw);
             }
@@ -385,9 +386,7 @@ namespace KaroTestGUI
             this.txtMessageLog.Text = "WHITE:\t" + white + " \r\n" + this.txtMessageLog.Text;
             this.txtMessageLog.Text = "Played:\t" + games + "\r\n" + this.txtMessageLog.Text;
 
-            textBox2.Text = "" + games;
-            bdraw = false;
-            
+            textBox2.Text = "" + games; 
         }
 
         private void ShowWinning(int moves, float total, bool draw)
