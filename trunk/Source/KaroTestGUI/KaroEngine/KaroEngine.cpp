@@ -399,7 +399,7 @@ namespace KaroEngine
 		}
 		
 		std::sort (moves->begin(), moves->end(), bigger_than_second);
-
+		
 	}
 
 
@@ -893,36 +893,37 @@ namespace KaroEngine
 				}
 			}
 
+
+			// Put best score in transposition table
+			if(depth == 1) { // || depth == 3
+				//hash=GetHash();
+
+				pair<int,int> depthScore = make_pair(depth, bestMove->score);
+
+				if(turn == Player::RED){
+					map<int,pair<int,int>>::iterator it = transpositionTableRed.find(hash);
+					if (it == transpositionTableRed.end()){
+						transpositionTableRed.insert(pair<int, pair<int,int>>(hash, depthScore));
+					}else{
+						if(it->second.first > depth)
+							it->second = depthScore;
+					}
+				}else{
+					map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(hash);
+					if (it == transpositionTableWhite.end()){
+						transpositionTableWhite.insert(pair<int, pair<int,int>>(hash, depthScore));
+					}else{
+						if(it->second.first > depth)
+							it->second = depthScore;
+					}
+				}
+			
+			}
+
 			// Prunning
 			if(beta <= alpha) {				
 				return bestMove;
 			}
-		}
-
-		// Put best score in transposition table
-		if(depth == 1 || depth == 3) {		
-			//hash=GetHash();
-
-			pair<int,int> depthScore = make_pair(depth, bestMove->score);
-
-			if(turn == Player::RED){
-				map<int,pair<int,int>>::iterator it = transpositionTableRed.find(hash);
-				if (it == transpositionTableRed.end()){
-					transpositionTableRed.insert(pair<int, pair<int,int>>(hash, depthScore));
-				}else{
-					if(it->second.first > depth)
-						it->second = depthScore;
-				}
-			}else{
-				map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(hash);
-				if (it == transpositionTableWhite.end()){
-					transpositionTableWhite.insert(pair<int, pair<int,int>>(hash, depthScore));
-				}else{
-					if(it->second.first > depth)
-						it->second = depthScore;
-				}
-			}
-			
 		}
 
 		return bestMove;
