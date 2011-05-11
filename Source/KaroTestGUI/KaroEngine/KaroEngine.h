@@ -125,7 +125,7 @@ namespace KaroEngine
 
 		bool IsValidMove(int from, int to);
 		bool IsWinner(Player p, int lastMove);
-		Player Reverse(Player);
+		Player Reverse(Player &p);
 		void SetMessageLog(std::string s);
 
 		int EvaluateBoard(Player p);
