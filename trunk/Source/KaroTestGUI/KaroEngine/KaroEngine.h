@@ -16,6 +16,7 @@
 #include <sstream>
 #include <algorithm>
 #include "mtrand.h"
+#include <iostream>
 using namespace std;
 using namespace System;
 
@@ -87,7 +88,7 @@ namespace KaroEngine
 		* Functions
 		*/
 		// Algorithm functions
-		Move * MiniMax(Player p, int depth, int alpha, int beta,int hash);
+		Move * MiniMax(Player p, int depth, int alpha, int beta,int hash, int currentEvaluation);
 		int GetAmountConnectedTilesRecursive(int tileNumber);
 		int GetAmountConnectedNeighbours(int tileNumber);
 		void TransformToMovableTiles(int tileNumber, bool checkNeighbours, bool checkDiagonalNeighbours);
@@ -140,6 +141,8 @@ namespace KaroEngine
 		// Algorithm functions
 		float CalculateComputerMove();
 		int EvaluateNumRows(Player p, int pieceIndex);
+		void AssignMoveScores(vector<Move*> *moves);
+
 
 		// 'Getters'
 		bool FreeForMove(int); // checks if a tile is empty
