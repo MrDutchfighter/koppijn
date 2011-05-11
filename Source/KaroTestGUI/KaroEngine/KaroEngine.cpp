@@ -385,6 +385,24 @@ namespace KaroEngine
 		return score;
 	}
 
+	void KaroEngine::AssignMoveScores(vector<Move*> *moves)
+	{
+		for(int i=0; i < moves->size(); i++) {
+			// Execute the move
+			DoMove(moves->at(i));
+			int scoreRed = EvaluateBoard(Player::RED);
+			int scoreWhite = EvaluateBoard(Player::WHITE);
+			int evaluationScore = scoreRed-scoreWhite;
+			//int rand = rand() % 1000 + 1;
+			moves->at(i)->score = evaluationScore;
+			UndoMove(moves->at(i));				
+		}
+		
+		std::sort (moves->begin(), moves->end(), bigger_than_second);
+
+	}
+
+
 	/**
 	* Calculates the next computer move
 	*/
@@ -411,7 +429,7 @@ namespace KaroEngine
 		} else if(gameState == GameState::PLAYING) {
 			// Generate a real computer move with minmax
 			int hash= GetHash();
-			Move * theMove = MiniMax(GetTurn(), 0, INT_MIN, INT_MAX,hash);
+			Move * theMove = MiniMax(GetTurn(), 0, INT_MIN, INT_MAX,hash,0);
 
 			// Execute the final move
 			if(theMove->positionFrom > 0) {
@@ -719,7 +737,7 @@ namespace KaroEngine
 	/**
 	* MinMax function
 	*/
-	Move * KaroEngine::MiniMax(Player p, int depth, int alpha, int beta,int hash)
+	Move * KaroEngine::MiniMax(Player p, int depth, int alpha, int beta,int hash, int evaluationScore)
 	{
 		// Hash the current board?
 		//Position currentPosition = new Position(board);
@@ -758,9 +776,9 @@ namespace KaroEngine
 		}
 
 		// Evaluate the current board, game ended? Return empty move with the max/min score
-		int scoreRed = EvaluateBoard(Player::RED);
-		int scoreWhite = EvaluateBoard(Player::WHITE);
-		int evaluationScore = scoreRed-scoreWhite;
+		//int scoreRed = EvaluateBoard(Player::RED);
+		//int scoreWhite = EvaluateBoard(Player::WHITE);
+		//int evaluationScore = scoreRed-scoreWhite;
 
 		// If maximum depth is reached
 		if(depth == maxDepth) {
@@ -770,7 +788,7 @@ namespace KaroEngine
 
 		// Find next moves for the current player
 		vector<Move*> * possibleMoves = GetPossibleMoves(p);
-
+		this->AssignMoveScores(possibleMoves);
 		// Loop through all the moves
 		for(int i=0; i < possibleMoves->size(); i++) {
 			// Execute the move
@@ -848,7 +866,7 @@ namespace KaroEngine
 
 			// Get the last best move
 			//Move * lastBestMove = possibleMoves->at(i);
-			Move * lastBestMove = MiniMax(Reverse(p), depth+1, alpha, beta,hash);
+			Move * lastBestMove = MiniMax(Reverse(p), depth+1, alpha, beta,hash, possibleMoves->at(i)->score);
 
 			// Directly undo this move
 			UndoMove(possibleMoves->at(i));
