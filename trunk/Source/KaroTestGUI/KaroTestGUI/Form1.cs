@@ -352,7 +352,7 @@ namespace KaroTestGUI
 
                 while (engine.GetGameState() != GameState.GAMEFINISHED)
                 {
-                    if (moves >= 80)
+                    if (moves >= 180)
                     {
                         bdraw = true;
                         break;

@@ -922,38 +922,27 @@ namespace KaroEngine
 	int KaroEngine::EvaluateBoard(Player p)
 	{
 		int calculatedScore = 0;
-		switch(p)
+		if(p == Player::WHITE)
 		{
-		case Player::WHITE:
-			{
-				if(!this->whitePieces.empty()) {
-					for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
-						if (it->second == true)
-						{
-							calculatedScore += 2;
-							//calculatedScore += 0;
-							calculatedScore += this->EvaluateNumRows(p, it->first);
-						}
-							
-					}
+			for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
+				if (it->second == true)
+				{
+					calculatedScore += 2;
+					calculatedScore += this->EvaluateNumRows(p, it->first);
+				}	
+			}	
+		}
+		if (p == Player::RED)
+		{
+			for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
+				if (it->second == true)
+				{
+					calculatedScore += 2;
+					this->EvaluateNumRows(p, it->first);
 				}
-			break;
-			}
-		case Player::RED:
-			{
-				if(!this->redPieces.empty()) {
-					for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
-						if (it->second == true)
-						{
-							calculatedScore += 2;
-							//calculatedScore += 0;
-							this->EvaluateNumRows(p, it->first);
-						}
-					}
-				}
-			break;
 			}
 		}
+
 		this->evaluationScore = this->evaluationScore; // DON'T USE IT!
 		return calculatedScore;
 	}
