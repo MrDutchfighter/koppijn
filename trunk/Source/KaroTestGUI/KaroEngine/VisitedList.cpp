@@ -7,12 +7,14 @@ VisitedList::VisitedList(void)
 	
 }
 bool VisitedList::isInArray(int index){
-	for each(pair<int,int> i in this->visitedList){
-		if(i.second==index){
-			return true;
-		}
+	map<int,int>::iterator iter;
+	iter = this->visitedList.find(index);
+    if (iter != this->visitedList.end()) {  //index is found in the map
+		return true;
 	}
-	return false;
+    else{
+		return false;
+	}
 }
 
 void VisitedList::insertAt(int index){
