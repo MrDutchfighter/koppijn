@@ -36,7 +36,7 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION; 
 		this->insertionCount = 0;	
-		this->maxDepth = 3;
+		this->maxDepth = 4;
 		this->evaluationScore = 0;
 		this->visitedList = new VisitedList();
 
@@ -282,6 +282,7 @@ namespace KaroEngine
 		if(board[lastMove] == marked)
 		{			
 			int countUnMarked = 0;
+
 			for each (pair<int, bool> piece in GetPlayerPieces(p))
 			{
 				//check if four pieces are Marked else return false
@@ -935,33 +936,26 @@ namespace KaroEngine
 	int KaroEngine::EvaluateBoard(Player p)
 	{
 		int calculatedScore = 0;
-		switch(p){
-			case Player::WHITE:
-			{
-				int markedPieces = CountMarkedPieces(whitePieces);
-				for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
-					if (it->second == true)
-					{
-						calculatedScore += 2;
-
-						if(markedPieces > 1)
-							calculatedScore += this->EvaluateNumRows(p, it->first);
-					}
+		if(p == Player::WHITE)
+		{
+			for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
+				if (it->second == true)
+				{
+					calculatedScore += 2;
+					calculatedScore += this->EvaluateNumRows(p, it->first);
+				}	
+			}	
+		}
+		else
+		{
+			int markedPieces = CountMarkedPieces(redPieces);
+			for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
+				if (it->second == true)
+				{
+					calculatedScore += 2;
+					if(markedPieces > 1)
+						this->EvaluateNumRows(p, it->first);
 				}
-			break;
-			}
-			case Player::RED:
-			{
-				int markedPieces = CountMarkedPieces(redPieces);
-				for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
-					if (it->second == true)
-					{
-						calculatedScore += 2;
-						if(markedPieces > 1)
-							this->EvaluateNumRows(p, it->first);
-					}
-				}
-			break;
 			}
 		}
 
@@ -1017,11 +1011,9 @@ namespace KaroEngine
 
 	int KaroEngine::GetHash()
 	{
-		
 		vector<int> tileIndexes; // found tiles
 		int left = this->_leftBoundairy.first; // most left tile
 		int right = 0; // most right tile
-
 		int count = 0; // tile index for iterating
 
 		while(tileIndexes.size() != 20)
