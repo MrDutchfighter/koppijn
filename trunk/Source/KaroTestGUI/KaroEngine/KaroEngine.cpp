@@ -136,29 +136,6 @@ namespace KaroEngine
 	}
 
 	/**
-	* Inserts a tile on the given position
-	*/
-	bool KaroEngine::InsertByXY(int position) {
-		if(board[position] == Tile::SOLIDTILE || board[position] == Tile::MOVEABLETILE ){
-		
-			map<int,bool> whitePieces2 = whitePieces;
-			map<int,bool> redPieces2 = redPieces;
-
-			Move * x = new Move(position);
-
-			DoMove(x);
-
-			//turn = this->Reverse(turn);
-			insertionCount++;							
-			if(insertionCount == 12) {
-				gameState = GameState::PLAYING;
-			}
-			return true;
-		}
-		return false;
-	}
-
-	/**
 	* Switches the turn
 	*/
 	Player KaroEngine::Reverse(Player &turnPro)
@@ -338,7 +315,8 @@ namespace KaroEngine
 
 				int position=(y*BOARDWIDTH)+x;
 
-				if(this->InsertByXY(position)){
+				Move * v = new Move(position);
+				if(this->DoMove(v)) {
 					foundInsertPosition=true;
 				}
 			}
@@ -1030,15 +1008,15 @@ namespace KaroEngine
 	*/													//
 	// Exectues the given move
 		// The move has to be valid!
-	void KaroEngine::DoMove(Move *move)
+	bool KaroEngine::DoMove(Move *move)
 	{
 		//map<int,bool> whitePieces2 = whitePieces;
 		//map<int,bool> redPieces2 = redPieces;
 		//map<int,int> moveableTiles2 = moveableTiles;
 		//map<int,int> test = allEmptyTiles;
-
+		bool result = false;
 		if(move->positionFrom > 0 && move->positionTo > 0 && move->tileFrom > 0) {
-			DoMove(move->positionFrom, move->positionTo, move->tileFrom, move->isJumpMove);
+			result = DoMove(move->positionFrom, move->positionTo, move->tileFrom, move->isJumpMove);
 
 			// Check all changed positions for a change in moveable tiles
 			//TransformToMovableTiles(move->positionFrom, true, false);
@@ -1046,14 +1024,14 @@ namespace KaroEngine
 			//TransformToMovableTiles(move->tileFrom, true, true);
 
 		} else if(move->positionFrom > 0 && move->positionTo > 0) {
-			DoMove(move->positionFrom, move->positionTo, move->isJumpMove);
+			result = DoMove(move->positionFrom, move->positionTo, move->isJumpMove);
 
 			// Check all changed positions for a change in moveable tiles
 			//TransformToMovableTiles(move->positionFrom, true, false);
 			//TransformToMovableTiles(move->positionTo, true, false);
 
 		} else if(move->positionTo > 0) {
-			DoMove(move->positionTo);
+			result = DoMove(move->positionTo);
 
 			// Check all changed positions for a change in moveable tiles
 			//TransformToMovableTiles(move->positionTo, true, false);
@@ -1066,6 +1044,7 @@ namespace KaroEngine
 
 		turn = Reverse(turn);
 		lastMove = move;
+		return result;
 	}
 
 	// Do insert move
@@ -1073,7 +1052,7 @@ namespace KaroEngine
 		if(board[to] == Tile::SOLIDTILE || board[to] == Tile::MOVEABLETILE) {
 			board[to] = (turn == Player::RED) ? Tile::REDUNMARKED : Tile::WHITEUNMARKED;
 		} else {
-			SetMessageLog("[ERROR] You can't place a pawn here!");
+			//SetMessageLog("[ERROR] You can't place a pawn here!");
 			return false;
 		}
 
@@ -1090,6 +1069,12 @@ namespace KaroEngine
 
 		allEmptyTiles.erase(to);
 
+		insertionCount += 1;
+		
+		if(insertionCount == 12) {
+			gameState = GameState::PLAYING;
+		}
+		
 		return true;
 	}
 
@@ -1228,6 +1213,7 @@ namespace KaroEngine
 
 		allEmptyTiles.insert(std::pair<int,int>(to, 0));
 
+		insertionCount -= 1;
 		return true;
 	}
 

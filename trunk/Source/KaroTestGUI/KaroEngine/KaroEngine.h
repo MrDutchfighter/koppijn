@@ -122,9 +122,8 @@ namespace KaroEngine
 		~KaroEngine(void);
 
 		// Normal functions
-		bool InsertByXY(int position);
 		void DoMove(int from, int to, int fromTile);
-		void DoMove(Move *move);		
+		bool DoMove(Move *move);		
 		void UndoMove(Move *move);
 
 		bool IsValidMove(int from, int to);
