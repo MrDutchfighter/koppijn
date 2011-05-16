@@ -171,7 +171,7 @@ namespace KaroEngine
 	}
 
 	/**
-	*returns the pieces from the Player (p)
+	* Returns the pieces from the Player (p)
 	**/
 	map<int,bool> KaroEngine::GetPlayerPieces(Player p)
 	{
@@ -234,7 +234,7 @@ namespace KaroEngine
 						if(board[previous] == marked)
 						{
 							int previous2 = previous - possibleSteps[i];
-							if(board[previous2] == marked){
+							if(board[previous2] == marked) {
 								int previous3 = previous2 - possibleSteps[i];
 								if(board[previous3] == marked)
 									return true;
@@ -307,6 +307,7 @@ namespace KaroEngine
 		for(int i=0; i < moves->size(); i++) {
 			// Execute the move
 			DoMove(moves->at(i));
+
 			int scoreRed = EvaluateBoard(Player::RED);
 			int scoreWhite = EvaluateBoard(Player::WHITE);
 			int evaluationScore = scoreRed-scoreWhite;
@@ -667,7 +668,6 @@ namespace KaroEngine
 			bestMove->score = INT_MAX; // Int32.MaxValue
 		}
 
-
 		//First check if the score is already know, then evaluate. 
 		if(depth != 0) {
 			// Is this move in the transposition table?
@@ -710,7 +710,6 @@ namespace KaroEngine
 			DoMove(possibleMoves->at(i));
 			hash=GetHash();
 			//SetHash(hash,possibleMoves->at(i));
-			
 
 			// Was this the winning move? (has to be here, because IsWinner needs the last move...)
 			if(IsWinner(p, possibleMoves->at(i)->positionTo)) {
