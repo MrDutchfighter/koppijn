@@ -758,8 +758,9 @@ namespace KaroEngine
 			if(beta <= alpha) {				
 				return bestMove;
 			}
+		}
 
-			// Put best score in transposition table
+		// Put best score in transposition table
 			if(depth == 1) { // 
 				hash=GetHash();
 
@@ -784,8 +785,6 @@ namespace KaroEngine
 				}
 			
 			}
-		}
-
 		return bestMove;
 	}
 
