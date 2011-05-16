@@ -196,69 +196,6 @@ namespace KaroEngine
 	}
 
 	/**
-	* Checks if from 'from' to 'to' is a valid move
-	*/
-	bool KaroEngine::IsValidMove(int from, int to)
-	{
-		// check if the move is valid by validating with the turn of the current player
-		if(turn == Player::RED) {
-			if(board[from] != Tile::REDUNMARKED && board[from] != Tile::REDMARKED)
-				return false;
-		}
-
-		else if(turn == Player::WHITE) {
-			if(board[from] != Tile::WHITEUNMARKED && board[from] != Tile::WHITEMARKED)
-				return false;
-		}
-
-		if(board[to] != Tile::SOLIDTILE && board[to] != Tile::MOVEABLETILE) {
-			return false;
-		}
-
-		int moved = to - from;
-
-		// If possible move ( one step )
-		for(int i=0;i<8;i++){
-			if(possibleSteps[i]==moved) {
-				return true;
-			}
-		}
-
-		//check if it is a jumpmove
-		for(int i=0;i<8;i++){
-			if(possibleJumps[i]==moved){
-				//if the jump is possible, check if there is a piece between the 2 places.
-				int checkingTilenr=from+possibleSteps[i];
-				Tile checkTile=board[checkingTilenr];
-
-				if(checkTile== Tile::WHITEUNMARKED ||
-					checkTile == Tile::WHITEMARKED ||
-					checkTile == Tile::REDUNMARKED ||
-					checkTile == Tile::REDMARKED) {
-						this->SetMessageLog("Jumped succesfully");
-						//switch the mark
-						switch(board[from]){
-							case Tile::WHITEUNMARKED:
-								board[from]=Tile::WHITEMARKED;
-							break;
-							case Tile::WHITEMARKED:
-								board[from]=Tile::WHITEUNMARKED;
-							break;
-							case Tile::REDUNMARKED:
-								board[from]=Tile::REDMARKED;
-							break;
-							case Tile::REDMARKED:
-								board[from]=Tile::REDUNMARKED;
-							break;
-						}
-						return true;
-				}
-			}
-		}
-
-		return false; // VICTORIOUSSSSS
-	}	
-	/**
 	*returns the pieces from the Player (p)
 	**/
 	map<int,bool> KaroEngine::GetPlayerPieces(Player p)
