@@ -270,8 +270,7 @@ namespace KaroEngine
 					}
 				}
 			}
-		}		
-
+		}
 		return false;
 	}
 
@@ -734,63 +733,9 @@ namespace KaroEngine
 		for(int i=0; i < possibleMoves->size(); i++) {
 			// Execute the move
 			DoMove(possibleMoves->at(i));
-			_boundairyChanged=false;
-			//Check the boundairies
-			//boundairy left check the FROM position
-			if(possibleMoves->at(i)->positionFrom%BOARDWIDTH == this->_leftBoundairy.first ){
-				this->_leftBoundairy.second-=1;
-				if(this->_leftBoundairy.second==0){ //if zero reset the left boundairy
-					this->_leftBoundairy.first+=1;
-					this->_leftBoundairy.second=0;
-					for(int i=0;i<BOARDWIDTH;i++){
-						if(board[this->_leftBoundairy.first+(i*BOARDWIDTH)] != Tile::EMPTY || board[this->_leftBoundairy.first+(i*BOARDWIDTH)] != Tile::BORDER){
-							this->_leftBoundairy.second+=1;
-						}						
-					}
-					_boundairyChanged=true;
-				}
-			}
-
-			//boundairy Top check the FROM position
-			if(possibleMoves->at(i)->positionFrom/BOARDWIDTH == this->_topBoundairy.first ){
-				this->_topBoundairy.second-=1;
-				if(this->_topBoundairy.second==0){ //if zero reset the left boundairy
-					this->_topBoundairy.first+=1;
-					this->_topBoundairy.second=0;
-					for(int i=0;i<BOARDWIDTH;i++){
-						if(board[i+(this->_leftBoundairy.first*BOARDWIDTH)] != Tile::EMPTY || board[i+(this->_leftBoundairy.first*BOARDWIDTH)] != Tile::BORDER){
-							this->_leftBoundairy.second+=1;
-						}
-					}
-					_boundairyChanged=true;
-				}
-			}
+			hash=GetHash();
+			//SetHash(hash,possibleMoves->at(i));
 			
-			//Check the TO position
-			//boundairy left
-			if(possibleMoves->at(i)->positionTo%BOARDWIDTH < this->_leftBoundairy.first ){
-				this->_leftBoundairy.first=possibleMoves->at(i)->positionTo%BOARDWIDTH;
-				this->_leftBoundairy.second=1;
-				_boundairyChanged=true;
-			}
-			else if(possibleMoves->at(i)->positionTo%BOARDWIDTH == this->_leftBoundairy.first && possibleMoves->at(i)->positionFrom%BOARDWIDTH != this->_leftBoundairy.first ){
-				this->_leftBoundairy.second+=1;
-			}
-
-			//boundairy top
-			if(possibleMoves->at(i)->positionTo/BOARDWIDTH < this->_topBoundairy.first ){
-				this->_topBoundairy.first=possibleMoves->at(i)->positionTo/BOARDWIDTH;
-				this->_topBoundairy.second=1;
-				_boundairyChanged=true;
-			}
-			else if( (int)(possibleMoves->at(i)->positionTo/BOARDWIDTH == this->_topBoundairy.first) && (int)(possibleMoves->at(i)->positionFrom/BOARDWIDTH != this->_topBoundairy.first) ){
-				this->_topBoundairy.second+=1;
-			}
-			if(_boundairyChanged){
-				hash=GetHash();
-			}else{
-				SetHash(hash,possibleMoves->at(i));
-			}
 
 			// Was this the winning move? (has to be here, because IsWinner needs the last move...)
 			if(IsWinner(p, possibleMoves->at(i)->positionTo)) {
