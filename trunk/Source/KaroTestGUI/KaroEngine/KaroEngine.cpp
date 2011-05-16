@@ -1,8 +1,8 @@
 // This is the main DLL file.
 
 #include "stdafx.h"
-
 #include "KaroEngine.h"
+
 namespace KaroEngine 
 {
 	KaroEngine::KaroEngine(void)
@@ -299,6 +299,9 @@ namespace KaroEngine
 		return score;
 	}
 
+	/**
+	* Assigns a score to a move
+	*/
 	void KaroEngine::AssignMoveScores(vector<Move*> *moves)
 	{
 		for(int i=0; i < moves->size(); i++) {
@@ -312,8 +315,7 @@ namespace KaroEngine
 			UndoMove(moves->at(i));				
 		}
 		
-		std::sort (moves->begin(), moves->end(), bigger_than_second);
-		
+		std::sort (moves->begin(), moves->end(), bigger_than_second);	
 	}
 
 	/**
@@ -568,6 +570,9 @@ namespace KaroEngine
 		}
 	}
 
+	/**
+	* Checks all empty tiles and transforms them to a movable tile if possible
+	*/
 	void KaroEngine::TransformToMoveableTiles() {
 		moveableTiles.clear();
 		for(std::map<int,int>::iterator it = this->allEmptyTiles.begin(); it != this->allEmptyTiles.end(); ++it) {
