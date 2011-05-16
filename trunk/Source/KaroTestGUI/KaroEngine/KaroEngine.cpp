@@ -897,7 +897,7 @@ namespace KaroEngine
 	int KaroEngine::GetHash()
 	{
 		vector<int> tileIndexes; // found tiles
-		int left = this->_leftBoundairy.first; // most left tile
+		int left = 0; // most left tile
 		int right = 0; // most right tile
 		int count = 0; // tile index for iterating
 
