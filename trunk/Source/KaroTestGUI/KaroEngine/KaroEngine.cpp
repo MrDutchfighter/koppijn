@@ -11,7 +11,7 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION;
 		this->insertionCount = 0;
-		this->maxDepth = 4;
+		this->maxDepth = 3;
 		this->evaluationScore = 0;
 		this->visitedList = new VisitedList();
 
@@ -194,53 +194,51 @@ namespace KaroEngine
 		if (p == Player::RED)
 			marked = Tile::REDMARKED;
 
-		//check if first piece is marked
+		//check if the last moved piece is marked
 		if(board[lastMove] == marked)
 		{			
-			int countUnMarked = 0;
+			map<int,bool> pieces = GetPlayerPieces(p);
 
-			for each (pair<int, bool> piece in GetPlayerPieces(p))
+			//check if there's more than 3 marked pieces on the field
+			if(CountMarkedPieces(pieces) > 3)
 			{
-				//check if four pieces are Marked else return false
-				if(!piece.second)
-					countUnMarked++;
-				if(countUnMarked > 2)
-					return false;
-
-				for(int i = 0; i < 8; i++)
+				for(int i = 0; i < 4; i++)
 				{
-					//check if piece in possibleStep
-					if(piece.first == lastMove + possibleSteps[i])
-					{
-						//check if second is marked
-						int second = lastMove + possibleSteps[i];
-						if(board[second] != marked)
-							break;
-												
-						int difference = second - lastMove;
+					//check if second is marked
+					int second = lastMove + possibleSteps[i];
+					int previous = lastMove - possibleSteps[i];
 
+					if(board[second] == marked)
+					{
 						//check if third is unmarked
-						int third = second + difference;
-						if(board[third] != marked)
+						int third = second + possibleSteps[i];
+						if(board[third] == marked)
 						{
-							//check if minfirst is unmarked 
-							int minFirst = lastMove - difference;
-							if(board[minFirst] != marked)
-								break;
-							else
-							{
-								//check if minfirst is marked and is winning
-								int minSecond = minFirst - difference;
-								if(board[minSecond] == marked)
-									return true;
-							}
+							int fourth = third + possibleSteps[i];
+							if(board[fourth] == marked)
+								return true;
 						}
 						else
 						{
-							//check if fourth is marked and is winning
-							int fourth = third + difference;
-							if(board[fourth] == marked)
-								return true;
+							//check if opposite is marked
+							if(board[previous] == marked){
+								int fourth = previous - possibleSteps[i];
+								if(board[fourth] == marked)
+									return true;
+							}
+						}
+					}
+					else
+					{
+						//check opposite direction
+						if(board[previous] == marked)
+						{
+							int previous2 = previous - possibleSteps[i];
+							if(board[previous2] == marked){
+								int previous3 = previous2 - possibleSteps[i];
+								if(board[previous3] == marked)
+									return true;
+							}
 						}
 					}
 				}
@@ -684,9 +682,7 @@ namespace KaroEngine
 					bestMove->score = it->second.second;
 					return bestMove;
 				}
-			}
-			
-            
+			} 
 		}
 
 		// Evaluate the current board, game ended? Return empty move with the max/min score
@@ -753,10 +749,14 @@ namespace KaroEngine
 				}
 			}
 
+			// Prunning
+			if(beta <= alpha) {				
+				return bestMove;
+			}
 
 			// Put best score in transposition table
-			if(depth == 1) { // || depth == 3
-				//hash=GetHash();
+			if(depth == 1) { // 
+				hash=GetHash();
 
 				pair<int,int> depthScore = make_pair(depth, bestMove->score);
 
@@ -778,11 +778,6 @@ namespace KaroEngine
 					}
 				}
 			
-			}
-
-			// Prunning
-			if(beta <= alpha) {				
-				return bestMove;
 			}
 		}
 
