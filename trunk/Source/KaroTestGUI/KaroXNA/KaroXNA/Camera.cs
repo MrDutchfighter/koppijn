@@ -11,7 +11,7 @@ namespace KaroXNA
         float XAngle = 0f;
         float YAngle = 0f;
 
-        private  Vector3 CenterBoard = new Vector3(0,0,10);
+        private  Vector3 CenterBoard = new Vector3(10,10,10);
 
 		public Camera()
 		{
