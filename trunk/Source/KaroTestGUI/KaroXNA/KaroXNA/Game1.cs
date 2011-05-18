@@ -21,10 +21,12 @@ namespace KaroXNA
         ContentManager content;
         GraphicsDevice device;
         Model model;
+        Camera cam;
         Matrix world, view, proj;
         float f;
         Effect effect;
         KaroEngine.KaroEngineWrapper engine;
+        List<Piece> gamePieces;
 
         public Game1()
         {
@@ -37,6 +39,8 @@ namespace KaroXNA
             graphics.ApplyChanges();
             this.Window.Title = "Karo XNA";
             Content.RootDirectory = "Content";
+            gamePieces = new List<Piece>();
+            cam = new Camera();
 
         }
 
@@ -52,8 +56,8 @@ namespace KaroXNA
             device = graphics.GraphicsDevice;
 
             world = Matrix.Identity;
-            view = Matrix.CreateLookAt(new Vector3(5, 5, 5), new Vector3(0, 0, 0), Vector3.Up);
-            proj = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 640f / 480f, 1f, 30f);
+            view = cam.View;
+            proj = cam.Projection;
 
             base.Initialize();
         }
@@ -64,7 +68,15 @@ namespace KaroXNA
         /// </summary>
         protected override void LoadContent()
         {
-            model = Content.Load<Model>("piece");
+            for (int i = 0; i < 12; i++)
+            {
+                Piece p = new Piece(Content.Load<Model>("piece"), false);
+                world = Matrix.CreateTranslation(new Vector3(i*1.8f, 0, 0));
+                p.PieceMatrix = world;
+                p.IsVisible = true;
+                gamePieces.Add(p);
+            }
+            
             // TODO: use this.Content to load your game content here
         }
 
@@ -86,10 +98,8 @@ namespace KaroXNA
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
-
-            f += .0005f;
-            if (f > 360f) f = 0f;
-
+            if (Keyboard.GetState().IsKeyDown(Keys.R))
+                cam.DoYRotation(1);
             //world = Matrix.CreateRotationY(MathHelper.ToDegrees(f));
             // TODO: Add your update logic here
 
@@ -105,19 +115,26 @@ namespace KaroXNA
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
 
-            foreach (ModelMesh mesh in model.Meshes)
+            foreach (Piece p in gamePieces)
             {
-                foreach (BasicEffect e in mesh.Effects)
+                if (!p.IsVisible)
                 {
-                    e.PreferPerPixelLighting = true;
-                    e.DiffuseColor = Color.Tomato.ToVector3();
-                    e.SpecularColor = Color.White.ToVector3();
-                    e.EnableDefaultLighting();
-                    e.World = world;
-                    e.View = view;
-                    e.Projection = proj;
+                    continue;
                 }
-                mesh.Draw();
+                foreach (ModelMesh mesh in p.PieceModel.Meshes)
+                {
+                    foreach (BasicEffect e in mesh.Effects)
+                    {
+                        e.PreferPerPixelLighting = true;
+                        e.DiffuseColor = Color.Tomato.ToVector3();
+                        e.SpecularColor = Color.White.ToVector3();
+                        e.EnableDefaultLighting();
+                        e.World = p.PieceMatrix;
+                        e.View = cam.View;
+                        e.Projection = cam.Projection;
+                    }
+                    mesh.Draw();
+                }
             }
         }
     }
