@@ -13,6 +13,7 @@ using KaroEngine;
 
 namespace KaroXNA
 {
+    public enum GameState { MENU, PLAYING };
     /// <summary>
     /// This is the main type for your game
     /// </summary>
@@ -29,6 +30,8 @@ namespace KaroXNA
         KaroEngine.KaroEngineWrapper engine;
         List<Piece> gamePieces;
         List<Tile> gameTiles;
+        Menu gameMenu;
+        GameState gameState;
 
         public Game1()
         {
@@ -44,7 +47,9 @@ namespace KaroXNA
             gamePieces = new List<Piece>();
             gameTiles = new List<Tile>();
             cam = new Camera();
-
+            gameState = GameState.MENU;
+            gameMenu = new Menu(this, 0);
+            Components.Add(gameMenu);
             engine = new KaroEngineWrapper();
 
             engine.InsertByXY(5, 4);
@@ -170,6 +175,7 @@ namespace KaroXNA
                     mesh.Draw();
                 }
             }
+            base.Draw(gameTime);
         }
     }
 }
