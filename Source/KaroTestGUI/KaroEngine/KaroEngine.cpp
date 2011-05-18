@@ -11,7 +11,7 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION;
 		this->insertionCount = 0;
-		this->maxDepth = 3;
+		this->maxDepth = 4;
 		this->evaluationScore = 0;
 		this->visitedList = new VisitedList();
 
@@ -290,10 +290,13 @@ namespace KaroEngine
 			int evaluationScore = scoreRed-scoreWhite;
 			//int rand = rand() % 1000 + 1;
 			moves->at(i)->score = evaluationScore;
-			UndoMove(moves->at(i));				
+			UndoMove(moves->at(i));
 		}
-		
-		std::sort (moves->begin(), moves->end(), bigger_than_second);	
+		if(turn==Player::WHITE){
+			std::sort (moves->begin(), moves->end(), smaller_than_second);
+		}else{
+			std::sort (moves->begin(), moves->end(), bigger_than_second);			
+		}
 	}
 
 	/**
@@ -733,7 +736,7 @@ namespace KaroEngine
 
 			
 			// Put best score in transposition table
-			if(depth == 0 || depth == 1) {
+			if(depth == 0 ) {
 				pair<int,int> depthScore = make_pair(depth, lastBestMove->score);
 				if(turn == Player::RED){
 					map<int,pair<int,int>>::iterator it = transpositionTableRed.find(currentHash);
