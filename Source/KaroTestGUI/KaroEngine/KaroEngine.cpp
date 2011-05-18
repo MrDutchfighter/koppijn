@@ -73,10 +73,6 @@ namespace KaroEngine
 			randomWhiteMarked[i] = GetRandomNumber();
 			randomRedMarked[i] = GetRandomNumber();
 		}
-		this->_leftBoundairy.first=5;
-		this->_leftBoundairy.second=4;
-		this->_topBoundairy.first=4;
-		this->_topBoundairy.second=5;
 		this->SetMessageLog("Engine Initialized\r\n");
 	}
 
@@ -127,6 +123,10 @@ namespace KaroEngine
 			stringstream << connectedTiles;
 			s = stringstream.str();
 			this->SetMessageLog("Amount of connected tiles: "+s);
+			std::stringstream stringstream2;
+			stringstream2 << GetHash();
+			s = stringstream2.str();
+			this->SetMessageLog("Current Hash: "+s);
 			if(this->IsWinner(Reverse(turn), to))
 			{
 				this->SetMessageLog("WIN!");
@@ -686,8 +686,8 @@ namespace KaroEngine
 		for(int i=0; i < possibleMoves->size(); i++) {
 			// Execute the move
 			DoMove(possibleMoves->at(i));
-			hash=GetHash();
-			//SetHash(hash,possibleMoves->at(i));
+			//hash=GetHash();
+			int currentHash=GetHash(hash,possibleMoves->at(i));
 
 			// Was this the winning move? (has to be here, because IsWinner needs the last move...)
 			if(IsWinner(p, possibleMoves->at(i)->positionTo)) {
@@ -698,16 +698,16 @@ namespace KaroEngine
 					bestMove->score = INT_MIN+10000;
 				}
 				UndoMove(possibleMoves->at(i));
-				break;
 				return bestMove;
 			}
 
 			// Get the last best move
 			//Move * lastBestMove = possibleMoves->at(i);
-			Move * lastBestMove = MiniMax(Reverse(p), depth+1, alpha, beta,hash, possibleMoves->at(i)->score);
+			Move * lastBestMove = MiniMax(Reverse(p), depth+1, alpha, beta,currentHash, possibleMoves->at(i)->score);
 
 			// Directly undo this move
 			UndoMove(possibleMoves->at(i));
+			
 
 			// Was the last move the best move?
 			if(lastBestMove->score > bestMove->score && p == Player::RED) {
@@ -731,37 +731,45 @@ namespace KaroEngine
 				}
 			}
 
+			
+			// Put best score in transposition table
+			if(depth == 0 ) {
+				pair<int,int> depthScore = make_pair(depth, lastBestMove->score);
+				if(turn == Player::RED){
+					map<int,pair<int,int>>::iterator it = transpositionTableRed.find(currentHash);
+					if (it == transpositionTableRed.end()){
+						transpositionTableRed.insert(pair<int, pair<int,int>>(currentHash, depthScore));
+					} else {
+						if(it->second.first > depth) {
+							it->second = depthScore;
+						} else {
+							if(it->second.second != depthScore.second){
+								SetMessageLog("[ERROR] Fail @ HASH");
+							}
+						}
+					}
+				}else{
+					map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(currentHash);
+					if (it == transpositionTableWhite.end()){
+						transpositionTableWhite.insert(pair<int, pair<int,int>>(currentHash, depthScore));
+					}else{
+						if(it->second.first > depth){
+							it->second = depthScore;
+						} else {
+							if(it->second.second != depthScore.second){
+								SetMessageLog("[ERROR] Fail @ HASH");
+							}
+						}
+					}
+				}
+			}
+
 			// Prunning
-			if(beta <= alpha) {				
+			if(beta <= alpha) {
 				return bestMove;
 			}
 		}
-
-		// Put best score in transposition table
-			if(depth == 1) { // 
-				hash=GetHash();
-
-				pair<int,int> depthScore = make_pair(depth, bestMove->score);
-
-				if(turn == Player::RED){
-					map<int,pair<int,int>>::iterator it = transpositionTableRed.find(hash);
-					if (it == transpositionTableRed.end()){
-						transpositionTableRed.insert(pair<int, pair<int,int>>(hash, depthScore));
-					}else{
-						if(it->second.first > depth)
-							it->second = depthScore;
-					}
-				}else{
-					map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(hash);
-					if (it == transpositionTableWhite.end()){
-						transpositionTableWhite.insert(pair<int, pair<int,int>>(hash, depthScore));
-					}else{
-						if(it->second.first > depth)
-							it->second = depthScore;
-					}
-				}
-			
-			}
+		
 		return bestMove;
 	}
 
@@ -845,42 +853,75 @@ namespace KaroEngine
 	}
 
 	int KaroEngine::GetHash()
-	{
-		vector<int> tileIndexes; // found tiles
-		int left = 0; // most left tile
-		int right = 0; // most right tile
-		int count = 0; // tile index for iterating
+	{		
+		this->boardLeft = 20;    // most left tile
+		this->boardRight = 0;   // most right tile
 
-		while(tileIndexes.size() != 20)
-		{
-			if(board[count] != Tile::EMPTY && board[count] != Tile::BORDER)
-			{
-				int tempCol = count % BOARDWIDTH;
-				
-				if(tempCol < left)
-					left = tempCol;
-				if(tempCol > right)
-					right = tempCol;
-
-				tileIndexes.push_back(count);
-			}
-			count ++;
+		//Go through all tiles whitout a playerpiece
+		for(std::map<int,int>::iterator it = this->allEmptyTiles.begin(); it != this->allEmptyTiles.end(); ++it) {
+			int tempCol = it->first % BOARDWIDTH;				
+			if(tempCol < this->boardLeft )
+				this->boardLeft = tempCol;
+			if(tempCol > this->boardRight)
+				this->boardRight = tempCol;
+		}
+		//go through all white pieces
+		for(std::map<int,bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
+			int tempCol = it->first % BOARDWIDTH;				
+			if(tempCol < this->boardLeft)
+				this->boardLeft = tempCol;
+			if(tempCol > this->boardRight)
+				this->boardRight = tempCol;
+		}
+		//go through all red pieces
+		for(std::map<int,bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
+			int tempCol = it->first % BOARDWIDTH;				
+			if(tempCol < this->boardLeft )
+				this->boardLeft  = tempCol;
+			if(tempCol > this->boardRight)
+				this->boardRight = tempCol;
 		}
 
-		int topRow = ceil((float)tileIndexes[0] / BOARDWIDTH) - 1;
-		int topLeftCorner = (topRow * BOARDWIDTH) + left;
-		int bottomRow = ceil((float)tileIndexes[19] / BOARDWIDTH) - 1;
-		int bottomLeftCorner = (bottomRow * BOARDWIDTH) + left;
+		this->boardTop=this->allEmptyTiles.begin()->first/BOARDWIDTH;
 
-		int squareWidth = right - left;
+		if(this->whitePieces.begin()->first/BOARDWIDTH < this->boardTop){
+			this->boardTop=this->whitePieces.begin()->first/BOARDWIDTH;
+		}
+
+		if(this->redPieces.begin()->first/BOARDWIDTH < this->boardTop){
+			this->boardTop=this->redPieces.begin()->first/BOARDWIDTH;
+		}
+
+		//get last (highest) index of the tilesmap
+		std::map<int,int>::iterator endit = this->allEmptyTiles.end();
+		--endit;
+		this->boardBottom=endit->first/BOARDWIDTH;
+
+		//get last (highest) index of the whitepawnsmap
+		std::map<int,bool>::iterator whiteit = whitePieces.end();
+		--whiteit;
+		if(whiteit->first/BOARDWIDTH > this->boardBottom){
+			this->boardBottom=whiteit->first/BOARDWIDTH;
+		}
+
+		//get last (highest) index of the redpawnsmap
+		std::map<int,bool>::iterator redit = this->redPieces.end();
+		--redit;
+		if(redit->first/BOARDWIDTH > this->boardBottom){
+			this->boardBottom=redit->first/BOARDWIDTH;
+		}
+
+		int topLeftCorner = (this->boardTop * BOARDWIDTH) + this->boardLeft;
+		
+		int squareHeight = (this->boardBottom - this->boardTop)+1;
+		int squareWidth = (this->boardRight - this->boardLeft)+1;
 
 		int hash = 0;
-		for(int i = topLeftCorner; i < bottomLeftCorner; i += BOARDWIDTH)
-		{
+		for(int i = 0; i < squareHeight; i += 1){			
 			for(int k = 0; k < squareWidth; k++)
 			{
-				int index = i + k;
-				int randomIndex = (index - (left -1 )) - (topRow * BOARDWIDTH);
+				int index = topLeftCorner+(i* BOARDWIDTH) + k;
+				int randomIndex = (index - (this->boardLeft -1 )) - (this->boardTop * BOARDWIDTH);
 
 				if(board[index] != Tile::EMPTY)
 				{
@@ -920,44 +961,62 @@ namespace KaroEngine
 		return hash;
 	}
 	
-	void KaroEngine::SetHash(int &hash,Move *move){
+	int KaroEngine::GetHash(int hash,Move *move){
+		return GetHash();
+
+		if(move->tileFrom >0){
+			int x=move->tileFrom%BOARDWIDTH;
+			int y=move->tileFrom/BOARDWIDTH;
+			if(x < this->boardLeft || x > this->boardRight || y < boardTop || y > boardBottom){
+				return GetHash();
+			}
+			x=move->positionTo%BOARDWIDTH;
+			y=move->positionTo/BOARDWIDTH;
+			if(x < this->boardLeft || x > this->boardRight || y < boardTop || y > boardBottom){
+				return GetHash();
+			}
+		}
+
+		int randomIndexFrom = (move->positionFrom - (this->boardLeft -1 )) - (this->boardTop * BOARDWIDTH);
+		int randomIndexTo= (move->positionTo - (this->boardLeft -1 )) - (this->boardTop * BOARDWIDTH);
+
 		if(board[move->positionTo] == Tile::REDMARKED){
-			hash ^= randomRedMarked[move->positionTo];
+			hash ^= randomRedMarked[randomIndexTo];
 			if(move->isJumpMove){
-				hash ^= randomRedUnmarked[move->positionFrom];
+				hash ^= randomRedUnmarked[randomIndexFrom];
 			}
 			else{
-				hash ^= randomRedMarked[move->positionFrom];
+				hash ^= randomRedMarked[randomIndexFrom];
 			}
 		}
 		else if(board[move->positionTo] == Tile::REDUNMARKED){
-			hash ^= randomRedUnmarked[move->positionTo];
+			hash ^= randomRedUnmarked[randomIndexTo];
 			if(move->isJumpMove){
-				hash ^= randomRedMarked[move->positionFrom];
+				hash ^= randomRedMarked[randomIndexFrom];
 			}
 			else{
-				hash ^= randomRedUnmarked[move->positionFrom];
+				hash ^= randomRedUnmarked[randomIndexFrom];
 			}
 		}
 		else if(board[move->positionTo] == Tile::WHITEMARKED){
-			hash ^= randomWhiteMarked[move->positionTo];
+			hash ^= randomWhiteMarked[randomIndexTo];
 			if(move->isJumpMove){
-				hash ^= randomWhiteUnmarked[move->positionFrom];
+				hash ^= randomWhiteUnmarked[randomIndexFrom];
 			}
 			else{
-				hash ^= randomWhiteMarked[move->positionFrom];
+				hash ^= randomWhiteMarked[randomIndexFrom];
 			}
 		}
 		else if(board[move->positionTo] == Tile::WHITEUNMARKED){
-			hash ^= randomWhiteUnmarked[move->positionTo];
+			hash ^= randomWhiteUnmarked[randomIndexTo];
 			if(move->isJumpMove){
-				hash ^= randomWhiteMarked[move->positionFrom];
+				hash ^= randomWhiteMarked[randomIndexFrom];
 			}
 			else{
-				hash ^= randomWhiteUnmarked[move->positionFrom];
+				hash ^= randomWhiteUnmarked[randomIndexFrom];
 			}
 		}
-		//return hash;
+		return hash;
 	}
 
 	int KaroEngine::GetRandomNumber()
@@ -966,7 +1025,6 @@ namespace KaroEngine
 		int randomNumber2 = (int)(drand() * 1000000) + 1000000;
 		int randomNumber = rand() % 8999 + 1000;
 		
-
 
 		for(int i = 0; i < sizeof(randomTile) / sizeof(randomTile[0]); i++){
 			if(randomTile[i] == randomNumber)
@@ -988,6 +1046,7 @@ namespace KaroEngine
 			if(randomWhiteMarked[i] == randomNumber)
 				randomNumber = GetRandomNumber();
 		}
+
 
 		return randomNumber;
 	}
@@ -1032,7 +1091,6 @@ namespace KaroEngine
 
 		} else if(move->positionTo > 0) {
 			result = DoMove(move->positionTo);
-
 			// Check all changed positions for a change in moveable tiles
 			//TransformToMovableTiles(move->positionTo, true, false);
 		} else {
