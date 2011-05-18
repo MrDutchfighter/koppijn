@@ -11,12 +11,12 @@ namespace KaroXNA
         float XAngle = 0f;
         float YAngle = 0f;
 
-        private  Vector3 CenterBoard = new Vector3(0,0,0);
+        private  Vector3 CenterBoard = new Vector3(0,0,10);
 
 		public Camera()
 		{
-            this.CameraPosition = new Vector3(40f, 40f, 40f);
-            this.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 800f / 600f, 0.1f, 100f);
+            this.CameraPosition = new Vector3(40f, 40f, 5f);
+            this.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 800f / 600f, 0.1f, 150f);
             this.View = Matrix.CreateLookAt(CameraPosition + CenterBoard, CenterBoard, Vector3.Up);
 		}
 
@@ -34,7 +34,7 @@ namespace KaroXNA
             {
                 this.YAngle = this.YAngle + angle;
             }
-            CameraPosition = Vector3.Transform(new Vector3(40f, 40f, 40f), Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(YAngle), MathHelper.ToRadians(XAngle), 0f));
+            CameraPosition = Vector3.Transform(new Vector3(40f, 40f, 5f), Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(YAngle), MathHelper.ToRadians(XAngle), 0f));
                 this.View = Matrix.CreateLookAt(CameraPosition + CenterBoard, CenterBoard, Vector3.Up);
             
         }
@@ -43,7 +43,7 @@ namespace KaroXNA
         {
                
                     this.XAngle = this.XAngle + angle;
-                    CameraPosition = Vector3.Transform(new Vector3(40f, 40f, 40f), Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(YAngle), MathHelper.ToRadians(XAngle), 0f));
+                    CameraPosition = Vector3.Transform(new Vector3(40f, 40f, 5f), Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(YAngle), MathHelper.ToRadians(XAngle), 0f));
                     this.View = Matrix.CreateLookAt(CameraPosition + CenterBoard, CenterBoard, Vector3.Up);
         }
 

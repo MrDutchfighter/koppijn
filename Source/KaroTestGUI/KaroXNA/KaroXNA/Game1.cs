@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Storage;
+using KaroEngine;
 
 namespace KaroXNA
 {
@@ -44,6 +45,23 @@ namespace KaroXNA
             gameTiles = new List<Tile>();
             cam = new Camera();
 
+            engine = new KaroEngineWrapper();
+
+            engine.InsertByXY(5, 4);
+            engine.InsertByXY(6, 4);
+            engine.InsertByXY(7, 4);
+            engine.InsertByXY(8, 4);
+            engine.InsertByXY(9, 4);
+
+            engine.InsertByXY(5, 5);
+            engine.InsertByXY(6, 5);
+            engine.InsertByXY(7, 5);
+            engine.InsertByXY(8, 5);
+            engine.InsertByXY(9, 5);
+
+            engine.InsertByXY(5, 6);
+            engine.InsertByXY(6, 6);
+
         }
 
         protected override void Initialize()
@@ -59,21 +77,35 @@ namespace KaroXNA
 
         protected override void LoadContent()
         {
+            int offset = 0;
+            int xpos = 0;
             for (int i = 0; i < 12; i++)
             {
+                if (i % 5 == 0)
+                {
+                    offset += 6;
+                    xpos = 0;
+                }
                 Piece p = new Piece(Content.Load<Model>("piece"), false);
-                world = Matrix.CreateTranslation(new Vector3(i * 5.5f, 1f, 0));
+                world = Matrix.CreateTranslation(new Vector3(xpos * 5.5f, 1f, offset));
                 p.PieceMatrix = world;
                 p.IsVisible = true;
                 gamePieces.Add(p);
+                xpos++;
             }
-
+            offset = 0;
             for (int i = 0; i < 20; i++)
             {
+                if (i % 5 == 0)
+                {
+                    offset += 6;
+                    xpos = 0;
+                }
                 Tile t = new Tile(Content.Load<Model>("tile"), false);
-                world = Matrix.CreateTranslation(new Vector3(i * 5.5f, 0, 0));
+                world = Matrix.CreateTranslation(new Vector3(xpos * 5.5f, 0, offset));
                 t.TileMatrix= world;
                 gameTiles.Add(t);
+                xpos++;
             }
         }
 
