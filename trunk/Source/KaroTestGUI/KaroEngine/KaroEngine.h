@@ -64,7 +64,6 @@ namespace KaroEngine
 		int  boardRight;
 		int  boardTop;
 		int  boardBottom;
-		bool boardChanged;
 		
 
 		map<int,bool> redPieces;
@@ -76,22 +75,22 @@ namespace KaroEngine
 		map<int, pair<int,int>> transpositionTableWhite; //<hash, <depth,score>>
 		map<int, pair<int,int>> transpositionTableRed; //<hash, <depth,score>>
 		
-		int randomTile[289];
-		int randomRedUnmarked[289];
-		int randomWhiteUnmarked[289];
-		int randomRedMarked[289];
-		int randomWhiteMarked[289];
+		long randomTile[289];
+		long randomRedUnmarked[289];
+		long randomWhiteUnmarked[289];
+		long randomRedMarked[289];
+		long randomWhiteMarked[289];
 
-		int GetHash();
-		int GetHash(int hash,Move *move);
-		int GetRandomNumber();
+		long GetHash();
+		long GetHash(long hash,Move *move);
+		long GetRandomNumber();
 		int CountMarkedPieces(map<int,bool>);
 
 		/**
 		* Functions
 		*/
 		// Algorithm functions
-		Move * MiniMax(Player p, int depth, int alpha, int beta,int hash, int currentEvaluation);
+		Move * MiniMax(Player p, int depth, int alpha, int beta,long hash, int currentEvaluation);
 		int GetAmountConnectedTilesRecursive(int tileNumber);
 		int GetAmountConnectedNeighbours(int tileNumber);
 		void TransformToMovableTiles(int tileNumber, bool checkNeighbours, bool checkDiagonalNeighbours);

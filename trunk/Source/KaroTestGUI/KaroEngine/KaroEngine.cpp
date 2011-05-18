@@ -633,7 +633,7 @@ namespace KaroEngine
 	/**
 	* MinMax function
 	*/
-	Move * KaroEngine::MiniMax(Player p, int depth, int alpha, int beta,int hash, int evaluationScore)
+	Move * KaroEngine::MiniMax(Player p, int depth, int alpha, int beta,long hash, int evaluationScore)
 	{
 		// Hash the current board?
 		//Position currentPosition = new Position(board);
@@ -733,7 +733,7 @@ namespace KaroEngine
 
 			
 			// Put best score in transposition table
-			if(depth == 0 ) {
+			if(depth == 0 || depth == 1) {
 				pair<int,int> depthScore = make_pair(depth, lastBestMove->score);
 				if(turn == Player::RED){
 					map<int,pair<int,int>>::iterator it = transpositionTableRed.find(currentHash);
@@ -765,7 +765,7 @@ namespace KaroEngine
 			}
 
 			// Prunning
-			if(beta <= alpha) {
+			if (beta <= alpha) {
 				return bestMove;
 			}
 		}
@@ -852,8 +852,9 @@ namespace KaroEngine
 		this->messageLog+=txt+ "\r\n";
 	}
 
-	int KaroEngine::GetHash()
-	{		
+	long KaroEngine::GetHash()
+	{	
+		
 		this->boardLeft = 20;    // most left tile
 		this->boardRight = 0;   // most right tile
 
@@ -910,18 +911,18 @@ namespace KaroEngine
 		if(redit->first/BOARDWIDTH > this->boardBottom){
 			this->boardBottom=redit->first/BOARDWIDTH;
 		}
-
+		
 		int topLeftCorner = (this->boardTop * BOARDWIDTH) + this->boardLeft;
 		
 		int squareHeight = (this->boardBottom - this->boardTop)+1;
 		int squareWidth = (this->boardRight - this->boardLeft)+1;
 
-		int hash = 0;
+		long hash = 0;
 		for(int i = 0; i < squareHeight; i += 1){			
 			for(int k = 0; k < squareWidth; k++)
 			{
 				int index = topLeftCorner+(i* BOARDWIDTH) + k;
-				int randomIndex = (index - (this->boardLeft -1 )) - (this->boardTop * BOARDWIDTH);
+				int randomIndex = (index - (this->boardLeft)) - (this->boardTop * BOARDWIDTH);
 
 				if(board[index] != Tile::EMPTY)
 				{
@@ -941,7 +942,7 @@ namespace KaroEngine
 
 		/*
 
-		int hash = 0;
+		long hash = 0;
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH; i++)
 		{
 			if(board[i] != Tile::EMPTY && board[i] != Tile::BORDER)
@@ -961,8 +962,10 @@ namespace KaroEngine
 		return hash;
 	}
 	
-	int KaroEngine::GetHash(int hash,Move *move){
-		return GetHash();
+	long KaroEngine::GetHash(long hash,Move *move){
+		//return GetHash();
+
+		int topLeftCorner = (this->boardTop * BOARDWIDTH) + this->boardLeft;
 
 		if(move->tileFrom >0){
 			int x=move->tileFrom%BOARDWIDTH;
@@ -970,15 +973,19 @@ namespace KaroEngine
 			if(x < this->boardLeft || x > this->boardRight || y < boardTop || y > boardBottom){
 				return GetHash();
 			}
+
 			x=move->positionTo%BOARDWIDTH;
 			y=move->positionTo/BOARDWIDTH;
 			if(x < this->boardLeft || x > this->boardRight || y < boardTop || y > boardBottom){
 				return GetHash();
 			}
+			hash ^= randomTile[move->tileFrom-topLeftCorner];
 		}
-
-		int randomIndexFrom = (move->positionFrom - (this->boardLeft -1 )) - (this->boardTop * BOARDWIDTH);
-		int randomIndexTo= (move->positionTo - (this->boardLeft -1 )) - (this->boardTop * BOARDWIDTH);
+				
+		
+		
+		int randomIndexFrom = move->positionFrom - topLeftCorner;
+		int randomIndexTo	= move->positionTo - topLeftCorner;
 
 		if(board[move->positionTo] == Tile::REDMARKED){
 			hash ^= randomRedMarked[randomIndexTo];
@@ -1016,14 +1023,16 @@ namespace KaroEngine
 				hash ^= randomWhiteUnmarked[randomIndexFrom];
 			}
 		}
+		hash ^= randomTile[randomIndexTo];
+		hash ^= randomTile[randomIndexFrom];
 		return hash;
 	}
 
-	int KaroEngine::GetRandomNumber()
+	long KaroEngine::GetRandomNumber()
 	{
 		MTRand drand;
-		int randomNumber2 = (int)(drand() * 1000000) + 1000000;
-		int randomNumber = rand() % 8999 + 1000;
+		long randomNumber = (int)(drand() * 1000000000) + 1000000000;
+		//long randomNumber = rand() % 89999999 + 10000000;
 		
 
 		for(int i = 0; i < sizeof(randomTile) / sizeof(randomTile[0]); i++){
