@@ -22,7 +22,10 @@ namespace KaroEngine {
 		String^ GetMessageLog();
 		int GetEvaluationScore();
 		array<array<int>^>^ GetPossibleMoves(int x, int y,int tileFromX,int tileFromY);
-
+		int KaroEngineWrapper::GetBoardBottom();
+		int KaroEngineWrapper::GetBoardLeft();
+		int KaroEngineWrapper::GetBoardRight();
+		int KaroEngineWrapper::GetBoardTop();
 		void UndoLastMove();
 	};
 }
