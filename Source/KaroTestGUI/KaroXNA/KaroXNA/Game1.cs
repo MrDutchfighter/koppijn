@@ -163,6 +163,8 @@ namespace KaroXNA
                         e.World = t.TileMatrix;
                         e.View = cam.View;
                         e.Projection = cam.Projection;
+
+                        e.SpecularColor = Color.Black.ToVector3();
                     }
 
                     mesh.Draw();
