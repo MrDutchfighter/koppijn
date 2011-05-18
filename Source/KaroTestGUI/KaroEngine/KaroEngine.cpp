@@ -1039,11 +1039,12 @@ namespace KaroEngine
 			SetMessageLog("Not a valid move given");
 		}
 
-		TransformToMoveableTiles();
+		if(result){
+			TransformToMoveableTiles();
+			turn = Reverse(turn);
+			lastMove = move;	
+		}
 		
-
-		turn = Reverse(turn);
-		lastMove = move;
 		return result;
 	}
 
