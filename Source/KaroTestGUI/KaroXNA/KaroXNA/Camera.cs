@@ -16,7 +16,7 @@ namespace KaroXNA
 		public Camera()
 		{
             this.CameraPosition = new Vector3(40f, 40f, 5f);
-            this.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 800f / 600f, 0.1f, 150f);
+            this.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(20), 800f / 600f, 0.1f, 150f);
             this.View = Matrix.CreateLookAt(CameraPosition + CenterBoard, CenterBoard, Vector3.Up);
 		}
 
@@ -34,18 +34,22 @@ namespace KaroXNA
             {
                 this.YAngle = this.YAngle + angle;
             }
-            CameraPosition = Vector3.Transform(new Vector3(40f, 40f, 5f), Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(YAngle), MathHelper.ToRadians(XAngle), 0f));
-                this.View = Matrix.CreateLookAt(CameraPosition + CenterBoard, CenterBoard, Vector3.Up);
+            CameraPosition = Vector3.Transform(CameraPosition, Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(YAngle), MathHelper.ToRadians(XAngle), 0f));
+            this.View = Matrix.CreateLookAt(CameraPosition + CenterBoard, CenterBoard, Vector3.Up);
             
         }
 
         public void DoXRotation(float angle)
         {
-               
-                    this.XAngle = this.XAngle + angle;
-                    CameraPosition = Vector3.Transform(new Vector3(40f, 40f, 5f), Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(YAngle), MathHelper.ToRadians(XAngle), 0f));
-                    this.View = Matrix.CreateLookAt(CameraPosition + CenterBoard, CenterBoard, Vector3.Up);
+            this.XAngle = this.XAngle + angle;
+            CameraPosition = Vector3.Transform(CameraPosition, Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(YAngle), MathHelper.ToRadians(XAngle), 0f));
+            this.View = Matrix.CreateLookAt(CameraPosition + CenterBoard, CenterBoard, Vector3.Up);
         }
 
+        public void DoZoom(float value)
+        {
+            CameraPosition = Vector3.Transform(CameraPosition, Matrix.CreateScale(value + 1f));
+            this.View = Matrix.CreateLookAt(CameraPosition + CenterBoard, CenterBoard, Vector3.Up);
+        }
     }
 }
