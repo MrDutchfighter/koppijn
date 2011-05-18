@@ -164,4 +164,8 @@ namespace KaroEngine
 	inline bool bigger_than_second(const Move* pMove1, const Move* pMove2){
 		return (pMove1->score > pMove2->score);
 	}
+
+	inline bool smaller_than_second(const Move* pMove1, const Move* pMove2){
+		return (pMove1->score < pMove2->score);
+	}
 }
