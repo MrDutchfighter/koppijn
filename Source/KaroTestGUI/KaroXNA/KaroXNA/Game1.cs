@@ -52,8 +52,8 @@ namespace KaroXNA
             device = graphics.GraphicsDevice;
 
             world = Matrix.Identity;
-            view = Matrix.CreateLookAt(new Vector3(3, 3, 3), new Vector3(0, 0, 0), Vector3.Up);
-            proj = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 640f / 480f, 1f, 10f);
+            view = Matrix.CreateLookAt(new Vector3(5, 5, 5), new Vector3(0, 0, 0), Vector3.Up);
+            proj = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 640f / 480f, 1f, 30f);
 
             base.Initialize();
         }
