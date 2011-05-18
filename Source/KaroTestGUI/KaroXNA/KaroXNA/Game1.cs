@@ -27,6 +27,7 @@ namespace KaroXNA
         Effect effect;
         KaroEngine.KaroEngineWrapper engine;
         List<Piece> gamePieces;
+        List<Tile> gameTiles;
 
         public Game1()
         {
@@ -40,19 +41,13 @@ namespace KaroXNA
             this.Window.Title = "Karo XNA";
             Content.RootDirectory = "Content";
             gamePieces = new List<Piece>();
+            gameTiles = new List<Tile>();
             cam = new Camera();
 
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
-
             device = graphics.GraphicsDevice;
 
             world = Matrix.Identity;
@@ -62,38 +57,31 @@ namespace KaroXNA
             base.Initialize();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent()
         {
             for (int i = 0; i < 12; i++)
             {
                 Piece p = new Piece(Content.Load<Model>("piece"), false);
-                world = Matrix.CreateTranslation(new Vector3(i*1.8f, 0, 0));
+                world = Matrix.CreateTranslation(new Vector3(i * 5.5f, 1f, 0));
                 p.PieceMatrix = world;
                 p.IsVisible = true;
                 gamePieces.Add(p);
             }
-            
-            // TODO: use this.Content to load your game content here
+
+            for (int i = 0; i < 20; i++)
+            {
+                Tile t = new Tile(Content.Load<Model>("tile"), false);
+                world = Matrix.CreateTranslation(new Vector3(i * 5.5f, 0, 0));
+                t.TileMatrix= world;
+                gameTiles.Add(t);
+            }
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
-        /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            Content.Unload();
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -106,14 +94,9 @@ namespace KaroXNA
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
-
 
             foreach (Piece p in gamePieces)
             {
@@ -133,6 +116,23 @@ namespace KaroXNA
                         e.View = cam.View;
                         e.Projection = cam.Projection;
                     }
+                    mesh.Draw();
+                }
+            }
+
+            foreach (Tile t in gameTiles)
+            {
+                foreach (ModelMesh mesh in t.TileModel.Meshes)
+                {
+                    foreach (BasicEffect e in mesh.Effects)
+                    {
+                        e.EnableDefaultLighting();
+
+                        e.World = t.TileMatrix;
+                        e.View = cam.View;
+                        e.Projection = cam.Projection;
+                    }
+
                     mesh.Draw();
                 }
             }
