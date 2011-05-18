@@ -32,6 +32,8 @@ namespace KaroXNA
         List<Tile> gameTiles;
         Menu gameMenu;
         GameState gameState;
+        MouseState oldMouseState;
+
 
         public Game1()
         {
@@ -92,7 +94,7 @@ namespace KaroXNA
                     xpos = 0;
                 }
                 Piece p = new Piece(Content.Load<Model>("piece"), false);
-                world = Matrix.CreateTranslation(new Vector3(xpos * 5.5f, 1f, offset));
+                world = Matrix.CreateTranslation(new Vector3(xpos * 5.5f, 5f, offset));
                 p.PieceMatrix = world;
                 p.IsVisible = true;
                 gamePieces.Add(p);
@@ -124,7 +126,19 @@ namespace KaroXNA
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
             if (Keyboard.GetState().IsKeyDown(Keys.R))
-                cam.DoYRotation(1);
+                cam.DoYRotation(0.5f);
+            if (Keyboard.GetState().IsKeyDown(Keys.PageUp))
+                cam.DoZoom(-0.01f);
+            if (Keyboard.GetState().IsKeyDown(Keys.PageDown))
+                cam.DoZoom(0.01f);
+            if (Mouse.GetState().ScrollWheelValue != oldMouseState.ScrollWheelValue)
+            {
+                float difference = (Mouse.GetState().ScrollWheelValue - oldMouseState.ScrollWheelValue);
+                cam.DoZoom(difference / 1000);
+            }
+
+            oldMouseState = Mouse.GetState();
+
             //world = Matrix.CreateRotationY(MathHelper.ToDegrees(f));
             // TODO: Add your update logic here
 
