@@ -3,9 +3,12 @@
 
 
 VisitedList::VisitedList(void)
-{
-	
+{}
+
+int VisitedList::Size(){
+	return this->visitedList.size();
 }
+
 bool VisitedList::isInArray(int index){
 	map<int,int>::iterator iter;
 	iter = this->visitedList.find(index);

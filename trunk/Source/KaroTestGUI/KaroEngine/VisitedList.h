@@ -9,6 +9,7 @@ public:
 	bool isInArray(int index);
 	void insertAt(int index);
 	void Clear();
+	int Size();
 private:
 	map<int,int> visitedList;
 	

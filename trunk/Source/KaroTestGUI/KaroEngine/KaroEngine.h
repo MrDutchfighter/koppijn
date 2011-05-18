@@ -60,11 +60,12 @@ namespace KaroEngine
 		int possibleSteps[8];
 		int possibleJumps[8];
 		
-		pair<int,int> _leftBoundairy;
-		pair<int,int> _topBoundairy;
-		bool _boundairyChanged;
-		//pair<int,int> _rightBoundairy;
-		//pair<int,int> _bottomBoundairy;
+		int  boardLeft;
+		int  boardRight;
+		int  boardTop;
+		int  boardBottom;
+		bool boardChanged;
+		
 
 		map<int,bool> redPieces;
 		map<int,bool> whitePieces;
@@ -74,6 +75,7 @@ namespace KaroEngine
 
 		map<int, pair<int,int>> transpositionTableWhite; //<hash, <depth,score>>
 		map<int, pair<int,int>> transpositionTableRed; //<hash, <depth,score>>
+		
 		int randomTile[289];
 		int randomRedUnmarked[289];
 		int randomWhiteUnmarked[289];
@@ -81,7 +83,7 @@ namespace KaroEngine
 		int randomWhiteMarked[289];
 
 		int GetHash();
-		void SetHash(int &hash,Move *move);
+		int GetHash(int hash,Move *move);
 		int GetRandomNumber();
 		int CountMarkedPieces(map<int,bool>);
 
