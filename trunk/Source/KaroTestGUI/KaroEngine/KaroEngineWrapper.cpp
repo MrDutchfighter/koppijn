@@ -40,6 +40,21 @@ bool KaroEngineWrapper::InsertByXY(int x, int y) {
 	return _karoEngine->DoMove(v);
 }
 
+int KaroEngineWrapper::GetBoardTop(){
+	return _karoEngine->boardTop;
+}
+int KaroEngineWrapper::GetBoardLeft(){
+	return _karoEngine->boardLeft;
+}
+int KaroEngineWrapper::GetBoardRight(){
+
+	return _karoEngine->boardRight;
+}
+int KaroEngineWrapper::GetBoardBottom(){
+	return _karoEngine->boardBottom;
+}
+
+
 int KaroEngineWrapper::GetEvaluationScore(){
 	return _karoEngine->GetEvaluationScore();
 }

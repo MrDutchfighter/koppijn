@@ -58,12 +58,7 @@ namespace KaroEngine
 		int insertionCount;
 		int evaluationScore;		
 		int possibleSteps[8];
-		int possibleJumps[8];
-		
-		int  boardLeft;
-		int  boardRight;
-		int  boardTop;
-		int  boardBottom;
+		int possibleJumps[8];			
 		
 
 		map<int,bool> redPieces;
@@ -109,6 +104,11 @@ namespace KaroEngine
 		
 	public:
 		
+		int  boardLeft;
+		int  boardRight;
+		int  boardTop;
+		int  boardBottom;
+
 		/**
 		* Properties
 		*/
