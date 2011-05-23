@@ -314,7 +314,7 @@ namespace KaroTestGUI
 
             for (int i = 0; i < times; i++)
             {
-                total += engine.CalculateComputerMove();
+                /*total +=*/ engine.CalculateComputerMove();
                 moves++;
                 UpdateGUI();
                 Application.DoEvents();
@@ -333,6 +333,7 @@ namespace KaroTestGUI
 
         private void button2_Click(object sender, EventArgs e)
         {
+            engine = new KaroEngineWrapper();
             UpdateGUI();
 
             int white = 0;
@@ -358,7 +359,7 @@ namespace KaroTestGUI
                         break;
                     }
 
-                    total += engine.CalculateComputerMove();
+                    /*total +=*/ engine.CalculateComputerMove();
                     moves++;
                     UpdateGUI();
                     Application.DoEvents();
