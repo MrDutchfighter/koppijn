@@ -124,7 +124,7 @@ namespace KaroXNA
                             t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
                             gameTiles.Add(t);
 
-                            p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y), Color.Tomato.ToVector3());
+                            p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y), Color.Tomato.ToVector3()); 
                             world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
                             p.PieceMatrix = world;
                             p.IsVisible = true;
