@@ -21,11 +21,12 @@ namespace KaroXNA
         public int selectedItem;
         public KeyboardState oldState;
         public MouseState curMousePos;
+        public Game1 game;
 
         public Menu(Game game, int drawOrder)
             : base(game)
         {
-            
+            this.game = (Game1)game;
             this.DrawOrder = drawOrder;
             
             
@@ -129,6 +130,10 @@ namespace KaroXNA
                     spriteBatch.DrawString(spriteFont, menuList[i].MenuName, currentFontPosition, Color.DarkOrange);
                 else
                     spriteBatch.DrawString(spriteFont, menuList[i].MenuName, currentFontPosition, Color.LightGreen);
+
+                Vector2 pos = new Vector2(Game.GraphicsDevice.Viewport.Width / 4, (Game.GraphicsDevice.Viewport.Height / 2) - 200);
+                
+                spriteBatch.DrawString(spriteFont, "FPS: " + game.FPS, pos, Color.LightGreen);
             }
 
 
