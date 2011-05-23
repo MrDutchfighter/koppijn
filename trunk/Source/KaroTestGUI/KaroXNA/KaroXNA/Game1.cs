@@ -20,13 +20,10 @@ namespace KaroXNA
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
-        ContentManager content;
         GraphicsDevice device;
         Model tileModel, pieceModel;
         Camera cam;
         Matrix world, view, proj;
-        float f;
-        Effect effect;
         KaroEngine.KaroEngineWrapper engine;
         List<Piece> gamePieces;
         List<Tile> gameTiles;
@@ -35,6 +32,7 @@ namespace KaroXNA
         MouseState oldMouseState;
         const int BOARDWIDTH = 17;
         bool spacePressed = false;
+        Random random = new Random();
 
         float rotY = 0.0f;
 
@@ -95,26 +93,21 @@ namespace KaroXNA
                 for (int y = 0; y < BOARDWIDTH; y++)
                 {
                     KaroEngine.Tile tile = engine.GetByXY(x, y);
-
-                    if (tile != KaroEngine.Tile.BORDER && tile != KaroEngine.Tile.EMPTY)
-                    {
+                    
+                    if (tile != KaroEngine.Tile.BORDER && tile != KaroEngine.Tile.EMPTY) {
                         Tile t = new Tile(tileModel, false);
-                        t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
+                        t.TileMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(random.Next(0, 4) * 90)) * Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
+                        
                         gameTiles.Add(t);
 
-                        if(tile == KaroEngine.Tile.WHITEUNMARKED || tile == KaroEngine.Tile.WHITEMARKED || tile == KaroEngine.Tile.REDUNMARKED || tile == KaroEngine.Tile.REDMARKED)
-                        {
+                        if(tile == KaroEngine.Tile.WHITEUNMARKED || tile == KaroEngine.Tile.WHITEMARKED || tile == KaroEngine.Tile.REDUNMARKED || tile == KaroEngine.Tile.REDMARKED) {
                             Piece p = new Piece(pieceModel, true, new Point(x, y), Color.Black.ToVector3());
-
+                            
                             if (tile == KaroEngine.Tile.REDUNMARKED || tile == KaroEngine.Tile.REDMARKED)
-                            {
                                 p.Color = Color.Tomato.ToVector3();
-                            }
 
                             if (tile == KaroEngine.Tile.WHITEUNMARKED || tile == KaroEngine.Tile.WHITEMARKED)
-                            {
                                 p.Color = Color.White.ToVector3();
-                            }
 
                             if (tile == KaroEngine.Tile.WHITEUNMARKED || tile == KaroEngine.Tile.REDUNMARKED)
                                 p.PieceMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
