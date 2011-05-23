@@ -54,7 +54,7 @@ namespace KaroXNA
             Content.RootDirectory = "Content";
             gamePieces = new List<Piece>();
             gameTiles = new List<Tile>();
-            cam = new Camera();
+            cam = new Camera(graphics.GraphicsDevice.Viewport.Width / graphics.GraphicsDevice.Viewport.Height);
             gameState = GameState.MENU;
             gameMenu = new Menu(this, 0);
             Components.Add(gameMenu);
@@ -118,6 +118,7 @@ namespace KaroXNA
 
         protected override void Update(GameTime gameTime)
         {
+
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
 

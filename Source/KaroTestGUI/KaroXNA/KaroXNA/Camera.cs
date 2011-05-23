@@ -13,7 +13,7 @@ namespace KaroXNA
 
         private  Vector3 CenterBoard = new Vector3(40,5,30);
 
-		public Camera()
+		public Camera(float aspectRatio)
 		{
             this.CameraPosition = new Vector3(10f, 20, 20f);
             this.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(80), 1.3f, 0.1f, 1000f);
