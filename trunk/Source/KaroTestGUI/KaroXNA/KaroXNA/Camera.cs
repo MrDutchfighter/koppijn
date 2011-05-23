@@ -32,7 +32,7 @@ namespace KaroXNA
             }
             else
             {
-                this.YAngle = this.YAngle + angle;
+                this.YAngle = /*this.YAngle +*/ angle;
             }
             CameraPosition = Vector3.Transform(CameraPosition, Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(YAngle), MathHelper.ToRadians(XAngle), 0f));
             this.View = Matrix.CreateLookAt(CameraPosition + CenterBoard, CenterBoard, Vector3.Up);
