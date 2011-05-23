@@ -215,6 +215,17 @@ namespace KaroXNA
             //world = Matrix.CreateRotationY(MathHelper.ToDegrees(f));
             // TODO: Add your update logic here
 
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            float fps = 1 / elapsed;
+            deltaFPSTime += elapsed;
+            if (deltaFPSTime > 1)
+            {
+                this.FPS = fps;
+                deltaFPSTime -= 1;
+            }
+
+
             base.Update(gameTime);
         }
 
@@ -250,15 +261,7 @@ namespace KaroXNA
 
                 p.Draw(cam);
             }
-            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            float fps = 1 / elapsed;
-            deltaFPSTime += elapsed;
-            if (deltaFPSTime > 1)
-            {
-                this.FPS = fps;
-                deltaFPSTime -= 1;
-            }
             base.Draw(gameTime);
         }
     }
