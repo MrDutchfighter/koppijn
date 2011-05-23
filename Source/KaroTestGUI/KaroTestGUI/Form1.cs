@@ -280,12 +280,14 @@ namespace KaroTestGUI
         }
         #endregion
 
+        // Undo
         private void btn_Click(object sender, EventArgs e)
         {
             engine.UndoLastMove();
             UpdateGUI();
         }
 
+        // Generate random move(s)
         private void button1_Click(object sender, EventArgs e)
         {
             engine = new KaroEngineWrapper();
@@ -309,32 +311,40 @@ namespace KaroTestGUI
             Application.DoEvents();
 
             int times = int.Parse(textBox1.Text);
-            float total = 0;
             int moves = 0;
+
+            DateTime startTijd = DateTime.Now;
+            TimeSpan timeDiff = DateTime.Now - DateTime.Now;
 
             for (int i = 0; i < times; i++)
             {
-                /*total +=*/ engine.CalculateComputerMove();
+                engine.CalculateComputerMove();
                 moves++;
                 UpdateGUI();
                 Application.DoEvents();
 
                 if (engine.GetGameState() == GameState.GAMEFINISHED)
                 {
-                    ShowWinning(moves, total, false);
+                   timeDiff = DateTime.Now - startTijd;
+                    ShowWinning(moves, (float)timeDiff.TotalSeconds, false);
                     break;
                 }
             }
 
+            timeDiff = DateTime.Now - startTijd; 
+
             this.txtMessageLog.Text = "Moves:\t" + moves + "\r\n\r\n" + this.txtMessageLog.Text; 
-            this.txtMessageLog.Text = "Avarage:\t" + total / times + " Seconds \r\n" + this.txtMessageLog.Text;
-            this.txtMessageLog.Text = "Total:\t" + total + " Seconds \r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Avarage:\t" + (timeDiff.TotalSeconds / times) + " Seconds \r\n" + this.txtMessageLog.Text;
+            this.txtMessageLog.Text = "Total:\t" + timeDiff.TotalSeconds + " Seconds \r\n" + this.txtMessageLog.Text;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             engine = new KaroEngineWrapper();
             UpdateGUI();
+
+            DateTime startTijd = DateTime.Now;
+            TimeSpan timeDiff = DateTime.Now - DateTime.Now;
 
             int white = 0;
             int red = 0;
@@ -347,9 +357,8 @@ namespace KaroTestGUI
             for (int i = 0; i < games; i++)
             {
                 newGameToolStripMenuItem_Click(sender, e);
-
-                float total = 0;
                 int moves = 0;
+                startTijd = DateTime.Now;
 
                 while (engine.GetGameState() != GameState.GAMEFINISHED)
                 {
@@ -359,7 +368,7 @@ namespace KaroTestGUI
                         break;
                     }
 
-                    /*total +=*/ engine.CalculateComputerMove();
+                    engine.CalculateComputerMove();
                     moves++;
                     UpdateGUI();
                     Application.DoEvents();
@@ -379,7 +388,8 @@ namespace KaroTestGUI
                 }
                 bdraw = false;
 
-                ShowWinning(moves, total, bdraw);
+                timeDiff = DateTime.Now - startTijd;
+                ShowWinning(moves, (float)timeDiff.TotalSeconds, bdraw);
             }
 
             this.txtMessageLog.Text = "Draw\t" + draw + "\r\n\r\n" + this.txtMessageLog.Text;
