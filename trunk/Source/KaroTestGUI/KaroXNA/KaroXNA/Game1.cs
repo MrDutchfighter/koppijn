@@ -29,6 +29,7 @@ namespace KaroXNA
         List<Tile> gameTiles;
         Menu gameMenu;
         GameState gameState;
+        int insertionCount = 0;
         MouseState oldMouseState;
         const int BOARDWIDTH = 17;
         bool spacePressed = false;
@@ -54,21 +55,6 @@ namespace KaroXNA
             gameMenu = new Menu(this, 0);
             //Components.Add(gameMenu);
             engine = new KaroEngineWrapper();
-
-            engine.InsertByXY(5, 4);
-            engine.InsertByXY(6, 4);
-            engine.InsertByXY(7, 4);
-            engine.InsertByXY(8, 4);
-            engine.InsertByXY(9, 4);
-
-            engine.InsertByXY(5, 5);
-            engine.InsertByXY(6, 5);
-            engine.InsertByXY(7, 5);
-            engine.InsertByXY(8, 5);
-            engine.InsertByXY(9, 5);
-
-            engine.InsertByXY(5, 6);
-            engine.InsertByXY(6, 6);
 
         }
 
@@ -159,18 +145,34 @@ namespace KaroXNA
                     Point positionTo = new Point(move[1] % BOARDWIDTH, move[1] / BOARDWIDTH);
                     Point tileFrom = new Point(move[2] % BOARDWIDTH, move[2] / BOARDWIDTH);
 
-                    foreach (Piece p in gamePieces)
+                    if (engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12)
                     {
-                        if (p.Location == positionFrom)
-                        {
-                            if (move[3] == 1) 
-                                //p.PieceMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
+                            Piece p = new Piece(pieceModel, true, new Point(positionTo.X, positionTo.Y), Color.Black.ToVector3());
                             
-                            p.PieceMatrix *= Matrix.CreateTranslation(new Vector3((positionTo.X - p.Location.X) * 5.5f, 0, (positionTo.Y - p.Location.Y) * 5.5f));
-                            p.Location = positionTo;
+                            if(engine.GetTurn() == KaroEngine.Player.RED)
+                                p.Color = Color.Tomato.ToVector3();
+                            else
+                                p.Color = Color.White.ToVector3();
+                            //Turn the piece upside down, default is flipped, which we don't want!
+                            p.PieceMatrix = Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 3.4f, positionTo.Y * 5.5f));
+
+                            gamePieces.Add(p);
+                            insertionCount++;
+                    }
+                    else
+                    {
+                        foreach (Piece p in gamePieces)
+                        {
+                            if (p.Location == positionFrom)
+                            {
+                                if (move[3] == 1)
+                                    //p.PieceMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
+
+                                    p.PieceMatrix *= Matrix.CreateTranslation(new Vector3((positionTo.X - p.Location.X) * 5.5f, 0, (positionTo.Y - p.Location.Y) * 5.5f));
+                                p.Location = positionTo;
+                            }
                         }
                     }
-
                     foreach (Tile t in gameTiles)
                     {
                         if (t.Location == tileFrom)
