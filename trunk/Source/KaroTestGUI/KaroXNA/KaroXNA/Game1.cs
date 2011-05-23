@@ -52,7 +52,7 @@ namespace KaroXNA
             cam = new Camera();
             gameState = GameState.MENU;
             gameMenu = new Menu(this, 0);
-            Components.Add(gameMenu);
+            //Components.Add(gameMenu);
             engine = new KaroEngineWrapper();
 
             engine.InsertByXY(5, 4);
