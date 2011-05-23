@@ -24,5 +24,7 @@ namespace KaroXNA
             Location = location;
             Color = color;
         }
+
+
     }
 }
