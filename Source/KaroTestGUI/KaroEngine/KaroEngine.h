@@ -140,7 +140,7 @@ namespace KaroEngine
 		vector<Move*> * GetPossibleMoves(int tile, bool isTurned);
 
 		// Algorithm functions
-		float CalculateComputerMove();
+		Move* CalculateComputerMove();
 		int EvaluateNumRows(Player p, int pieceIndex);
 		void AssignMoveScores(vector<Move*> *moves, int hash);
 

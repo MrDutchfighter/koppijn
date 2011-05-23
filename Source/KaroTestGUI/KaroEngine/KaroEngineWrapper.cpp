@@ -59,8 +59,22 @@ int KaroEngineWrapper::GetEvaluationScore(){
 	return _karoEngine->GetEvaluationScore();
 }
 
-float KaroEngineWrapper::CalculateComputerMove(){
-	return _karoEngine->CalculateComputerMove();
+array<int>^ KaroEngineWrapper::CalculateComputerMove(){
+
+	Move* calculatedMove = _karoEngine->CalculateComputerMove();
+
+	array<int>^ theMove = gcnew array<int>(4);
+
+	theMove[0] = calculatedMove->positionFrom;
+	theMove[1] = calculatedMove->positionTo;
+	theMove[2] = calculatedMove->tileFrom;
+	if(calculatedMove->isJumpMove)
+		theMove[3] = 1;
+	else
+		theMove[3] = 0;
+	
+	return theMove;
+	
 }
 
 String ^KaroEngineWrapper::GetMessageLog(){
