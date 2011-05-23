@@ -34,6 +34,7 @@ namespace KaroXNA
         GameState gameState;
         MouseState oldMouseState;
         const int BOARDWIDTH = 17;
+        bool spacePressed = false;
 
 
         public Game1()
@@ -181,86 +182,88 @@ namespace KaroXNA
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                engine.CalculateComputerMove();
-                gamePieces.Clear();
-                gameTiles.Clear();
-                Tile t;
-                Piece p;
-
-                for (int x = 0; x < BOARDWIDTH; x++)
+                if (!spacePressed)
                 {
-                    for (int y = 0; y < BOARDWIDTH; y++)
+                    spacePressed = true;
+                    engine.CalculateComputerMove();
+                    gamePieces.Clear();
+                    gameTiles.Clear();
+                    Tile t;
+                    Piece p;
+
+                    for (int x = 0; x < BOARDWIDTH; x++)
                     {
-                        switch (engine.GetByXY(x, y))
+                        for (int y = 0; y < BOARDWIDTH; y++)
                         {
-                            case KaroEngine.Tile.BORDER:
-                                break;
-                            case KaroEngine.Tile.EMPTY:
-                                break;
-                            case KaroEngine.Tile.MOVEABLETILE:
-                                t = new Tile(Content.Load<Model>("tile"), false);
-                                t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
-                                gameTiles.Add(t);
-                                break;
-                            case KaroEngine.Tile.SOLIDTILE:
-                                t = new Tile(Content.Load<Model>("tile"), false);
-                                t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
-                                gameTiles.Add(t);
-                                break;
-                            case KaroEngine.Tile.REDUNMARKED:
-                                t = new Tile(Content.Load<Model>("tile"), false);
-                                t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
-                                gameTiles.Add(t);
+                            switch (engine.GetByXY(x, y))
+                            {
+                                case KaroEngine.Tile.BORDER:
+                                    break;
+                                case KaroEngine.Tile.EMPTY:
+                                    break;
+                                case KaroEngine.Tile.MOVEABLETILE:
+                                    t = new Tile(Content.Load<Model>("tile"), false);
+                                    t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
+                                    gameTiles.Add(t);
+                                    break;
+                                case KaroEngine.Tile.SOLIDTILE:
+                                    t = new Tile(Content.Load<Model>("tile"), false);
+                                    t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
+                                    gameTiles.Add(t);
+                                    break;
+                                case KaroEngine.Tile.REDUNMARKED:
+                                    t = new Tile(Content.Load<Model>("tile"), false);
+                                    t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
+                                    gameTiles.Add(t);
 
-                                p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y), Color.Tomato.ToVector3());
-                                world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
-                                p.PieceMatrix = world;
-                                p.IsVisible = true;
-                                gamePieces.Add(p);
-                                break;
-                            case KaroEngine.Tile.REDMARKED:
-                                t = new Tile(Content.Load<Model>("tile"), false);
-                                t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
-                                gameTiles.Add(t);
+                                    p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y), Color.Tomato.ToVector3());
+                                    world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
+                                    p.PieceMatrix = world;
+                                    p.IsVisible = true;
+                                    gamePieces.Add(p);
+                                    break;
+                                case KaroEngine.Tile.REDMARKED:
+                                    t = new Tile(Content.Load<Model>("tile"), false);
+                                    t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
+                                    gameTiles.Add(t);
 
-                                p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y), Color.Tomato.ToVector3());
-                                world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
-                                p.PieceMatrix = world;
-                                p.IsVisible = true;
-                                gamePieces.Add(p);
-                                break;
-                            case KaroEngine.Tile.WHITEUNMARKED:
-                                t = new Tile(Content.Load<Model>("tile"), false);
-                                t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
-                                gameTiles.Add(t);
+                                    p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y), Color.Tomato.ToVector3());
+                                    world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
+                                    p.PieceMatrix = world;
+                                    p.IsVisible = true;
+                                    gamePieces.Add(p);
+                                    break;
+                                case KaroEngine.Tile.WHITEUNMARKED:
+                                    t = new Tile(Content.Load<Model>("tile"), false);
+                                    t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
+                                    gameTiles.Add(t);
 
-                                p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y), Color.White.ToVector3());
-                                world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
-                                p.PieceMatrix = world;
-                                p.IsVisible = true;
-                                gamePieces.Add(p);
-                                break;
-                            case KaroEngine.Tile.WHITEMARKED:
-                                t = new Tile(Content.Load<Model>("tile"), false);
-                                t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
-                                gameTiles.Add(t);
+                                    p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y), Color.White.ToVector3());
+                                    world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
+                                    p.PieceMatrix = world;
+                                    p.IsVisible = true;
+                                    gamePieces.Add(p);
+                                    break;
+                                case KaroEngine.Tile.WHITEMARKED:
+                                    t = new Tile(Content.Load<Model>("tile"), false);
+                                    t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
+                                    gameTiles.Add(t);
 
-                                p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y), Color.White.ToVector3());
-                                world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
-                                p.PieceMatrix = world;
-                                p.IsVisible = true;
-                                gamePieces.Add(p);
-                                break;
+                                    p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y), Color.White.ToVector3());
+                                    world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
+                                    p.PieceMatrix = world;
+                                    p.IsVisible = true;
+                                    gamePieces.Add(p);
+                                    break;
+                            }
                         }
                     }
                 }
-
-
-
-
-
             }
-
+            if (Keyboard.GetState().IsKeyUp(Keys.Space))
+            {
+                spacePressed = false;
+            }
             oldMouseState = Mouse.GetState();
 
             //world = Matrix.CreateRotationY(MathHelper.ToDegrees(f));
