@@ -82,7 +82,7 @@ String ^KaroEngineWrapper::GetMessageLog(){
 }
 
 array<array<int>^>^ KaroEngineWrapper::GetPossibleMoves(int x, int y,int tileFromX,int tileFromY){
-	vector<Move*>* possibleMoves = _karoEngine->GetPossibleMoves((y*_karoEngine->BOARDWIDTH+x),false);
+	vector<Move*>* possibleMoves = _karoEngine->GetPossibleMoves((y*_karoEngine->BOARDWIDTH+x));
 	
 	int tilefrom=(tileFromY*_karoEngine->BOARDWIDTH+tileFromX);
 	if(tileFromX == -1){

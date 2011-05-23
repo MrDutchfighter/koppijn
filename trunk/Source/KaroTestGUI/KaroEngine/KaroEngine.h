@@ -137,7 +137,7 @@ namespace KaroEngine
 
 		// Get possible moves
 		vector<Move*> * GetPossibleMoves(Player forPlayer);
-		vector<Move*> * GetPossibleMoves(int tile, bool isTurned);
+		vector<Move*> * GetPossibleMoves(int tile);
 
 		// Algorithm functions
 		Move* CalculateComputerMove();

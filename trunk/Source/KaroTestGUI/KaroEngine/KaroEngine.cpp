@@ -11,7 +11,8 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION;
 		this->insertionCount = 0;
-		this->maxDepth = 2;
+		this->maxDepth = 4;
+
 		this->evaluationScore = 0;
 		this->visitedList = new VisitedList();
 
@@ -101,7 +102,7 @@ namespace KaroEngine
 			}
 		}
 
-		vector<Move*>* moves= this->GetPossibleMoves(from, true);
+		vector<Move*>* moves= this->GetPossibleMoves(from);
 		for(int i=0;i<moves->size();i++){
 			if(moves->at(i)->positionTo == to && moves->at(i)->positionFrom == from && moves->at(i)->tileFrom == tileFrom) {
 				move = moves->at(i);
@@ -279,16 +280,35 @@ namespace KaroEngine
 	/**
 	* Assigns a score to a move
 	*/
-	void KaroEngine::AssignMoveScores(vector<Move*> *moves)
+	void KaroEngine::AssignMoveScores(vector<Move*> *moves, int hash)
 	{
 		for(int i=0; i < moves->size(); i++) {
 			// Execute the move
 			DoMove(moves->at(i));
 
-			int scoreRed = EvaluateBoard(Player::RED);
-			int scoreWhite = EvaluateBoard(Player::WHITE);
-			int evaluationScore = scoreRed-scoreWhite;
-			//int rand = rand() % 1000 + 1;
+			int evaluationScore;
+			int currentHash = GetHash(hash,moves->at(i));
+
+			if(turn == Player::RED){
+				map<int,pair<int,int>>::iterator it = transpositionTableRed.find(currentHash);
+				if (it != transpositionTableRed.end())
+					evaluationScore = it->second.second;
+				else{
+					int scoreRed = EvaluateBoard(Player::RED);
+					int scoreWhite = EvaluateBoard(Player::WHITE);
+					evaluationScore = scoreRed-scoreWhite;
+				}
+			}else{
+				map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(currentHash);
+				if (it != transpositionTableWhite.end())
+					evaluationScore = it->second.second;
+				else{
+					int scoreRed = EvaluateBoard(Player::RED);
+					int scoreWhite = EvaluateBoard(Player::WHITE);
+					evaluationScore = scoreRed-scoreWhite;
+				}
+			} 
+
 			moves->at(i)->score = evaluationScore;
 			UndoMove(moves->at(i));
 		}
@@ -312,7 +332,7 @@ namespace KaroEngine
 
 		// If the game is in insertion state, insert a random item on a tile
 		if(gameState == GameState::INSERTION) {
-			bool foundInsertPosition=false;
+			bool foundInsertPosition = false;
 			while(!foundInsertPosition){
 				int x = 5+rand()%5;
 				int y = 4+rand()%4;
@@ -321,24 +341,21 @@ namespace KaroEngine
 
 				Move * v = new Move(position);
 				if(this->DoMove(v)) {
+					theMove = v;
 					foundInsertPosition=true;
 				}
 			}
 		} else if(gameState == GameState::PLAYING) {
 			// Generate a real computer move with minmax
-			int hash= GetHash();
-			theMove = MiniMax(GetTurn(), 0, INT_MIN, INT_MAX,hash,0);
+			int hash = GetHash();
+			Move * theMove = MiniMax(turn, 0, INT_MIN, INT_MAX,hash,0);
 
 			// Execute the final move
 			if(theMove->positionFrom > 0) {
 				DoMove(theMove);
 
 				if(this->IsWinner(Reverse(turn), theMove->positionTo))
-				{
 					gameState = GameState::GAMEFINISHED;
-				}
-			} else {
-				SetMessageLog("Geen move gevonden");
 			}
 		}
 		QueryPerformanceCounter((LARGE_INTEGER *)&ctr2);
@@ -366,21 +383,13 @@ namespace KaroEngine
 		if(forPlayer == Player::RED) {
 			for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
 				
-				if(board[it->first] != Tile::REDMARKED && board[it->first] != Tile::REDUNMARKED) {
-					return new vector<Move*>();
-				}
-					
-				vector<Move*> *moves = GetPossibleMoves(it->first, it->second);
+				vector<Move*> *moves = GetPossibleMoves(it->first);
 				possibleMoves->insert(possibleMoves->end(), moves->begin(), moves->end());
 			}
 		} else if(forPlayer == Player::WHITE) {
 			for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
 
-				if(board[it->first] != Tile::WHITEMARKED && board[it->first] != Tile::WHITEUNMARKED) {
-					return new vector<Move*>();
-				}
-
-				vector<Move*> *moves = GetPossibleMoves(it->first, it->second);
+				vector<Move*> *moves = GetPossibleMoves(it->first);
 				possibleMoves->insert(possibleMoves->end(), moves->begin(), moves->end());
 			}
 		}
@@ -391,7 +400,7 @@ namespace KaroEngine
 	/**
 	* Get all the possible moves from the current tile
 	*/
-	vector<Move*>* KaroEngine::GetPossibleMoves(int curTile, bool isTurned) {
+	vector<Move*>* KaroEngine::GetPossibleMoves(int curTile) {
 
 		vector<Move*> *possibleMoves = new vector<Move*>();
 		//vector<int> *moveableTileIndexes = new vector<int>();
@@ -685,7 +694,8 @@ namespace KaroEngine
 
 		// Find next moves for the current player
 		vector<Move*> * possibleMoves = GetPossibleMoves(p);
-		this->AssignMoveScores(possibleMoves);
+		this->AssignMoveScores(possibleMoves, hash);
+
 		// Loop through all the moves
 		for(int i=0; i < possibleMoves->size(); i++) {
 			// Execute the move
