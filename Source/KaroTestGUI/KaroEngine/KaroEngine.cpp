@@ -11,7 +11,8 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION;
 		this->insertionCount = 0;
-		this->maxDepth = 4;
+		this->maxDepth = 2;
+
 		this->evaluationScore = 0;
 		this->visitedList = new VisitedList();
 
@@ -284,6 +285,7 @@ namespace KaroEngine
 	Move* KaroEngine::CalculateComputerMove() {
 		
 		Move * theMove;
+		theMove = new Move(-1,-1,-1, false);
 		__int64 ctr1 = 0, ctr2 = 0, freq = 0;
 		int acc = 0, i = 0;
 
@@ -314,9 +316,12 @@ namespace KaroEngine
 				DoMove(theMove);
 
 				if(this->IsWinner(Reverse(turn), theMove->positionTo))
+				{
 					gameState = GameState::GAMEFINISHED;
+				}
 			}
 		}
+
 		QueryPerformanceCounter((LARGE_INTEGER *)&ctr2);
 		QueryPerformanceFrequency((LARGE_INTEGER *)&freq);
 		
