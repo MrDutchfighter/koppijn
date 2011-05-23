@@ -154,7 +154,8 @@ namespace KaroXNA
                             else
                                 p.Color = Color.White.ToVector3();
                             //Turn the piece upside down, default is flipped, which we don't want!
-                            p.PieceMatrix = Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 3.4f, positionTo.Y * 5.5f));
+                            p.T = Matrix.Identity;
+                            p.T *= Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 3.4f, positionTo.Y * 5.5f));
 
                             gamePieces.Add(p);
                             insertionCount++;
@@ -163,28 +164,31 @@ namespace KaroXNA
                     {
                         foreach (Piece p in gamePieces)
                         {
-                            p.T = Matrix.Identity;
-
-                            if (!p.IsFlipped)
-                                p.T *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
-                                
-
-                            if (move[3] == 1)
+                            if (p.Location == positionFrom)
                             {
-                                p.T *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
-                                p.T *= Matrix.CreateTranslation(new Vector3((positionTo.X) * 5.5f, 1f, (positionTo.Y) * 5.5f));
+                                p.T = Matrix.Identity;
 
-                                if (p.IsFlipped)
-                                    p.IsFlipped = false;
+                                if (!p.IsFlipped)
+                                    p.T *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
+
+
+                                if (move[3] == 1)
+                                {
+                                    p.T *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
+                                    p.T *= Matrix.CreateTranslation(new Vector3((positionTo.X) * 5.5f, 1f, (positionTo.Y) * 5.5f));
+
+                                    if (p.IsFlipped)
+                                        p.IsFlipped = false;
+                                    else
+                                        p.IsFlipped = true;
+                                }
                                 else
-                                    p.IsFlipped = true;
+                                {
+                                    p.T *= Matrix.CreateTranslation(new Vector3((positionTo.X) * 5.5f, 1f, (positionTo.Y) * 5.5f));
+                                }
+
+                                p.Location = positionTo;
                             }
-                            else
-                            {
-                                p.T *= Matrix.CreateTranslation(new Vector3((positionTo.X ) * 5.5f, 1f, (positionTo.Y) * 5.5f));
-                            }
-                            
-                            p.Location = positionTo;
                         }
                     }
                     foreach (Tile t in gameTiles)
