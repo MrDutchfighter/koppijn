@@ -279,16 +279,35 @@ namespace KaroEngine
 	/**
 	* Assigns a score to a move
 	*/
-	void KaroEngine::AssignMoveScores(vector<Move*> *moves)
+	void KaroEngine::AssignMoveScores(vector<Move*> *moves, int hash)
 	{
 		for(int i=0; i < moves->size(); i++) {
 			// Execute the move
 			DoMove(moves->at(i));
 
-			int scoreRed = EvaluateBoard(Player::RED);
-			int scoreWhite = EvaluateBoard(Player::WHITE);
-			int evaluationScore = scoreRed-scoreWhite;
-			//int rand = rand() % 1000 + 1;
+			int evaluationScore;
+			int currentHash = GetHash(hash,moves->at(i));
+
+			if(turn == Player::RED){
+				map<int,pair<int,int>>::iterator it = transpositionTableRed.find(currentHash);
+				if (it != transpositionTableRed.end())
+					evaluationScore = it->second.second;
+				else{
+					int scoreRed = EvaluateBoard(Player::RED);
+					int scoreWhite = EvaluateBoard(Player::WHITE);
+					evaluationScore = scoreRed-scoreWhite;
+				}
+			}else{
+				map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(currentHash);
+				if (it != transpositionTableWhite.end())
+					evaluationScore = it->second.second;
+				else{
+					int scoreRed = EvaluateBoard(Player::RED);
+					int scoreWhite = EvaluateBoard(Player::WHITE);
+					evaluationScore = scoreRed-scoreWhite;
+				}
+			} 
+
 			moves->at(i)->score = evaluationScore;
 			UndoMove(moves->at(i));
 		}
@@ -684,7 +703,7 @@ namespace KaroEngine
 
 		// Find next moves for the current player
 		vector<Move*> * possibleMoves = GetPossibleMoves(p);
-		this->AssignMoveScores(possibleMoves);
+		this->AssignMoveScores(possibleMoves, hash);
 		// Loop through all the moves
 		for(int i=0; i < possibleMoves->size(); i++) {
 			// Execute the move
@@ -784,11 +803,13 @@ namespace KaroEngine
 		int calculatedScore = 0;
 		if(p == Player::WHITE)
 		{
+			int markedPieces = CountMarkedPieces(whitePieces);
 			for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
 				if (it->second == true)
 				{
 					calculatedScore += 2;
-					calculatedScore += this->EvaluateNumRows(p, it->first);
+					if(markedPieces > 1)
+						calculatedScore += this->EvaluateNumRows(p, it->first);
 				}	
 			}	
 		}
