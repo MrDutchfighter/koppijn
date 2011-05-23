@@ -13,11 +13,14 @@ namespace KaroXNA
         public Model PieceModel { get; set; }
         public Matrix PieceMatrix { get; set; }
         public bool IsVisible { get; set; }
+        public bool IsFlipped { get; set; }
+        public Point Location { get; set; }
 
-        public Piece(Model model, bool visible)
+        public Piece(Model model, bool visible, Point location)
         {
             PieceModel = model;
             IsVisible = visible;
+            Location = location;
         }
     }
 }
