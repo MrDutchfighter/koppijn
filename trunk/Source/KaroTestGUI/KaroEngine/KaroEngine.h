@@ -142,7 +142,7 @@ namespace KaroEngine
 		// Algorithm functions
 		float CalculateComputerMove();
 		int EvaluateNumRows(Player p, int pieceIndex);
-		void AssignMoveScores(vector<Move*> *moves);
+		void AssignMoveScores(vector<Move*> *moves, int hash);
 
 
 		// 'Getters'
