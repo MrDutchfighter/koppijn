@@ -166,11 +166,13 @@ namespace KaroXNA
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
-            if (Keyboard.GetState().IsKeyDown(Keys.R))
+            if (Keyboard.GetState().IsKeyDown(Keys.R) || Keyboard.GetState().IsKeyDown(Keys.Right))
                 cam.DoYRotation(0.5f);
-            if (Keyboard.GetState().IsKeyDown(Keys.PageUp))
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                cam.DoYRotation(-0.5f);
+            if (Keyboard.GetState().IsKeyDown(Keys.PageUp) || Keyboard.GetState().IsKeyDown(Keys.Up))
                 cam.DoZoom(-0.01f);
-            if (Keyboard.GetState().IsKeyDown(Keys.PageDown))
+            if (Keyboard.GetState().IsKeyDown(Keys.PageDown) || Keyboard.GetState().IsKeyDown(Keys.Down))
                 cam.DoZoom(0.01f);
             if (Mouse.GetState().ScrollWheelValue != oldMouseState.ScrollWheelValue)
             {
