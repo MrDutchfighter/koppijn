@@ -109,10 +109,10 @@ namespace KaroXNA
                             if (tile == KaroEngine.Tile.WHITEUNMARKED || tile == KaroEngine.Tile.WHITEMARKED)
                                 p.Color = Color.White.ToVector3();
 
-                            if (tile == KaroEngine.Tile.WHITEUNMARKED || tile == KaroEngine.Tile.REDUNMARKED)
+                            if (tile == KaroEngine.Tile.WHITEMARKED || tile == KaroEngine.Tile.REDMARKED)
                                 p.PieceMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
                             else
-                                p.PieceMatrix = Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(x * 5.5f, 2, y * 5.5f));
+                                p.PieceMatrix = Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(x * 5.5f, 3.4f, y * 5.5f));
 
                             gamePieces.Add(p);
                         }
