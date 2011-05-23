@@ -152,7 +152,8 @@ namespace KaroXNA
                 if (!spacePressed)
                 {
                     spacePressed = true;
-                    engine.CalculateComputerMove();
+                    int[] move = engine.CalculateComputerMove();
+                    int test = move[0];
                     gamePieces.Clear();
                     gameTiles.Clear();
                     tileModel = Content.Load<Model>("tile");
