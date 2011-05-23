@@ -11,7 +11,7 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION;
 		this->insertionCount = 0;
-		this->maxDepth = 4;
+		this->maxDepth = 1;
 
 		this->evaluationScore = 0;
 		this->visitedList = new VisitedList();
@@ -348,7 +348,7 @@ namespace KaroEngine
 		} else if(gameState == GameState::PLAYING) {
 			// Generate a real computer move with minmax
 			int hash = GetHash();
-			Move * theMove = MiniMax(turn, 0, INT_MIN, INT_MAX,hash,0);
+			theMove = MiniMax(turn, 0, INT_MIN, INT_MAX,hash,0);
 
 			// Execute the final move
 			if(theMove->positionFrom > 0) {
