@@ -42,6 +42,7 @@ namespace KaroXNA
 
         public Game1()
         {
+            this.IsFixedTimeStep = false;
             IsMouseVisible = true;
             graphics = new GraphicsDeviceManager(this);
             this.Window.AllowUserResizing = true;
