@@ -113,7 +113,7 @@ namespace KaroXNA
                             t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
                             gameTiles.Add(t);
 
-                            p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y));
+                            p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y), Color.Tomato.ToVector3());
                             world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
                             p.PieceMatrix = world;
                             p.IsVisible = true;
@@ -124,7 +124,7 @@ namespace KaroXNA
                             t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
                             gameTiles.Add(t);
 
-                            p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y));
+                            p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y), Color.Tomato.ToVector3());
                             world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
                             p.PieceMatrix = world;
                             p.IsVisible = true;
@@ -135,7 +135,7 @@ namespace KaroXNA
                             t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
                             gameTiles.Add(t);
 
-                            p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y));
+                            p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y), Color.White.ToVector3());
                             world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
                             p.PieceMatrix = world;
                             p.IsVisible = true;
@@ -146,7 +146,7 @@ namespace KaroXNA
                             t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
                             gameTiles.Add(t);
 
-                            p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y));
+                            p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y), Color.White.ToVector3());
                             world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
                             p.PieceMatrix = world;
                             p.IsVisible = true;
@@ -211,6 +211,11 @@ namespace KaroXNA
                 }
             }
 
+            RasterizerState rs = new RasterizerState();
+            rs.FillMode = FillMode.Solid;
+            rs.CullMode = CullMode.CullCounterClockwiseFace;
+            GraphicsDevice.RasterizerState = rs;
+
             foreach (Piece p in gamePieces)
             {
                 if (!p.IsVisible)
@@ -222,7 +227,8 @@ namespace KaroXNA
                     foreach (BasicEffect e in mesh.Effects)
                     {
                         e.PreferPerPixelLighting = true;
-                        e.DiffuseColor = Color.Tomato.ToVector3();
+
+                        e.DiffuseColor = p.Color;
                         e.SpecularColor = Color.White.ToVector3();
                         e.EnableDefaultLighting();
                         e.World = p.PieceMatrix;
