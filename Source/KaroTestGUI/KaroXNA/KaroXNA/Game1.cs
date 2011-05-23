@@ -34,6 +34,9 @@ namespace KaroXNA
         const int BOARDWIDTH = 17;
         bool spacePressed = false;
         Random random = new Random();
+        public float frames = 0f;
+        public float deltaFPSTime = 0f;
+        public float FPS { get { return this.frames; } set { this.frames = value; } }
 
         float rotY = 0.0f;
 
@@ -145,6 +148,7 @@ namespace KaroXNA
                     Point positionTo = new Point(move[1] % BOARDWIDTH, move[1] / BOARDWIDTH);
                     Point tileFrom = new Point(move[2] % BOARDWIDTH, move[2] / BOARDWIDTH);
 
+                    
                     if (engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12)
                     {
                             Piece p = new Piece(pieceModel, true, new Point(positionTo.X, positionTo.Y), Color.Black.ToVector3());
@@ -209,7 +213,15 @@ namespace KaroXNA
 
             //world = Matrix.CreateRotationY(MathHelper.ToDegrees(f));
             // TODO: Add your update logic here
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            float fps = 1 / elapsed;
+            deltaFPSTime += elapsed;
+            if (deltaFPSTime > 1)
+            {
+                this.FPS = fps;
+                deltaFPSTime -= 1;
+            }
             base.Update(gameTime);
         }
 
