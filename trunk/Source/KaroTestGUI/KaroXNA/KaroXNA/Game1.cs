@@ -36,6 +36,7 @@ namespace KaroXNA
         const int BOARDWIDTH = 17;
         bool spacePressed = false;
 
+        float rotY = 0.0f;
 
         public Game1()
         {
@@ -136,10 +137,14 @@ namespace KaroXNA
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
-            if (Keyboard.GetState().IsKeyDown(Keys.R) || Keyboard.GetState().IsKeyDown(Keys.Right))
-                cam.DoYRotation(0.5f);
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
-                cam.DoYRotation(-0.5f);
+
+            if (Keyboard.GetState().IsKeyDown(Keys.R) || Keyboard.GetState().IsKeyDown(Keys.Right)) { rotY += 0.1f; cam.DoYRotation(rotY); }
+            if (Keyboard.GetState().IsKeyDown(Keys.Left)) { rotY += 0.1f; cam.DoYRotation(rotY * -1); }
+
+            if (!Keyboard.GetState().IsKeyDown(Keys.R) && !Keyboard.GetState().IsKeyDown(Keys.Right) && !Keyboard.GetState().IsKeyDown(Keys.Left)) { rotY = 0.5f; }
+            if (rotY > 4) { rotY = 4f; }
+
+
             if (Keyboard.GetState().IsKeyDown(Keys.PageUp) || Keyboard.GetState().IsKeyDown(Keys.Up))
                 cam.DoZoom(-0.01f);
             if (Keyboard.GetState().IsKeyDown(Keys.PageDown) || Keyboard.GetState().IsKeyDown(Keys.Down))
