@@ -95,7 +95,7 @@ namespace KaroXNA
                     KaroEngine.Tile tile = engine.GetByXY(x, y);
                     
                     if (tile != KaroEngine.Tile.BORDER && tile != KaroEngine.Tile.EMPTY) {
-                        Tile t = new Tile(tileModel, false);
+                        Tile t = new Tile(tileModel, false, new Point(x, y));
                         t.TileMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(random.Next(0, 4) * 90)) * Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
                         
                         gameTiles.Add(t);
@@ -152,44 +152,31 @@ namespace KaroXNA
                 if (!spacePressed)
                 {
                     spacePressed = true;
+
                     int[] move = engine.CalculateComputerMove();
-                    int test = move[0];
-                    gamePieces.Clear();
-                    gameTiles.Clear();
-                    tileModel = Content.Load<Model>("tile");
-                    pieceModel = Content.Load<Model>("piece");
 
-                    for (int x = 0; x < BOARDWIDTH; x++)
+                    Point positionFrom = new Point(move[0] % BOARDWIDTH, move[0] / BOARDWIDTH);
+                    Point positionTo = new Point(move[1] % BOARDWIDTH, move[1] / BOARDWIDTH);
+                    Point tileFrom = new Point(move[2] % BOARDWIDTH, move[2] / BOARDWIDTH);
+
+                    foreach (Piece p in gamePieces)
                     {
-                        for (int y = 0; y < BOARDWIDTH; y++)
+                        if (p.Location == positionFrom)
                         {
-                            KaroEngine.Tile tile = engine.GetByXY(x, y);
+                            if (move[3] == 1) 
+                                //p.PieceMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
+                            
+                            p.PieceMatrix *= Matrix.CreateTranslation(new Vector3((positionTo.X - p.Location.X) * 5.5f, 0, (positionTo.Y - p.Location.Y) * 5.5f));
+                            p.Location = positionTo;
+                        }
+                    }
 
-                            if (tile != KaroEngine.Tile.BORDER && tile != KaroEngine.Tile.EMPTY)
-                            {
-                                Tile t = new Tile(tileModel, false);
-                                t.TileMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(random.Next(0, 4) * 90)) * Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
-
-                                gameTiles.Add(t);
-
-                                if (tile == KaroEngine.Tile.WHITEUNMARKED || tile == KaroEngine.Tile.WHITEMARKED || tile == KaroEngine.Tile.REDUNMARKED || tile == KaroEngine.Tile.REDMARKED)
-                                {
-                                    Piece p = new Piece(pieceModel, true, new Point(x, y), Color.Black.ToVector3());
-
-                                    if (tile == KaroEngine.Tile.REDUNMARKED || tile == KaroEngine.Tile.REDMARKED)
-                                        p.Color = Color.Tomato.ToVector3();
-
-                                    if (tile == KaroEngine.Tile.WHITEUNMARKED || tile == KaroEngine.Tile.WHITEMARKED)
-                                        p.Color = Color.White.ToVector3();
-
-                                    if (tile == KaroEngine.Tile.WHITEMARKED || tile == KaroEngine.Tile.REDMARKED)
-                                        p.PieceMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
-                                    else
-                                        p.PieceMatrix = Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(x * 5.5f, 3.4f, y * 5.5f));
-
-                                    gamePieces.Add(p);
-                                }
-                            }
+                    foreach (Tile t in gameTiles)
+                    {
+                        if (t.Location == tileFrom)
+                        {
+                            t.TileMatrix *= Matrix.CreateTranslation(new Vector3((positionTo.X - t.Location.X) * 5.5f, 0, (positionTo.Y - t.Location.Y) * 5.5f));
+                            t.Location = positionTo;
                         }
                     }
                 }
