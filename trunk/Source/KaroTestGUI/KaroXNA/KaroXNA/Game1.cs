@@ -113,7 +113,7 @@ namespace KaroXNA
                             t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
                             gameTiles.Add(t);
 
-                            p = new Piece(Content.Load<Model>("piece"), false);
+                            p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y));
                             world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
                             p.PieceMatrix = world;
                             p.IsVisible = true;
@@ -124,7 +124,7 @@ namespace KaroXNA
                             t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
                             gameTiles.Add(t);
 
-                            p = new Piece(Content.Load<Model>("piece"), false);
+                            p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y));
                             world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
                             p.PieceMatrix = world;
                             p.IsVisible = true;
@@ -135,7 +135,7 @@ namespace KaroXNA
                             t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
                             gameTiles.Add(t);
 
-                            p = new Piece(Content.Load<Model>("piece"), false);
+                            p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y));
                             world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
                             p.PieceMatrix = world;
                             p.IsVisible = true;
@@ -146,7 +146,7 @@ namespace KaroXNA
                             t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
                             gameTiles.Add(t);
 
-                            p = new Piece(Content.Load<Model>("piece"), false);
+                            p = new Piece(Content.Load<Model>("piece"), false, new Point(x, y));
                             world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
                             p.PieceMatrix = world;
                             p.IsVisible = true;
