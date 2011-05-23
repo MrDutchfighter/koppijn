@@ -96,9 +96,9 @@ namespace KaroXNA
                                 p.Color = Color.White.ToVector3();
 
                             if (tile == KaroEngine.Tile.WHITEMARKED || tile == KaroEngine.Tile.REDMARKED)
-                                p.PieceMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
+                                p.T = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
                             else
-                                p.PieceMatrix = Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(x * 5.5f, 3.4f, y * 5.5f));
+                                p.T = Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(x * 5.5f, 3.4f, y * 5.5f));
 
                             gamePieces.Add(p);
                         }
@@ -163,14 +163,28 @@ namespace KaroXNA
                     {
                         foreach (Piece p in gamePieces)
                         {
-                            if (p.Location == positionFrom)
-                            {
-                                if (move[3] == 1)
-                                    //p.PieceMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
+                            p.T = Matrix.Identity;
 
-                                    p.PieceMatrix *= Matrix.CreateTranslation(new Vector3((positionTo.X - p.Location.X) * 5.5f, 0, (positionTo.Y - p.Location.Y) * 5.5f));
-                                p.Location = positionTo;
+                            if (!p.IsFlipped)
+                                p.T *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
+                                
+
+                            if (move[3] == 1)
+                            {
+                                p.T *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
+                                p.T *= Matrix.CreateTranslation(new Vector3((positionTo.X) * 5.5f, 1f, (positionTo.Y) * 5.5f));
+
+                                if (p.IsFlipped)
+                                    p.IsFlipped = false;
+                                else
+                                    p.IsFlipped = true;
                             }
+                            else
+                            {
+                                p.T *= Matrix.CreateTranslation(new Vector3((positionTo.X ) * 5.5f, 1f, (positionTo.Y) * 5.5f));
+                            }
+                            
+                            p.Location = positionTo;
                         }
                     }
                     foreach (Tile t in gameTiles)
@@ -224,21 +238,8 @@ namespace KaroXNA
                 {
                     continue;
                 }
-                foreach (ModelMesh mesh in p.PieceModel.Meshes)
-                {
-                    foreach (BasicEffect e in mesh.Effects)
-                    {
-                        e.PreferPerPixelLighting = true;
 
-                        e.DiffuseColor = p.Color;
-                        e.SpecularColor = Color.White.ToVector3();
-                        e.EnableDefaultLighting();
-                        e.World = p.PieceMatrix;
-                        e.View = cam.View;
-                        e.Projection = cam.Projection;
-                    }
-                    mesh.Draw();
-                }
+                p.Draw(cam);
             }
 
            // base.Draw(gameTime);
