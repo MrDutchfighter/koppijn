@@ -11,8 +11,7 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION;
 		this->insertionCount = 0;
-		this->maxDepth = 2;
-
+		this->maxDepth = 3;
 		this->evaluationScore = 0;
 		this->visitedList = new VisitedList();
 
@@ -277,15 +276,54 @@ namespace KaroEngine
 		return score;
 	}
 
-	
+	/**
+	* Assigns a score to a move
+	*/
+	void KaroEngine::AssignMoveScores(vector<Move*> *moves, int hash)
+	{
+		for(int i=0; i < moves->size(); i++) {
+			// Execute the move
+			DoMove(moves->at(i));
+
+			int evaluationScore;
+			int currentHash = GetHash(hash,moves->at(i));
+
+			if(turn == Player::RED){
+				map<int,pair<int,int>>::iterator it = transpositionTableRed.find(currentHash);
+				if (it != transpositionTableRed.end())
+					evaluationScore = it->second.second;
+				else{
+					int scoreRed = EvaluateBoard(Player::RED);
+					int scoreWhite = EvaluateBoard(Player::WHITE);
+					evaluationScore = scoreRed-scoreWhite;
+				}
+			}else{
+				map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(currentHash);
+				if (it != transpositionTableWhite.end())
+					evaluationScore = it->second.second;
+				else{
+					int scoreRed = EvaluateBoard(Player::RED);
+					int scoreWhite = EvaluateBoard(Player::WHITE);
+					evaluationScore = scoreRed-scoreWhite;
+				}
+			} 
+
+			moves->at(i)->score = evaluationScore;
+			UndoMove(moves->at(i));
+		}
+		if(turn==Player::WHITE){
+			std::sort (moves->begin(), moves->end(), smaller_than_second);
+		}else{
+			std::sort (moves->begin(), moves->end(), bigger_than_second);			
+		}
+	}
 
 	/**
 	* Calculates the next computer move
 	*/
 	Move* KaroEngine::CalculateComputerMove() {
 		
-		Move * theMove;
-		theMove = new Move(-1,-1,-1, false);
+		Move * theMove= new Move(-1,-1,-1,false);
 		__int64 ctr1 = 0, ctr2 = 0, freq = 0;
 		int acc = 0, i = 0;
 
@@ -316,12 +354,9 @@ namespace KaroEngine
 				DoMove(theMove);
 
 				if(this->IsWinner(Reverse(turn), theMove->positionTo))
-				{
 					gameState = GameState::GAMEFINISHED;
-				}
 			}
 		}
-
 		QueryPerformanceCounter((LARGE_INTEGER *)&ctr2);
 		QueryPerformanceFrequency((LARGE_INTEGER *)&freq);
 		
@@ -340,64 +375,22 @@ namespace KaroEngine
 	/**
 	* Get all the possible moves for one player
 	*/
-	vector<Move*>* KaroEngine::GetPossibleMoves(Player forPlayer,int hash) {
+	vector<Move*>* KaroEngine::GetPossibleMoves(Player forPlayer) {
 		vector<Move*> *possibleMoves = new vector<Move*>();
 
 		// Loop through all the stones of the current player
 		if(forPlayer == Player::RED) {
-
 			for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
 				
-				if(board[it->first] != Tile::REDMARKED && board[it->first] != Tile::REDUNMARKED) {
-					return new vector<Move*>();
-				}
+				vector<Move*> *moves = GetPossibleMoves(it->first);
+				possibleMoves->insert(possibleMoves->end(), moves->begin(), moves->end());
+			}
+		} else if(forPlayer == Player::WHITE) {
+			for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
 
 				vector<Move*> *moves = GetPossibleMoves(it->first);
-				for(int i=0; i < moves->size(); i++) {
-					// Execute the move
-					DoMove(moves->at(i));
-					int evaluationScore;
-					int currentHash = GetHash(hash,moves->at(i));
-					map<int,pair<int,int>>::iterator it = transpositionTableRed.find(currentHash);
-					if (it != transpositionTableRed.end())
-						evaluationScore = it->second.second;
-					else{
-						int scoreRed = EvaluateBoard(Player::RED);
-						int scoreWhite = EvaluateBoard(Player::WHITE);
-						evaluationScore = scoreRed-scoreWhite;
-					}
-					moves->at(i)->score = evaluationScore;
-					UndoMove(moves->at(i));
-					possibleMoves->push_back (moves->at(i));
-				}				
+				possibleMoves->insert(possibleMoves->end(), moves->begin(), moves->end());
 			}
-			std::sort (possibleMoves->begin(), possibleMoves->end(), bigger_than_second);
-			} else if(forPlayer == Player::WHITE) {
-				for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
-					if(board[it->first] != Tile::WHITEMARKED && board[it->first] != Tile::WHITEUNMARKED) {
-						return new vector<Move*>();
-					}
-				vector<Move*> *moves = GetPossibleMoves(it->first);
-				for(int i=0; i < moves->size(); i++) {
-					// Execute the move
-					DoMove(moves->at(i));
-
-					int evaluationScore;
-					int currentHash = GetHash(hash,moves->at(i));
-					map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(currentHash);
-					if (it != transpositionTableWhite.end())
-						evaluationScore = it->second.second;
-					else{
-						int scoreRed = EvaluateBoard(Player::RED);
-						int scoreWhite = EvaluateBoard(Player::WHITE);
-						evaluationScore = scoreRed-scoreWhite;
-					}
-					moves->at(i)->score = evaluationScore;
-					UndoMove(moves->at(i));
-					possibleMoves->push_back(moves->at(i));
-				}
-			}
-			std::sort (possibleMoves->begin(), possibleMoves->end(), smaller_than_second);
 		}
 
 		return possibleMoves;
@@ -699,8 +692,8 @@ namespace KaroEngine
 		}		
 
 		// Find next moves for the current player
-		vector<Move*> * possibleMoves = GetPossibleMoves(p,hash);
-		//this->AssignMoveScores(possibleMoves, hash);
+		vector<Move*> * possibleMoves = GetPossibleMoves(p);
+		this->AssignMoveScores(possibleMoves, hash);
 
 		// Loop through all the moves
 		for(int i=0; i < possibleMoves->size(); i++) {
