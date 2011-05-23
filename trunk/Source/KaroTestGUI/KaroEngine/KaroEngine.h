@@ -136,13 +136,12 @@ namespace KaroEngine
 		map<int,bool> KaroEngine::GetPlayerPieces(Player p);
 
 		// Get possible moves
-		vector<Move*> * GetPossibleMoves(Player forPlayer);
+		vector<Move*> * GetPossibleMoves(Player forPlayer,int hash);
 		vector<Move*> * GetPossibleMoves(int tile);
 
 		// Algorithm functions
 		Move* CalculateComputerMove();
 		int EvaluateNumRows(Player p, int pieceIndex);
-		void AssignMoveScores(vector<Move*> *moves, int hash);
 
 
 		// 'Getters'
