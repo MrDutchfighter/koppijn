@@ -11,11 +11,11 @@ namespace KaroXNA
         float XAngle = 0f;
         float YAngle = 0f;
 
-        private  Vector3 CenterBoard = new Vector3(30,10,20);
+        private  Vector3 CenterBoard = new Vector3(40,5,30);
 
 		public Camera()
 		{
-            this.CameraPosition = new Vector3(6f, 0, 6f);
+            this.CameraPosition = new Vector3(10f, 20, 20f);
             this.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(80), 1.3f, 0.1f, 1000f);
             this.View = Matrix.CreateLookAt(CameraPosition + CenterBoard, CenterBoard, Vector3.Up);
 		}
