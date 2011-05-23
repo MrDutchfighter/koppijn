@@ -100,7 +100,7 @@ namespace KaroXNA
                             break;
                         case KaroEngine.Tile.MOVEABLETILE:
                             t = new Tile(Content.Load<Model>("tile"), false);
-                            t.TileMatrix= Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
+                            t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
                             gameTiles.Add(t);
                             break;
                         case KaroEngine.Tile.SOLIDTILE:
@@ -114,11 +114,10 @@ namespace KaroXNA
                             gameTiles.Add(t);
 
                             p = new Piece(Content.Load<Model>("piece"), false);
-                            world = Matrix.CreateTranslation(new Vector3(x * 5.5f + 1, 1, y * 5.5f + 1));
+                            world = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
                             p.PieceMatrix = world;
                             p.IsVisible = true;
                             gamePieces.Add(p);
-
                             break;
                         case KaroEngine.Tile.REDMARKED:
                             t = new Tile(Content.Load<Model>("tile"), false);
@@ -130,11 +129,10 @@ namespace KaroXNA
                             p.PieceMatrix = world;
                             p.IsVisible = true;
                             gamePieces.Add(p);
-
-                           break;
+                            break;
                         case KaroEngine.Tile.WHITEUNMARKED:
                             t = new Tile(Content.Load<Model>("tile"), false);
-                            t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f ));
+                            t.TileMatrix = Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
                             gameTiles.Add(t);
 
                             p = new Piece(Content.Load<Model>("piece"), false);
@@ -142,7 +140,6 @@ namespace KaroXNA
                             p.PieceMatrix = world;
                             p.IsVisible = true;
                             gamePieces.Add(p);
-
                             break;
                         case KaroEngine.Tile.WHITEMARKED:
                             t = new Tile(Content.Load<Model>("tile"), false);
@@ -193,6 +190,25 @@ namespace KaroXNA
         {
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            foreach (Tile t in gameTiles)
+            {
+                foreach (ModelMesh mesh in t.TileModel.Meshes)
+                {
+                    foreach (BasicEffect e in mesh.Effects)
+                    {
+                        e.EnableDefaultLighting();
+
+                        e.World = t.TileMatrix;
+                        e.View = cam.View;
+                        e.Projection = cam.Projection;
+
+                        e.SpecularColor = Color.Black.ToVector3();
+                    }
+
+                    mesh.Draw();
+                }
+            }
+
             foreach (Piece p in gamePieces)
             {
                 if (!p.IsVisible)
@@ -215,24 +231,6 @@ namespace KaroXNA
                 }
             }
 
-            foreach (Tile t in gameTiles)
-            {
-                foreach (ModelMesh mesh in t.TileModel.Meshes)
-                {
-                    foreach (BasicEffect e in mesh.Effects)
-                    {
-                        e.EnableDefaultLighting();
-
-                        e.World = t.TileMatrix;
-                        e.View = cam.View;
-                        e.Projection = cam.Projection;
-
-                        e.SpecularColor = Color.Black.ToVector3();
-                    }
-
-                    mesh.Draw();
-                }
-            }
             base.Draw(gameTime);
         }
     }
