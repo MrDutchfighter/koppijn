@@ -7,6 +7,7 @@ public:
 	int tileFrom;
 	int score;
 	bool isJumpMove;
+	bool isWinningMove;
 
 	Move(void);
 	Move(int to);

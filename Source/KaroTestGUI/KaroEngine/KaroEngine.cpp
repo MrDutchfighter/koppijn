@@ -380,7 +380,6 @@ namespace KaroEngine
 	vector<Move*>* KaroEngine::GetPossibleMoves(int curTile) {
 
 		vector<Move*> *possibleMoves = new vector<Move*>();
-		//vector<int> *moveableTileIndexes = new vector<int>();
 
 		if(this->board[curTile]==Tile::EMPTY || 
 			this->board[curTile]==Tile::BORDER ||
@@ -676,6 +675,7 @@ namespace KaroEngine
 			// Was this the winning move? (has to be here, because IsWinner needs the last move...)
 			if(IsWinner(p, possibleMoves->at(i)->positionTo)) {
 				bestMove = possibleMoves->at(i);
+				bestMove->isWinningMove = true;
 				if(p == Player::RED) {
 					bestMove->score = INT_MAX-10000;
 				} else if(p == Player::WHITE) {
@@ -693,12 +693,12 @@ namespace KaroEngine
 
 			// Was the last move the best move?
 			if(p==Player::RED && lastBestMove->score > bestMove->score) {
-					bestMove = possibleMoves->at(i);
-					bestMove->score = lastBestMove->score;
+				bestMove = possibleMoves->at(i);
+				bestMove->score = lastBestMove->score;
 
-					if(bestMove->score > alpha) {
-						alpha = bestMove->score;
-					}
+				if(bestMove->score > alpha) {
+					alpha = bestMove->score;
+				}
 			}
 			else if(p==Player::WHITE && lastBestMove->score < bestMove->score) {
 				bestMove = possibleMoves->at(i);
@@ -749,17 +749,17 @@ namespace KaroEngine
 		int scoreRed =0;
 		for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
 			if (it->second == true){
-					scoreWhite += 2;
-					if(markedWhite > 1){
-						this->EvaluateNumRows(Player::WHITE, it->first,scoreWhite);
-					}
+				scoreWhite += 2;
+				if(markedWhite > 1){
+					this->EvaluateNumRows(Player::WHITE, it->first, scoreWhite);
+				}
 			}
 		}
 		for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
 			if (it->second == true){
 				scoreRed += 2;
 				if(markedRed > 1){
-					this->EvaluateNumRows(Player::RED, it->first,scoreRed);
+					this->EvaluateNumRows(Player::RED, it->first, scoreRed);
 				}
 			}
 		}

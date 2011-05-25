@@ -12,6 +12,7 @@ Move::Move(int to)
 	this->positionTo = to;
 	this->tileFrom = -1;
 	this->isJumpMove = false;
+	this->isWinningMove = false;
 }
 
 Move::Move(int from, int to, bool isJumpMove)
@@ -20,6 +21,7 @@ Move::Move(int from, int to, bool isJumpMove)
 	this->positionTo = to;
 	this->tileFrom = -1;
 	this->isJumpMove = isJumpMove;
+	this->isWinningMove = false;
 }
 
 Move::Move(int from, int to, int tileFrom, bool isJumpMove)
@@ -28,4 +30,5 @@ Move::Move(int from, int to, int tileFrom, bool isJumpMove)
 	this->positionTo = to;
 	this->tileFrom = tileFrom;
 	this->isJumpMove = isJumpMove;
+	this->isWinningMove = false;
 }
