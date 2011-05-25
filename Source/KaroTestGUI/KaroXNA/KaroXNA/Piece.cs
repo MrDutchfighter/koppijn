@@ -20,27 +20,26 @@ namespace KaroXNA
 
         public Model PieceModel { get; set; }
         public bool IsVisible { get; set; }
-        public Point Location { get; set; }
+        public Tile onTopofTile { get; set; }
         public Vector3 Color { get; set; }
 
         public Matrix PieceMatrix { get; set; }
         public Matrix T { get; set; }
-
         public bool IsFlipped { get; set; }
+        public bool isMoving { get; set; }
 
-        public Piece(Game game, Model pieceModel, bool visible, Point location, Vector3 color)
+        public Piece(Game game, Model pieceModel, bool visible, Tile onTopofTile, Vector3 color)
             : base(game)
         {
             this.game = (Game1)game;
-
+            this.isMoving = false;
             PieceModel = pieceModel;
             IsVisible = visible;
-            Location = location;
+            this.onTopofTile=onTopofTile;
             Color = color;
 
             PieceMatrix = Matrix.Identity;
             T = Matrix.Identity;
-
             IsFlipped = false;
         }
 
@@ -49,47 +48,7 @@ namespace KaroXNA
             base.Initialize();
         }
 
-        public override void Update(GameTime gameTime)
-        {
-            if (game.gameState == GameState.PLAYING)
-            {
-                if (Keyboard.GetState().IsKeyDown(Keys.Space))
-                {
-                    Point positionFrom = new Point(game.move[0] % Game1.BOARDWIDTH, game.move[0] / Game1.BOARDWIDTH);
-                    Point positionTo = new Point(game.move[1] % Game1.BOARDWIDTH, game.move[1] / Game1.BOARDWIDTH);
-                    Point tileFrom = new Point(game.move[2] % Game1.BOARDWIDTH, game.move[2] / Game1.BOARDWIDTH);
-
-
-                    if (game.engine.GetGameState() != KaroEngine.GameState.INSERTION || game.insertionCount > 12)
-                    {
-                        if (Location == positionFrom)
-                        {
-                            T = Matrix.Identity;
-
-                            if (!IsFlipped)
-                                T *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
-
-                            if (game.move[3] == 1)
-                            {
-                                T *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
-                                T *= Matrix.CreateTranslation(new Vector3((positionTo.X) * 5.5f, 1f, (positionTo.Y) * 5.5f));
-
-                                if (IsFlipped)
-                                    IsFlipped = false;
-                                else
-                                    IsFlipped = true;
-                            }
-                            else
-                            {
-                                T *= Matrix.CreateTranslation(new Vector3((positionTo.X) * 5.5f, 1f, (positionTo.Y) * 5.5f));
-                            }
-
-                            Location = positionTo;
-                        }
-                    }
-                }
-            }
-
+        public override void Update(GameTime gameTime){
             base.Update(gameTime);
         }
 
@@ -104,8 +63,19 @@ namespace KaroXNA
                         e.EnableDefaultLighting();
                         e.PreferPerPixelLighting = true;
                         e.DiffuseColor = Color;
+                        e.World = Matrix.Identity;
+                        if (!IsFlipped){
+                            e.World *= Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(0f, 3.4f, 0f);
+                        }
+                        else {
+                            e.World *= Matrix.CreateTranslation(0f, 1f, 0f);
+                        }
+                        if (!this.isMoving){
+                            e.World *= this.onTopofTile.TileMatrix ;
+                        }else{
+                            //hier kan later de matrix voor het door de lucht laten zweven etc voor een mooie animatie.
+                        }
                         
-                        e.World = PieceMatrix * T;
                         e.View = game.cam.View;
                         e.Projection = game.cam.Projection;
                     }

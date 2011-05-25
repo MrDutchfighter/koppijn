@@ -28,7 +28,7 @@ namespace KaroXNA
         public GameState gameState;
 
         Matrix world, view, proj, tableMatrix;
-        public Model tileModel, pieceModel, tableModel;
+        public Model tableModel,pieceModel;
         public Camera cam;
         float rotY = 0.0f;
         float rotX = 0.0f;
@@ -44,6 +44,9 @@ namespace KaroXNA
         public float frames = 0f;
         public float deltaFPSTime = 0f;
         public float FPS { get { return this.frames; } set { this.frames = value; } }
+
+        Dictionary<int, Tile> TileComponents;
+        Dictionary<int, Piece> PieceComponents;
 
         public Game1()
         {
@@ -64,6 +67,8 @@ namespace KaroXNA
             spacePressed = false;
             insertionCount = 0;
             engine = new KaroEngineWrapper();
+            this.PieceComponents = new Dictionary<int, Piece>();
+            this.TileComponents = new Dictionary<int, Tile>();
         }
 
         protected override void Initialize()
@@ -81,7 +86,7 @@ namespace KaroXNA
 
         protected override void LoadContent()
         {
-            tileModel = Content.Load<Model>("tile");
+            Model tileModel = Content.Load<Model>("tile");
             pieceModel = Content.Load<Model>("piece");
             tableModel = Content.Load<Model>("table");
 
@@ -90,12 +95,10 @@ namespace KaroXNA
                 for (int y = 0; y < BOARDWIDTH; y++)
                 {
                     KaroEngine.Tile tile = engine.GetByXY(x, y);
-
-                    if (tile != KaroEngine.Tile.BORDER && tile != KaroEngine.Tile.EMPTY)
-                    {
+                    if (tile != KaroEngine.Tile.BORDER && tile != KaroEngine.Tile.EMPTY){
                         Tile t = new Tile(this, tileModel, false, new Point(x, y));
                         t.TileMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(random.Next(0, 4) * 90)) * Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
-
+                        this.TileComponents.Add(y * BOARDWIDTH + x, t);
                         Components.Add(t);
                     }
                 }
@@ -111,31 +114,46 @@ namespace KaroXNA
         {
             if (gameState == GameState.PLAYING)
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.Space))
-                {
-                    if (!spacePressed)
-                    {
+                if (Keyboard.GetState().IsKeyDown(Keys.Space)){
+                    if (!spacePressed){
                         spacePressed = true;
-
                         move = engine.CalculateComputerMove();
-
+                        Point positionFrom = new Point(move[0] % Game1.BOARDWIDTH, move[0] / Game1.BOARDWIDTH);
                         Point positionTo = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
+                        Point tileFrom = new Point(move[2] % Game1.BOARDWIDTH, move[2] / Game1.BOARDWIDTH);
 
-                        if (engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12)
-                        {
-                            Piece p = new Piece(this, pieceModel, true, new Point(positionTo.X, positionTo.Y), Color.Black.ToVector3());
+                        if (engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12) {
 
+                            Piece p = new Piece(this, pieceModel, true, this.TileComponents[positionTo.Y * BOARDWIDTH + positionTo.X], Color.Black.ToVector3());
                             if (engine.GetTurn() == KaroEngine.Player.RED)
                                 p.Color = Color.Tomato.ToVector3();
                             else
                                 p.Color = Color.White.ToVector3();
-
                             //Turn the piece upside down, default is flipped, which we don't want!
-                            p.T = Matrix.Identity;
-                            p.T *= Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 3.4f, positionTo.Y * 5.5f));
-
+                            //p.T = Matrix.Identity;
+                            //p.T *= Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 3.4f, positionTo.Y * 5.5f));
                             Components.Add(p);
+                            this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X,p);
                             insertionCount++;
+                        }
+                        else if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
+                            if (tileFrom.X >0) {
+                                Tile movedTile= this.TileComponents[tileFrom.Y * BOARDWIDTH + tileFrom.X];
+                                this.TileComponents.Remove(tileFrom.Y * BOARDWIDTH + tileFrom.X);
+                                movedTile.Location=positionTo;
+                                movedTile.TileMatrix=Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 0, positionTo.Y * 5.5f));
+                                this.TileComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, movedTile);
+                            }
+                            Piece movedPiece = this.PieceComponents[positionFrom.Y * BOARDWIDTH + positionFrom.X];
+                            this.PieceComponents.Remove(positionFrom.Y * BOARDWIDTH + positionFrom.X);
+                            movedPiece.onTopofTile = this.TileComponents[(positionTo.Y * BOARDWIDTH) + positionTo.X];
+                            KaroEngine.Tile t= engine.GetByXY(positionTo.X, positionTo.Y);
+                            if (t == KaroEngine.Tile.REDMARKED || t == KaroEngine.Tile.WHITEMARKED){
+                                movedPiece.IsFlipped = true;
+                            } else {
+                                movedPiece.IsFlipped = false;
+                            }
+                            this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, movedPiece);
                         }
                     }
                 }
@@ -226,7 +244,6 @@ namespace KaroXNA
                 foreach (BasicEffect e in mesh.Effects)
                 {
                     e.EnableDefaultLighting();
-
                     e.World = tableMatrix;
                     e.Projection = cam.Projection;
                     e.View = cam.View;
