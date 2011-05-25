@@ -146,7 +146,7 @@ namespace KaroXNA
                             }
                             Piece movedPiece = this.PieceComponents[positionFrom.Y * BOARDWIDTH + positionFrom.X];
                             this.PieceComponents.Remove(positionFrom.Y * BOARDWIDTH + positionFrom.X);
-                            movedPiece.onTopofTile = this.TileComponents[(positionTo.Y * BOARDWIDTH) + positionTo.X];
+                            movedPiece.MoveTo(this.TileComponents[(positionTo.Y * BOARDWIDTH) + positionTo.X]);
                             KaroEngine.Tile t= engine.GetByXY(positionTo.X, positionTo.Y);
                             if (t == KaroEngine.Tile.REDMARKED || t == KaroEngine.Tile.WHITEMARKED){
                                 movedPiece.IsFlipped = true;
