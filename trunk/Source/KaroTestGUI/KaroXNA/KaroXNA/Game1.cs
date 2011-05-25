@@ -21,24 +21,28 @@ namespace KaroXNA
     {
         GraphicsDeviceManager graphics;
         GraphicsDevice device;
-        public Model tileModel, pieceModel, tableModel;
-        Matrix tableMatrix;
-        public Camera cam;
-        Matrix world, view, proj;
+
         public KaroEngine.KaroEngineWrapper engine;
-        Menu gameMenu;
-        public int[] move;
-        GameState gameState;
-        public int insertionCount = 0;
-        MouseState oldMouseState;
         public const int BOARDWIDTH = 17;
-        bool spacePressed = false;
+        Menu gameMenu;
+        GameState gameState;
+
+        Matrix world, view, proj;
+        public Model tileModel, pieceModel;
+        public Camera cam;
+        float rotY = 0.0f;
+
+        public int[] move;
+        
+        public int insertionCount;
+        MouseState oldMouseState;
+        public bool spacePressed;
+
         Random random = new Random();
+
         public float frames = 0f;
         public float deltaFPSTime = 0f;
         public float FPS { get { return this.frames; } set { this.frames = value; } }
-
-        float rotY = 0.0f;
 
         public Game1()
         {
@@ -56,8 +60,9 @@ namespace KaroXNA
             gameState = GameState.MENU;
             gameMenu = new Menu(this, 0);
             Components.Add(gameMenu);
+            spacePressed = false;
+            insertionCount = 0;
             engine = new KaroEngineWrapper();
-
         }
 
         protected override void Initialize()
@@ -75,7 +80,6 @@ namespace KaroXNA
         {
             tileModel = Content.Load<Model>("tile");
             pieceModel = Content.Load<Model>("piece");
-            tableModel = Content.Load<Model>("test");
 
             for (int x = 0; x < BOARDWIDTH; x++)
             {
@@ -89,24 +93,6 @@ namespace KaroXNA
                         t.TileMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(random.Next(0, 4) * 90)) * Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
 
                         Components.Add(t);
-
-                        //if (tile == KaroEngine.Tile.WHITEUNMARKED || tile == KaroEngine.Tile.WHITEMARKED || tile == KaroEngine.Tile.REDUNMARKED || tile == KaroEngine.Tile.REDMARKED)
-                        //{
-                        //    Piece p = new Piece(pieceModel, true, new Point(x, y), Color.Black.ToVector3());
-
-                        //    if (tile == KaroEngine.Tile.REDUNMARKED || tile == KaroEngine.Tile.REDMARKED)
-                        //        p.Color = Color.Tomato.ToVector3();
-
-                        //    if (tile == KaroEngine.Tile.WHITEUNMARKED || tile == KaroEngine.Tile.WHITEMARKED)
-                        //        p.Color = Color.White.ToVector3();
-
-                        //    if (tile == KaroEngine.Tile.WHITEMARKED || tile == KaroEngine.Tile.REDMARKED)
-                        //        p.T = Matrix.CreateTranslation(new Vector3(x * 5.5f, 1, y * 5.5f));
-                        //    else
-                        //        p.T = Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(x * 5.5f, 3.4f, y * 5.5f));
-
-                        //    gamePieces.Add(p);
-                        //}
                     }
                 }
             }
@@ -151,11 +137,16 @@ namespace KaroXNA
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.R) || Keyboard.GetState().IsKeyDown(Keys.Right)) 
-                rotY += 0.1f; cam.DoYRotation(rotY);
+            if (Keyboard.GetState().IsKeyDown(Keys.R) || Keyboard.GetState().IsKeyDown(Keys.Right)) {
+                rotY += 0.1f; 
+                cam.DoYRotation(rotY);
+            }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Left)) 
-                rotY += 0.1f; cam.DoYRotation(rotY * -1);
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                rotY += 0.1f; 
+                cam.DoYRotation(rotY * -1);
+            }
 
             if (!Keyboard.GetState().IsKeyDown(Keys.R) && !Keyboard.GetState().IsKeyDown(Keys.Right) && !Keyboard.GetState().IsKeyDown(Keys.Left)) 
                 rotY = 0.5f;
