@@ -141,7 +141,7 @@ namespace KaroXNA
                                 Tile movedTile= this.TileComponents[tileFrom.Y * BOARDWIDTH + tileFrom.X];
                                 this.TileComponents.Remove(tileFrom.Y * BOARDWIDTH + tileFrom.X);
                                 movedTile.Location=positionTo;
-                                movedTile.TileMatrix=Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 0, positionTo.Y * 5.5f));
+                                movedTile.moveTo(Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 0, positionTo.Y * 5.5f)));
                                 this.TileComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, movedTile);
                             }
                             Piece movedPiece = this.PieceComponents[positionFrom.Y * BOARDWIDTH + positionFrom.X];
