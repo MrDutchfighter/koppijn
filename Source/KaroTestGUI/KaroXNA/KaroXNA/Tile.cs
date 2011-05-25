@@ -18,7 +18,11 @@ namespace KaroXNA
 
         public Model TileModel { get; set; }
         public Matrix TileMatrix { get; set; }
+        private Vector3 moveDirection;
+        private Matrix world;
+        
         public bool IsMovable { get; set; }
+        public bool IsMoving { get; set; }
 
         public Point Location { get; set; }
 
@@ -40,11 +44,29 @@ namespace KaroXNA
         }
 
         public override void Update(GameTime gameTime)
-        {            
+        {
+            if (IsMoving)
+            {
+                float x = this.moveDirection.X / 100;
+                float y = this.moveDirection.Y / 100;
+                float z = this.moveDirection.Z / 100;
+                this.world *= Matrix.CreateTranslation(x, y, z);
+                Vector3 moving = TileMatrix.Translation - this.world.Translation;
+                if (moving.X < 0.1f && moving.Y < 0.1f && moving.Z < 0.1f)
+                {
+                    IsMoving = false;
+                }
+            }
             base.Update(gameTime);
         }
-        
 
+        public void moveTo(Matrix toLocation) {
+            moveDirection = toLocation.Translation - TileMatrix.Translation;
+            this.world = TileMatrix;
+            TileMatrix = toLocation;
+            this.IsMoving = true;
+
+        }
         public override void Draw(GameTime gameTime)
         {
             foreach (ModelMesh mesh in TileModel.Meshes)
@@ -52,7 +74,13 @@ namespace KaroXNA
                 foreach (BasicEffect e in mesh.Effects)
                 {
                     e.EnableDefaultLighting();
-                    e.World = TileMatrix;
+                    if (IsMoving) {
+                        e.World = this.world;
+                    }
+                    else
+                    {
+                        e.World = TileMatrix;
+                    }
                     e.View = game.cam.View;
                     e.Projection = game.cam.Projection;
                 }
