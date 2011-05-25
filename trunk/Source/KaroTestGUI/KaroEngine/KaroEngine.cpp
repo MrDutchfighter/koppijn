@@ -170,7 +170,7 @@ namespace KaroEngine
 		if(board[lastMove] == marked)
 		{
 			// Check if there's more than 3 marked pieces on the field
-			if(markedPieces > 3){
+			if(markedPieces > 3) {
 				for(int i = 0; i < 4; i++)
 				{
 					//check if second is marked
@@ -274,26 +274,26 @@ namespace KaroEngine
 
 			if(turn == Player::RED){
 				map<int,pair<int,int>>::iterator it = transpositionTableRed.find(currentHash);
-				if (it != transpositionTableRed.end())
+				if (it != transpositionTableRed.end()) {
 					evaluationScore = it->second.second;
-				else{
+				} else {
 					evaluationScore = EvaluateBoard();
 				}
-			}else{
+			} else {
 				map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(currentHash);
-				if (it != transpositionTableWhite.end())
+				if (it != transpositionTableWhite.end()) {
 					evaluationScore = it->second.second;
-				else{
+				} else {
 					evaluationScore = EvaluateBoard();
 				}
-			} 
+			}
 
 			moves->at(i)->score = evaluationScore;
 			UndoMove(moves->at(i));
 		}
-		if(turn==Player::WHITE){
+		if(turn==Player::WHITE) {
 			std::sort (moves->begin(), moves->end(), smaller_than_second);
-		}else{
+		} else {
 			std::sort (moves->begin(), moves->end(), bigger_than_second);			
 		}
 	}
@@ -678,7 +678,7 @@ namespace KaroEngine
 			// Execute the move
 			DoMove(possibleMoves->at(i));
 			//hash=GetHash();
-			int currentHash=GetHash(hash,possibleMoves->at(i));
+			int currentHash = GetHash(hash, possibleMoves->at(i));
 
 			// Was this the winning move? (has to be here, because IsWinner needs the last move...)
 			if(IsWinner(p, possibleMoves->at(i)->positionTo)) {
@@ -694,34 +694,31 @@ namespace KaroEngine
 
 			// Get the last best move
 			//Move * lastBestMove = possibleMoves->at(i);
-			Move * lastBestMove = MiniMax(Reverse(p), depth+1, alpha, beta,currentHash, possibleMoves->at(i)->score);
+			Move * lastBestMove = MiniMax(Reverse(p), depth+1, alpha, beta, currentHash, possibleMoves->at(i)->score);
 
 			// Directly undo this move
 			UndoMove(possibleMoves->at(i));
-			
 
 			// Was the last move the best move?
-			if(lastBestMove->score > bestMove->score && p == Player::RED) {
-				bestMove = possibleMoves->at(i);
-				bestMove->score = lastBestMove->score;
-			} else if(lastBestMove->score < bestMove->score && p == Player::WHITE) {
-				bestMove = possibleMoves->at(i);
-				bestMove->score = lastBestMove->score;
-			}
+			if(p==Player::Red) {
+				if(lastBestMove->score > bestMove->score) {
+					bestMove = possibleMoves->at(i);
+					bestMove->score = lastBestMove->score;
 
-			// Is current player RED?
-			if(p == Player::RED) {
-				if(bestMove->score > alpha) {
-					alpha = bestMove->score;
+					if(bestMove->score > alpha) {
+						alpha = bestMove->score;
+					}
+				}
+			} else {
+				if(lastBestMove->score < bestMove->score) {
+					bestMove = possibleMoves->at(i);
+					bestMove->score = lastBestMove->score;
+
+					if(bestMove->score < beta) {
+						beta = bestMove->score;
+					}
 				}
 			}
-
-			if(p == Player::WHITE) {
-				if(bestMove->score < beta) {
-					beta = bestMove->score;
-				}
-			}
-
 			
 			// Put best score in transposition table
 			if(depth == 0 ) {
