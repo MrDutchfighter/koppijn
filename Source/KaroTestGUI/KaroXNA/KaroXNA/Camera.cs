@@ -34,15 +34,17 @@ namespace KaroXNA
             {
                 this.YAngle = /*this.YAngle +*/ angle;
             }
-            CameraPosition = Vector3.Transform(CameraPosition, Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(YAngle), MathHelper.ToRadians(XAngle), 0f));
+            CameraPosition = Vector3.Transform(CameraPosition, Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(YAngle), 0, 0f));
             this.View = Matrix.CreateLookAt(CameraPosition + CenterBoard, CenterBoard, Vector3.Up);
             
         }
 
         public void DoXRotation(float angle)
         {
-            this.XAngle = this.XAngle + angle;
-            CameraPosition = Vector3.Transform(CameraPosition, Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(YAngle), MathHelper.ToRadians(XAngle), 0f));
+            
+            this.XAngle = /*this.YAngle +*/ angle;
+            
+            CameraPosition = Vector3.Transform(CameraPosition, Quaternion.CreateFromYawPitchRoll(0, MathHelper.ToRadians(XAngle), 0f));
             this.View = Matrix.CreateLookAt(CameraPosition + CenterBoard, CenterBoard, Vector3.Up);
         }
 
