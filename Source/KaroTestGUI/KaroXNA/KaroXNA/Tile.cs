@@ -43,6 +43,7 @@ namespace KaroXNA
         {            
             base.Update(gameTime);
         }
+        
 
         public override void Draw(GameTime gameTime)
         {
