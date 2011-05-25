@@ -11,7 +11,7 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION;
 		this->insertionCount = 0;
-		this->maxDepth = 1;
+		this->maxDepth = 3;
 		this->evaluationScore = 0;
 		this->visitedList = new VisitedList();
 
@@ -154,7 +154,7 @@ namespace KaroEngine
 	{
 		if(p == Player::WHITE)
 			return whitePieces;
-		else if(p == Player::RED)
+		else
 			return redPieces;
 	}
 
@@ -165,18 +165,18 @@ namespace KaroEngine
 	{
 		Tile marked;
 
-		//Right player color 
+		// Right player color 
 		if (p == Player::WHITE) 
 			marked = Tile::WHITEMARKED;
 		if (p == Player::RED)
 			marked = Tile::REDMARKED;
 
-		//check if the last moved piece is marked
+		// Check if the last moved piece is marked
 		if(board[lastMove] == marked)
 		{			
 			map<int,bool> pieces = GetPlayerPieces(p);
 
-			//check if there's more than 3 marked pieces on the field
+			// Check if there's more than 3 marked pieces on the field
 			if(CountMarkedPieces(pieces) > 3)
 			{
 				for(int i = 0; i < 4; i++)
@@ -197,7 +197,7 @@ namespace KaroEngine
 						}
 						else
 						{
-							//check if opposite is marked
+							// Check if opposite is marked
 							if(board[previous] == marked){
 								int fourth = previous - possibleSteps[i];
 								if(board[fourth] == marked)
@@ -207,7 +207,7 @@ namespace KaroEngine
 					}
 					else
 					{
-						//check opposite direction
+						// Check opposite direction
 						if(board[previous] == marked)
 						{
 							int previous2 = previous - possibleSteps[i];
@@ -232,7 +232,7 @@ namespace KaroEngine
 		int score = 0;
 		Tile marked;
 		
-		//Right player color 
+		// Right player color 
 		if (p == Player::WHITE) 
 			marked = Tile::WHITEMARKED;
 		if (p == Player::RED)
@@ -240,7 +240,7 @@ namespace KaroEngine
 
 		for(int i = 0; i < 4; i++)
 		{
-			//check if second is marked
+			// Check if second is marked
 			int second = pieceIndex + possibleSteps[i];
 			int previous = pieceIndex - possibleSteps[i];
 
@@ -248,20 +248,20 @@ namespace KaroEngine
 			{
 				score += 2; // 2 in a row
 
-				//check if third is unmarked
+				// Check if third is unmarked
 				int third = second + possibleSteps[i];
 				if(board[third] == marked)
 					score += 3; // 3 in a row
 				else
 				{
-					//check if opposite is marked
+					// Check if opposite is marked
 					if(board[previous] == marked)
 						score += 3; // 3 in a row
 				}
 			}
 			else
 			{
-				//check opposite direction
+				// Check opposite direction
 				if(board[previous] == marked)
 				{
 					score += 2; // 2 in a row
