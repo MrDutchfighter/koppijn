@@ -60,7 +60,8 @@ namespace KaroEngine
 		int possibleSteps[8];
 		int possibleJumps[8];			
 		
-
+		int markedRed;
+		int markedWhite;
 		map<int,bool> redPieces;
 		map<int,bool> whitePieces;
 		map<int,int> moveableTiles;
@@ -79,7 +80,6 @@ namespace KaroEngine
 		long GetHash();
 		long GetHash(long hash,Move *move);
 		long GetRandomNumber();
-		int CountMarkedPieces(map<int,bool>);
 
 		/**
 		* Functions
@@ -132,8 +132,7 @@ namespace KaroEngine
 		Player Reverse(Player &p);
 		void SetMessageLog(std::string s);
 
-		int EvaluateBoard(Player p);
-		map<int,bool> KaroEngine::GetPlayerPieces(Player p);
+		int EvaluateBoard();
 
 		// Get possible moves
 		vector<Move*> * GetPossibleMoves(Player forPlayer);
@@ -141,7 +140,7 @@ namespace KaroEngine
 
 		// Algorithm functions
 		Move* CalculateComputerMove();
-		int EvaluateNumRows(Player p, int pieceIndex);
+		void EvaluateNumRows(Player p, int pieceIndex,int&score);
 		void AssignMoveScores(vector<Move*> *moves, int hash);
 
 

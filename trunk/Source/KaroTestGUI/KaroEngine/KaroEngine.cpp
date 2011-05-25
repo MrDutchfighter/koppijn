@@ -11,9 +11,11 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION;
 		this->insertionCount = 0;
-		this->maxDepth = 3;
+		this->maxDepth = 4;
 		this->evaluationScore = 0;
 		this->visitedList = new VisitedList();
+		this->markedRed=0;
+		this->markedWhite=0;
 
 		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH ; i ++ )
 			board[i] = Tile::EMPTY;
@@ -148,59 +150,44 @@ namespace KaroEngine
 	}
 
 	/**
-	* Returns the pieces from the Player (p)
-	**/
-	map<int,bool> KaroEngine::GetPlayerPieces(Player p)
-	{
-		if(p == Player::WHITE)
-			return whitePieces;
-		else
-			return redPieces;
-	}
-
-	/**
 	* Checks if the player (p) has won the game by moving his last tile
 	*/
 	bool KaroEngine::IsWinner(Player p, int lastMove)
 	{
 		Tile marked;
-
+		int markedPieces;
 		// Right player color 
-		if (p == Player::WHITE) 
+		if (p == Player::WHITE){
 			marked = Tile::WHITEMARKED;
-		if (p == Player::RED)
+			markedPieces = markedWhite;
+		}
+		else{
 			marked = Tile::REDMARKED;
+			markedPieces = markedRed;
+		}
 
 		// Check if the last moved piece is marked
 		if(board[lastMove] == marked)
-		{			
-			map<int,bool> pieces = GetPlayerPieces(p);
-
+		{
 			// Check if there's more than 3 marked pieces on the field
-			if(CountMarkedPieces(pieces) > 3)
-			{
+			if(markedPieces > 3){
 				for(int i = 0; i < 4; i++)
 				{
 					//check if second is marked
-					int second = lastMove + possibleSteps[i];
-					int previous = lastMove - possibleSteps[i];
-
-					if(board[second] == marked)
+					if(board[(lastMove + possibleSteps[i])] == marked)
 					{
 						//check if third is unmarked
-						int third = second + possibleSteps[i];
+						int third = lastMove + possibleJumps[i];
 						if(board[third] == marked)
 						{
-							int fourth = third + possibleSteps[i];
-							if(board[fourth] == marked)
+							if(board[(third + possibleSteps[i])] == marked)
 								return true;
 						}
 						else
 						{
 							// Check if opposite is marked
 							if(board[previous] == marked){
-								int fourth = previous - possibleSteps[i];
-								if(board[fourth] == marked)
+								if(board[(previous - possibleSteps[i])] == marked)
 									return true;
 							}
 						}
@@ -208,12 +195,11 @@ namespace KaroEngine
 					else
 					{
 						// Check opposite direction
-						if(board[previous] == marked)
+						if(board[(lastMove - possibleSteps[i])] == marked)
 						{
-							int previous2 = previous - possibleSteps[i];
+							int previous2 = (lastMove - possibleJumps[i]);
 							if(board[previous2] == marked) {
-								int previous3 = previous2 - possibleSteps[i];
-								if(board[previous3] == marked)
+								if(board[(previous2 - possibleSteps[i])] == marked)
 									return true;
 							}
 						}
@@ -227,9 +213,9 @@ namespace KaroEngine
 	/**
 	* Evaluates the amount of rows
 	*/
-	int KaroEngine::EvaluateNumRows(Player p, int pieceIndex)
+	void KaroEngine::EvaluateNumRows(Player p, int pieceIndex,int& score)
 	{
-		int score = 0;
+		//int score = 0;
 		Tile marked;
 		
 		// Right player color 
@@ -272,8 +258,6 @@ namespace KaroEngine
 				}
 			}
 		}		
-
-		return score;
 	}
 
 	/**
@@ -293,18 +277,14 @@ namespace KaroEngine
 				if (it != transpositionTableRed.end())
 					evaluationScore = it->second.second;
 				else{
-					int scoreRed = EvaluateBoard(Player::RED);
-					int scoreWhite = EvaluateBoard(Player::WHITE);
-					evaluationScore = scoreRed-scoreWhite;
+					evaluationScore = EvaluateBoard();
 				}
 			}else{
 				map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(currentHash);
 				if (it != transpositionTableWhite.end())
 					evaluationScore = it->second.second;
 				else{
-					int scoreRed = EvaluateBoard(Player::RED);
-					int scoreWhite = EvaluateBoard(Player::WHITE);
-					evaluationScore = scoreRed-scoreWhite;
+					evaluationScore = EvaluateBoard();
 				}
 			} 
 
@@ -381,13 +361,11 @@ namespace KaroEngine
 		// Loop through all the stones of the current player
 		if(forPlayer == Player::RED) {
 			for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
-				
 				vector<Move*> *moves = GetPossibleMoves(it->first);
 				possibleMoves->insert(possibleMoves->end(), moves->begin(), moves->end());
 			}
 		} else if(forPlayer == Player::WHITE) {
 			for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
-
 				vector<Move*> *moves = GetPossibleMoves(it->first);
 				possibleMoves->insert(possibleMoves->end(), moves->begin(), moves->end());
 			}
@@ -755,10 +733,10 @@ namespace KaroEngine
 					} else {
 						if(it->second.first > depth) {
 							it->second = depthScore;
-						} else {
-							if(it->second.second != depthScore.second){
-								SetMessageLog("[ERROR] Fail @ HASH");
-							}
+						//} else {
+							//if(it->second.second != depthScore.second){
+								//SetMessageLog("[ERROR] Fail @ HASH");
+							//}
 						}
 					}
 				}else{
@@ -768,10 +746,10 @@ namespace KaroEngine
 					}else{
 						if(it->second.first > depth){
 							it->second = depthScore;
-						} else {
-							if(it->second.second != depthScore.second){
-								SetMessageLog("[ERROR] Fail @ HASH");
-							}
+						//} else {
+							//if(it->second.second != depthScore.second){
+								//SetMessageLog("[ERROR] Fail @ HASH");
+							//}
 						}
 					}
 				}
@@ -789,34 +767,29 @@ namespace KaroEngine
 	/**
 	* Evaluation function of the current board for the given player
 	*/
-	int KaroEngine::EvaluateBoard(Player p)
-	{
-		int calculatedScore = 0;
-		if(p == Player::WHITE)
-		{
-			for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
-				if (it->second == true)
-				{
-					calculatedScore += 2;
-					calculatedScore += this->EvaluateNumRows(p, it->first);
-				}	
-			}	
+	int KaroEngine::EvaluateBoard(){
+		int scoreWhite = 0;
+		int scoreRed =0;
+		for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
+			if (it->second == true){
+					scoreWhite += 2;
+					if(markedWhite > 1){
+						this->EvaluateNumRows(Player::WHITE, it->first,scoreWhite);
+					}
+			}
 		}
-		else
-		{
-			int markedPieces = CountMarkedPieces(redPieces);
-			for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
-				if (it->second == true)
-				{
-					calculatedScore += 2;
-					if(markedPieces > 1)
-						this->EvaluateNumRows(p, it->first);
+		for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
+			if (it->second == true){
+				scoreRed += 2;
+				if(markedRed > 1){
+					this->EvaluateNumRows(Player::RED, it->first,scoreRed);
 				}
 			}
 		}
 
-		this->evaluationScore = this->evaluationScore; // DON'T USE IT!
-		return calculatedScore;
+		return scoreRed-scoreWhite;
+		//this->evaluationScore = this->evaluationScore; // DON'T USE IT!
+		//return calculatedScore;
 	}
 
 	/**													//
@@ -855,7 +828,7 @@ namespace KaroEngine
 	
 	int KaroEngine::GetEvaluationScore()
 	{
-		return EvaluateBoard(Player::RED)-EvaluateBoard(Player::WHITE);
+		return EvaluateBoard();
 	}
 
 	/**													//
@@ -1073,16 +1046,6 @@ namespace KaroEngine
 		return randomNumber;
 	}
 
-	int KaroEngine::CountMarkedPieces(map<int,bool> pieces)
-	{
-		int countMarked = 0;
-		for each (pair<int, bool> piece in pieces)
-		{
-			if(piece.second)
-				countMarked++;
-		}
-		return countMarked;
-	}
 
 	/**													//
 	* --------------- DO MOVE ------------------------	//
@@ -1185,7 +1148,14 @@ namespace KaroEngine
 				if(board[from] == Tile::WHITEUNMARKED || board[from] == Tile::WHITEMARKED) {
 					board[to] = (board[from] == Tile::WHITEUNMARKED) ? Tile::WHITEMARKED : Tile::WHITEUNMARKED;
 
-					bool isTurned = (board[to] == Tile::WHITEMARKED) ? true : false;
+					bool isTurned;
+					if(board[to] == Tile::WHITEMARKED){
+						isTurned=true;
+						markedWhite+=1;
+					}else{
+						isTurned=false;
+						markedWhite-=1;
+					}
 					whitePieces.erase(from);
 					whitePieces.insert(std::pair<int,bool>(to,isTurned));
 					
@@ -1193,7 +1163,15 @@ namespace KaroEngine
 				} else if(board[from] == Tile::REDUNMARKED || board[from] == Tile::REDMARKED) {
 					board[to] = (board[from] == Tile::REDUNMARKED) ? Tile::REDMARKED : Tile::REDUNMARKED;
 
-					bool isTurned = (board[to] == Tile::REDMARKED) ? true : false;
+					bool isTurned;
+					if(board[to] == Tile::REDMARKED){
+						isTurned=true;
+						markedRed+=1;
+					}else{
+						isTurned=false;
+						markedRed-=1;
+					}
+
 					redPieces.erase(from);
 					redPieces.insert(std::pair<int,bool>(to,isTurned));
 					
@@ -1312,24 +1290,55 @@ namespace KaroEngine
 
 		// Switch the pawns
 		if(board[to] == Tile::REDMARKED || board[to] == Tile::REDUNMARKED) {
-			if(isJumpMove)
+			bool isTurned;
+			if(isJumpMove){
 				board[from] = (board[to] == Tile::REDMARKED) ? Tile::REDUNMARKED : Tile::REDMARKED;
-			else
+				if(board[from] == Tile::REDMARKED){
+					isTurned=true;
+					markedRed+=1;
+				}else{
+					isTurned=false;
+					markedRed-=1;
+				}
+			}
+			else{
 				board[from] = board[to];
-
+				if(board[from] == Tile::REDMARKED){
+					isTurned=true;
+				}else{
+					isTurned=false;
+				}
+			}
 			// Remove & add pawn in redPieces
-			bool isTurned = (board[from] == Tile::REDMARKED) ? true : false;
+			
+
+
 			redPieces.erase(to);
 			redPieces.insert(std::pair<int,bool>(from, isTurned));
 		} 
 		else if(board[to] == Tile::WHITEMARKED || board[to] == Tile::WHITEUNMARKED) {
-			if(isJumpMove)
+			bool isTurned;
+			if(isJumpMove){
 				board[from] = (board[to] == Tile::WHITEMARKED) ? Tile::WHITEUNMARKED : Tile::WHITEMARKED;
-			else
+				
+				if(board[from] == Tile::WHITEMARKED){
+					isTurned=true;
+					markedWhite+=1;
+				}else{
+					isTurned=false;
+					markedWhite-=1;
+				}
+			}
+			else{
 				board[from] = board[to];
-
+				if(board[from] == Tile::WHITEMARKED){
+					isTurned=true;
+				}else{
+					isTurned=false;
+				}
+			}
 			// Remove & add pawn in whitePieces
-			bool isTurned = (board[from] == Tile::WHITEMARKED) ? true : false;
+			
 			whitePieces.erase(to);
 			whitePieces.insert(std::pair<int,bool>(from, isTurned));
 		} 
