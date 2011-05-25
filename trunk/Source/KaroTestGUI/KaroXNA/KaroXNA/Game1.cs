@@ -27,10 +27,11 @@ namespace KaroXNA
         Menu gameMenu;
         GameState gameState;
 
-        Matrix world, view, proj;
-        public Model tileModel, pieceModel;
+        Matrix world, view, proj, tableMatrix;
+        public Model tileModel, pieceModel, tableModel;
         public Camera cam;
         float rotY = 0.0f;
+        float rotX = 0.0f;
 
         public int[] move;
         
@@ -59,7 +60,7 @@ namespace KaroXNA
             cam = new Camera(graphics.GraphicsDevice.Viewport.Width / graphics.GraphicsDevice.Viewport.Height);
             gameState = GameState.MENU;
             gameMenu = new Menu(this, 0);
-            Components.Add(gameMenu);
+            //Components.Add(gameMenu);
             spacePressed = false;
             insertionCount = 0;
             engine = new KaroEngineWrapper();
@@ -73,6 +74,8 @@ namespace KaroXNA
             view = cam.View;
             proj = cam.Projection;
 
+            tableMatrix = Matrix.CreateScale(200) * Matrix.CreateTranslation(new Vector3(140, 22, 20));
+
             base.Initialize();
         }
 
@@ -80,6 +83,7 @@ namespace KaroXNA
         {
             tileModel = Content.Load<Model>("tile");
             pieceModel = Content.Load<Model>("piece");
+            tableModel = Content.Load<Model>("table");
 
             for (int x = 0; x < BOARDWIDTH; x++)
             {
@@ -148,11 +152,27 @@ namespace KaroXNA
                 cam.DoYRotation(rotY * -1);
             }
 
-            if (!Keyboard.GetState().IsKeyDown(Keys.R) && !Keyboard.GetState().IsKeyDown(Keys.Right) && !Keyboard.GetState().IsKeyDown(Keys.Left)) 
+            if (Keyboard.GetState().IsKeyDown(Keys.Home))
+            {
+                rotX += 0.1f;
+                cam.DoXRotation(rotX);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.End))
+            {
+                rotX += 0.1f;
+                cam.DoXRotation(rotX * -1);
+            }
+
+            if (!Keyboard.GetState().IsKeyDown(Keys.R) && !Keyboard.GetState().IsKeyDown(Keys.Right) && !Keyboard.GetState().IsKeyDown(Keys.Left) && !Keyboard.GetState().IsKeyDown(Keys.Home) && !Keyboard.GetState().IsKeyDown(Keys.End)) 
                 rotY = 0.5f;
+                rotX = 0.5f;
 
             if (rotY > 4) 
                 rotY = 4f;
+
+            if (rotX > 4)
+                rotX = 2f;
 
             if (Keyboard.GetState().IsKeyDown(Keys.PageUp) || Keyboard.GetState().IsKeyDown(Keys.Up))
                 cam.DoZoom(-0.01f);
@@ -190,6 +210,20 @@ namespace KaroXNA
         protected override void Draw(GameTime gameTime)
         {
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            foreach (ModelMesh mesh in tableModel.Meshes)
+            {
+                foreach (BasicEffect e in mesh.Effects)
+                {
+                    e.EnableDefaultLighting();
+
+                    e.World = tableMatrix;
+                    e.Projection = cam.Projection;
+                    e.View = cam.View;
+                }
+
+                mesh.Draw();
+            }
 
             base.Draw(gameTime);
         }
