@@ -186,8 +186,8 @@ namespace KaroEngine
 						else
 						{
 							// Check if opposite is marked
-							if(board[previous] == marked){
-								if(board[(previous - possibleSteps[i])] == marked)
+							if(board[(lastMove - possibleSteps[i])] == marked){
+								if(board[(lastMove - possibleJumps[i])] == marked)
 									return true;
 							}
 						}
