@@ -692,23 +692,19 @@ namespace KaroEngine
 			UndoMove(possibleMoves->at(i));
 
 			// Was the last move the best move?
-			if(p==Player::RED) {
-				if(lastBestMove->score > bestMove->score) {
+			if(p==Player::RED && lastBestMove->score > bestMove->score) {
 					bestMove = possibleMoves->at(i);
 					bestMove->score = lastBestMove->score;
 
 					if(bestMove->score > alpha) {
 						alpha = bestMove->score;
 					}
-				}
-			} else {
-				if(lastBestMove->score < bestMove->score) {
-					bestMove = possibleMoves->at(i);
-					bestMove->score = lastBestMove->score;
-
-					if(bestMove->score < beta) {
-						beta = bestMove->score;
-					}
+			}
+			else if(p==Player::WHITE && lastBestMove->score < bestMove->score) {
+				bestMove = possibleMoves->at(i);
+				bestMove->score = lastBestMove->score;
+				if(bestMove->score < beta) {
+					beta = bestMove->score;
 				}
 			}
 			
