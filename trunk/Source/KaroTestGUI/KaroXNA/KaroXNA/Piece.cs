@@ -51,38 +51,41 @@ namespace KaroXNA
 
         public override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            if (game.gameState == GameState.PLAYING)
             {
-                Point positionFrom = new Point(game.move[0] % Game1.BOARDWIDTH, game.move[0] / Game1.BOARDWIDTH);
-                Point positionTo = new Point(game.move[1] % Game1.BOARDWIDTH, game.move[1] / Game1.BOARDWIDTH);
-                Point tileFrom = new Point(game.move[2] % Game1.BOARDWIDTH, game.move[2] / Game1.BOARDWIDTH);
-
-
-                if (game.engine.GetGameState() != KaroEngine.GameState.INSERTION || game.insertionCount > 12)
+                if (Keyboard.GetState().IsKeyDown(Keys.Space))
                 {
-                    if (Location == positionFrom)
+                    Point positionFrom = new Point(game.move[0] % Game1.BOARDWIDTH, game.move[0] / Game1.BOARDWIDTH);
+                    Point positionTo = new Point(game.move[1] % Game1.BOARDWIDTH, game.move[1] / Game1.BOARDWIDTH);
+                    Point tileFrom = new Point(game.move[2] % Game1.BOARDWIDTH, game.move[2] / Game1.BOARDWIDTH);
+
+
+                    if (game.engine.GetGameState() != KaroEngine.GameState.INSERTION || game.insertionCount > 12)
                     {
-                        T = Matrix.Identity;
-
-                        if (!IsFlipped)
-                            T *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
-
-                        if (game.move[3] == 1)
+                        if (Location == positionFrom)
                         {
-                            T *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
-                            T *= Matrix.CreateTranslation(new Vector3((positionTo.X) * 5.5f, 1f, (positionTo.Y) * 5.5f));
+                            T = Matrix.Identity;
 
-                            if (IsFlipped)
-                                IsFlipped = false;
+                            if (!IsFlipped)
+                                T *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
+
+                            if (game.move[3] == 1)
+                            {
+                                T *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
+                                T *= Matrix.CreateTranslation(new Vector3((positionTo.X) * 5.5f, 1f, (positionTo.Y) * 5.5f));
+
+                                if (IsFlipped)
+                                    IsFlipped = false;
+                                else
+                                    IsFlipped = true;
+                            }
                             else
-                                IsFlipped = true;
-                        }
-                        else
-                        {
-                            T *= Matrix.CreateTranslation(new Vector3((positionTo.X) * 5.5f, 1f, (positionTo.Y) * 5.5f));
-                        }
+                            {
+                                T *= Matrix.CreateTranslation(new Vector3((positionTo.X) * 5.5f, 1f, (positionTo.Y) * 5.5f));
+                            }
 
-                        Location = positionTo;
+                            Location = positionTo;
+                        }
                     }
                 }
             }

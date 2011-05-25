@@ -24,8 +24,8 @@ namespace KaroXNA
 
         public KaroEngine.KaroEngineWrapper engine;
         public const int BOARDWIDTH = 17;
-        Menu gameMenu;
-        GameState gameState;
+        public Menu gameMenu;
+        public GameState gameState;
 
         Matrix world, view, proj, tableMatrix;
         public Model tileModel, pieceModel, tableModel;
@@ -58,9 +58,9 @@ namespace KaroXNA
             this.Window.Title = "Karo XNA";
             Content.RootDirectory = "Content";
             cam = new Camera(graphics.GraphicsDevice.Viewport.Width / graphics.GraphicsDevice.Viewport.Height);
-            gameState = GameState.MENU;
+            gameState = GameState.PLAYING;
             gameMenu = new Menu(this, 0);
-            //Components.Add(gameMenu);
+            Components.Add(gameMenu);
             spacePressed = false;
             insertionCount = 0;
             engine = new KaroEngineWrapper();
@@ -109,46 +109,69 @@ namespace KaroXNA
 
         protected override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            if (gameState == GameState.PLAYING)
             {
-                if (!spacePressed)
+                if (Keyboard.GetState().IsKeyDown(Keys.Space))
                 {
-                    spacePressed = true;
-
-                    move = engine.CalculateComputerMove();
-
-                    Point positionTo = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
-                    
-                    if (engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12)
+                    if (!spacePressed)
                     {
-                        Piece p = new Piece(this, pieceModel, true, new Point(positionTo.X, positionTo.Y), Color.Black.ToVector3());
+                        spacePressed = true;
 
-                        if (engine.GetTurn() == KaroEngine.Player.RED)
-                            p.Color = Color.Tomato.ToVector3();
-                        else
-                            p.Color = Color.White.ToVector3();
+                        move = engine.CalculateComputerMove();
 
-                        //Turn the piece upside down, default is flipped, which we don't want!
-                        p.T = Matrix.Identity;
-                        p.T *= Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 3.4f, positionTo.Y * 5.5f));
+                        Point positionTo = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
 
-                        Components.Add(p);
-                        insertionCount++;
+                        if (engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12)
+                        {
+                            Piece p = new Piece(this, pieceModel, true, new Point(positionTo.X, positionTo.Y), Color.Black.ToVector3());
+
+                            if (engine.GetTurn() == KaroEngine.Player.RED)
+                                p.Color = Color.Tomato.ToVector3();
+                            else
+                                p.Color = Color.White.ToVector3();
+
+                            //Turn the piece upside down, default is flipped, which we don't want!
+                            p.T = Matrix.Identity;
+                            p.T *= Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 3.4f, positionTo.Y * 5.5f));
+
+                            Components.Add(p);
+                            insertionCount++;
+                        }
                     }
                 }
+
+                // handles mouse and keyboard inputs
+                UpdateInput();
             }
 
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            float fps = 1 / elapsed;
+            deltaFPSTime += elapsed;
+
+            if (deltaFPSTime > 1)
+            {
+                this.FPS = fps;
+                deltaFPSTime -= 1;
+            }
+
+            base.Update(gameTime);
+        }
+
+        private void UpdateInput()
+        {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.R) || Keyboard.GetState().IsKeyDown(Keys.Right)) {
-                rotY += 0.1f; 
+            if (Keyboard.GetState().IsKeyDown(Keys.R) || Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                rotY += 0.1f;
                 cam.DoYRotation(rotY);
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
-                rotY += 0.1f; 
+                rotY += 0.1f;
                 cam.DoYRotation(rotY * -1);
             }
 
@@ -164,11 +187,11 @@ namespace KaroXNA
                 cam.DoXRotation(rotX * -1);
             }
 
-            if (!Keyboard.GetState().IsKeyDown(Keys.R) && !Keyboard.GetState().IsKeyDown(Keys.Right) && !Keyboard.GetState().IsKeyDown(Keys.Left) && !Keyboard.GetState().IsKeyDown(Keys.Home) && !Keyboard.GetState().IsKeyDown(Keys.End)) 
+            if (!Keyboard.GetState().IsKeyDown(Keys.R) && !Keyboard.GetState().IsKeyDown(Keys.Right) && !Keyboard.GetState().IsKeyDown(Keys.Left) && !Keyboard.GetState().IsKeyDown(Keys.Home) && !Keyboard.GetState().IsKeyDown(Keys.End))
                 rotY = 0.5f;
-                rotX = 0.5f;
+            rotX = 0.5f;
 
-            if (rotY > 4) 
+            if (rotY > 4)
                 rotY = 4f;
 
             if (rotX > 4)
@@ -192,19 +215,6 @@ namespace KaroXNA
             }
 
             oldMouseState = Mouse.GetState();
-
-            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            float fps = 1 / elapsed;
-            deltaFPSTime += elapsed;
-
-            if (deltaFPSTime > 1)
-            {
-                this.FPS = fps;
-                deltaFPSTime -= 1;
-            }
-
-            base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)

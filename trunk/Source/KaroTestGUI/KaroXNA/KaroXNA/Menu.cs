@@ -68,6 +68,7 @@ namespace KaroXNA
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
+           if(game.gameState == GameState.MENU)
             UpdateInput();
         }
 
@@ -114,30 +115,33 @@ namespace KaroXNA
         }
         public override void Draw(GameTime gameTime)
         {
-            spriteBatch.Begin();
-            //spriteBatch.DrawString(spriteFont, "Play", new Vector2(300, 300), Color.LightGreen);
-            for(int i = 0; i < menuList.Count; i++)
+            if (game.gameState == GameState.MENU)
             {
-                // Find the center of the string
-                Vector2 FontOrigin = spriteFont.MeasureString(menuList[i].MenuName) / 2;
-                //fontPosition = Vector2.Subtract(fontPosition, FontOrigin);
-                Vector2 currentFontPosition = fontPosition;
-                currentFontPosition = Vector2.Subtract(fontPosition, FontOrigin);
-                currentFontPosition.Y = currentFontPosition.Y + i * 14;
+                spriteBatch.Begin();
+                //spriteBatch.DrawString(spriteFont, "Play", new Vector2(300, 300), Color.LightGreen);
+                for (int i = 0; i < menuList.Count; i++)
+                {
+                    // Find the center of the string
+                    Vector2 FontOrigin = spriteFont.MeasureString(menuList[i].MenuName) / 2;
+                    //fontPosition = Vector2.Subtract(fontPosition, FontOrigin);
+                    Vector2 currentFontPosition = fontPosition;
+                    currentFontPosition = Vector2.Subtract(fontPosition, FontOrigin);
+                    currentFontPosition.Y = currentFontPosition.Y + i * 14;
 
-                // draw selected item different
-                if(selectedItem == i)
-                    spriteBatch.DrawString(spriteFont, menuList[i].MenuName, currentFontPosition, Color.DarkOrange);
-                else
-                    spriteBatch.DrawString(spriteFont, menuList[i].MenuName, currentFontPosition, Color.LightGreen);
+                    // draw selected item different
+                    if (selectedItem == i)
+                        spriteBatch.DrawString(spriteFont, menuList[i].MenuName, currentFontPosition, Color.DarkOrange);
+                    else
+                        spriteBatch.DrawString(spriteFont, menuList[i].MenuName, currentFontPosition, Color.LightGreen);
 
-                Vector2 pos = new Vector2(Game.GraphicsDevice.Viewport.Width / 4, (Game.GraphicsDevice.Viewport.Height / 2) - 200);
-                
-                spriteBatch.DrawString(spriteFont, "FPS: " + game.FPS, pos, Color.LightGreen);
+                    Vector2 pos = new Vector2(Game.GraphicsDevice.Viewport.Width / 4, (Game.GraphicsDevice.Viewport.Height / 2) - 200);
+
+                    spriteBatch.DrawString(spriteFont, "FPS: " + game.FPS, pos, Color.LightGreen);
+                }
+                spriteBatch.End();
             }
 
-
-            spriteBatch.End();
+            
         }
     }
 }
