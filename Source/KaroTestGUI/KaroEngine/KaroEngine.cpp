@@ -625,12 +625,11 @@ namespace KaroEngine
 	*/
 	Move * KaroEngine::MiniMax(Player p, int depth, int alpha, int beta,long hash, int evaluationScore)
 	{
-		// Hash the current board?
-		//Position currentPosition = new Position(board);
 		p = turn;
+
 		// Create new move
 		Move *bestMove = new Move();
-		if(p == Player::RED) {
+		if(turn == Player::RED) {
 			bestMove->score = INT_MIN; // Int32.MinValue
 		} else {
 			bestMove->score = INT_MAX; // Int32.MaxValue
@@ -638,17 +637,15 @@ namespace KaroEngine
 
 		//First check if the score is already know, then evaluate. 
 		if(depth != 0) {
-			// Is this move in the transposition table?
-			//int hash = GetHash();
 
-			if(turn == Player::RED){
+			if(turn == Player::RED) {
 				map<int,pair<int,int>>::iterator it = transpositionTableRed.find(hash);
 				if (it != transpositionTableRed.end())
 				{
 					bestMove->score = it->second.second;
 					return bestMove;
 				}
-			}else{
+			} else {
 				map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(hash);
 				if (it != transpositionTableWhite.end())
 				{
@@ -658,11 +655,6 @@ namespace KaroEngine
 			} 
 		}
 
-		// Evaluate the current board, game ended? Return empty move with the max/min score
-		//int scoreRed = EvaluateBoard(Player::RED);
-		//int scoreWhite = EvaluateBoard(Player::WHITE);
-		//int evaluationScore = scoreRed-scoreWhite;
-
 		// If maximum depth is reached
 		if(depth == maxDepth) {
 			bestMove->score = evaluationScore;
@@ -670,7 +662,7 @@ namespace KaroEngine
 		}		
 
 		// Find next moves for the current player
-		vector<Move*> * possibleMoves = GetPossibleMoves(p);
+		vector<Move*> * possibleMoves = GetPossibleMoves(turn);
 		this->AssignMoveScores(possibleMoves, hash);
 
 		// Loop through all the moves
@@ -723,30 +715,22 @@ namespace KaroEngine
 			// Put best score in transposition table
 			if(depth == 0 ) {
 				pair<int,int> depthScore = make_pair(depth, lastBestMove->score);
-				if(turn == Player::RED){
+				if(turn == Player::RED) {
 					map<int,pair<int,int>>::iterator it = transpositionTableRed.find(currentHash);
-					if (it == transpositionTableRed.end()){
+					if (it == transpositionTableRed.end()) {
 						transpositionTableRed.insert(pair<int, pair<int,int>>(currentHash, depthScore));
 					} else {
 						if(it->second.first > depth) {
 							it->second = depthScore;
-						//} else {
-							//if(it->second.second != depthScore.second){
-								//SetMessageLog("[ERROR] Fail @ HASH");
-							//}
 						}
 					}
-				}else{
+				} else {
 					map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(currentHash);
-					if (it == transpositionTableWhite.end()){
+					if (it == transpositionTableWhite.end()) {
 						transpositionTableWhite.insert(pair<int, pair<int,int>>(currentHash, depthScore));
-					}else{
-						if(it->second.first > depth){
+					} else {
+						if(it->second.first > depth) {
 							it->second = depthScore;
-						//} else {
-							//if(it->second.second != depthScore.second){
-								//SetMessageLog("[ERROR] Fail @ HASH");
-							//}
 						}
 					}
 				}
@@ -784,9 +768,7 @@ namespace KaroEngine
 			}
 		}
 
-		return scoreRed-scoreWhite;
-		//this->evaluationScore = this->evaluationScore; // DON'T USE IT!
-		//return calculatedScore;
+		return (scoreRed-scoreWhite);
 	}
 
 	/**													//
@@ -794,7 +776,7 @@ namespace KaroEngine
 	*/													//
 	std::string KaroEngine::GetMessageLog(){
 		std::string s = this->messageLog;
-		this->messageLog="";
+		this->messageLog = "";
 		return s;
 	}
 
@@ -832,7 +814,7 @@ namespace KaroEngine
 	* --------------- Setters ------------------------	//
 	*/													//
 	void KaroEngine::SetMessageLog(std::string txt){
-		this->messageLog+=txt+ "\r\n";
+		this->messageLog += txt + "\r\n";
 	}
 
 	long KaroEngine::GetHash()
@@ -841,7 +823,7 @@ namespace KaroEngine
 		this->boardLeft = 20;    // most left tile
 		this->boardRight = 0;   // most right tile
 
-		//Go through all tiles whitout a playerpiece
+		// Go through all tiles whitout a playerpiece
 		for(std::map<int,int>::iterator it = this->allEmptyTiles.begin(); it != this->allEmptyTiles.end(); ++it) {
 			int tempCol = it->first % BOARDWIDTH;				
 			if(tempCol < this->boardLeft )
@@ -849,7 +831,7 @@ namespace KaroEngine
 			if(tempCol > this->boardRight)
 				this->boardRight = tempCol;
 		}
-		//go through all white pieces
+		// Go through all white pieces
 		for(std::map<int,bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
 			int tempCol = it->first % BOARDWIDTH;				
 			if(tempCol < this->boardLeft)
@@ -857,7 +839,7 @@ namespace KaroEngine
 			if(tempCol > this->boardRight)
 				this->boardRight = tempCol;
 		}
-		//go through all red pieces
+		// Go through all red pieces
 		for(std::map<int,bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
 			int tempCol = it->first % BOARDWIDTH;				
 			if(tempCol < this->boardLeft )
@@ -876,19 +858,19 @@ namespace KaroEngine
 			this->boardTop=this->redPieces.begin()->first/BOARDWIDTH;
 		}
 
-		//get last (highest) index of the tilesmap
+		// Get last (highest) index of the tilesmap
 		std::map<int,int>::iterator endit = this->allEmptyTiles.end();
 		--endit;
 		this->boardBottom=endit->first/BOARDWIDTH;
 
-		//get last (highest) index of the whitepawnsmap
+		// Get last (highest) index of the whitepawnsmap
 		std::map<int,bool>::iterator whiteit = whitePieces.end();
 		--whiteit;
 		if(whiteit->first/BOARDWIDTH > this->boardBottom){
 			this->boardBottom=whiteit->first/BOARDWIDTH;
 		}
 
-		//get last (highest) index of the redpawnsmap
+		// Get last (highest) index of the redpawnsmap
 		std::map<int,bool>::iterator redit = this->redPieces.end();
 		--redit;
 		if(redit->first/BOARDWIDTH > this->boardBottom){
@@ -922,32 +904,10 @@ namespace KaroEngine
 				}
 			}
 		}
-
-		/*
-
-		long hash = 0;
-		for(int i = 0; i < BOARDWIDTH * BOARDWIDTH; i++)
-		{
-			if(board[i] != Tile::EMPTY && board[i] != Tile::BORDER)
-			{
-				if(board[i] == Tile::SOLIDTILE || board[i] == Tile::MOVEABLETILE)
-					hash ^= randomTile[i];
-				else if(board[i] == Tile::REDMARKED)
-					hash ^= randomRedMarked[i];
-				else if(board[i] == Tile::WHITEMARKED)
-					hash ^= randomWhiteMarked[i];
-				else if(board[i] == Tile::REDUNMARKED)
-					hash ^= randomRedUnmarked[i];
-				else if(board[i] == Tile::WHITEUNMARKED)
-					hash ^= randomWhiteUnmarked[i];
-			}
-		}*/
 		return hash;
 	}
 	
 	long KaroEngine::GetHash(long hash,Move *move){
-		//return GetHash();
-
 		int topLeftCorner = (this->boardTop * BOARDWIDTH) + this->boardLeft;
 
 		if(move->tileFrom >0){
@@ -964,9 +924,7 @@ namespace KaroEngine
 			}
 			hash ^= randomTile[move->tileFrom-topLeftCorner];
 		}
-				
-		
-		
+
 		int randomIndexFrom = move->positionFrom - topLeftCorner;
 		int randomIndexTo	= move->positionTo - topLeftCorner;
 
@@ -1015,8 +973,6 @@ namespace KaroEngine
 	{
 		MTRand drand;
 		long randomNumber = (int)(drand() * 1000000000) + 1000000000;
-		//long randomNumber = rand() % 89999999 + 10000000;
-		
 
 		for(int i = 0; i < sizeof(randomTile) / sizeof(randomTile[0]); i++){
 			if(randomTile[i] == randomNumber)
@@ -1039,7 +995,6 @@ namespace KaroEngine
 				randomNumber = GetRandomNumber();
 		}
 
-
 		return randomNumber;
 	}
 
@@ -1049,32 +1004,14 @@ namespace KaroEngine
 	*/													//
 	// Exectues the given move
 		// The move has to be valid!
-	bool KaroEngine::DoMove(Move *move)
-	{
-		//map<int,bool> whitePieces2 = whitePieces;
-		//map<int,bool> redPieces2 = redPieces;
-		//map<int,int> moveableTiles2 = moveableTiles;
-		//map<int,int> test = allEmptyTiles;
+	bool KaroEngine::DoMove(Move *move) {
 		bool result = false;
 		if(move->positionFrom > 0 && move->positionTo > 0 && move->tileFrom > 0) {
 			result = DoMove(move->positionFrom, move->positionTo, move->tileFrom, move->isJumpMove);
-
-			// Check all changed positions for a change in moveable tiles
-			//TransformToMovableTiles(move->positionFrom, true, false);
-			//TransformToMovableTiles(move->positionTo, true, true);
-			//TransformToMovableTiles(move->tileFrom, true, true);
-
 		} else if(move->positionFrom > 0 && move->positionTo > 0) {
 			result = DoMove(move->positionFrom, move->positionTo, move->isJumpMove);
-
-			// Check all changed positions for a change in moveable tiles
-			//TransformToMovableTiles(move->positionFrom, true, false);
-			//TransformToMovableTiles(move->positionTo, true, false);
-
 		} else if(move->positionTo > 0) {
 			result = DoMove(move->positionTo);
-			// Check all changed positions for a change in moveable tiles
-			//TransformToMovableTiles(move->positionTo, true, false);
 		} else {
 			SetMessageLog("Not a valid move given");
 		}
@@ -1122,9 +1059,6 @@ namespace KaroEngine
 	// Do a normal move (or jump move)
 	bool KaroEngine::DoMove(int from, int to, bool isJumpMove) {
 		
-		//Tile x = board[from];
-		//Tile y = board[to];
-
 		if((board[to] == Tile::SOLIDTILE || board[to] == Tile::MOVEABLETILE) && board[from] != Tile::EMPTY && board[from] != Tile::BORDER) {
 			if(!isJumpMove) {
 				board[to] = board[from];
@@ -1229,24 +1163,10 @@ namespace KaroEngine
 
 		if(move->positionFrom > 0 && move->positionTo > 0 && move->tileFrom > 0) {
 			UndoMove(move->positionFrom, move->positionTo, move->tileFrom, move->isJumpMove);
-
-			// Check all changed positions for a change in moveable tiles
-			//TransformToMovableTiles(move->positionFrom, true, false);
-			//TransformToMovableTiles(move->positionTo, true, true);
-			//TransformToMovableTiles(move->tileFrom, true, true);
-
 		} else if(move->positionFrom > 0 && move->positionTo > 0) {
 			UndoMove(move->positionFrom, move->positionTo, move->isJumpMove);
-
-			// Check all changed positions for a change in moveable tiles
-			//TransformToMovableTiles(move->positionFrom, true, false);
-			//TransformToMovableTiles(move->positionTo, true, false);
-
 		} else if(move->positionTo > 0) {
 			UndoMove(move->positionTo);
-
-			// Check all changed positions for a change in moveable tiles
-			//TransformToMovableTiles(move->positionTo, true, false);
 		} else {
 			SetMessageLog("Not a valid undo move given");
 		}
@@ -1276,9 +1196,6 @@ namespace KaroEngine
 	// Undo a normal move (or jump move)
 	bool KaroEngine::UndoMove(int from, int to, bool isJumpMove) {
 
-		//Tile x = board[from];
-		//Tile y = board[to];
-
 		// Quick check board[from] is a valid tile
 		if(board[from] != Tile::SOLIDTILE && board[from] != Tile::MOVEABLETILE) {
 			SetMessageLog("[ERROR] Can't undo this move bacause board[from] is not a solidtile or moveabletile.");
@@ -1307,9 +1224,6 @@ namespace KaroEngine
 				}
 			}
 			// Remove & add pawn in redPieces
-			
-
-
 			redPieces.erase(to);
 			redPieces.insert(std::pair<int,bool>(from, isTurned));
 		} 
@@ -1335,7 +1249,6 @@ namespace KaroEngine
 				}
 			}
 			// Remove & add pawn in whitePieces
-			
 			whitePieces.erase(to);
 			whitePieces.insert(std::pair<int,bool>(from, isTurned));
 		} 
