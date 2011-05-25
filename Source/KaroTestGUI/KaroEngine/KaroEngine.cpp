@@ -674,11 +674,12 @@ namespace KaroEngine
 		this->AssignMoveScores(possibleMoves, hash);
 
 		// Loop through all the moves
+		int currentHash = 0;
 		for(int i=0; i < possibleMoves->size(); i++) {
 			// Execute the move
 			DoMove(possibleMoves->at(i));
-			//hash=GetHash();
-			int currentHash = GetHash(hash, possibleMoves->at(i));
+
+			currentHash = GetHash(hash, possibleMoves->at(i));
 
 			// Was this the winning move? (has to be here, because IsWinner needs the last move...)
 			if(IsWinner(p, possibleMoves->at(i)->positionTo)) {
@@ -693,14 +694,13 @@ namespace KaroEngine
 			}
 
 			// Get the last best move
-			//Move * lastBestMove = possibleMoves->at(i);
 			Move * lastBestMove = MiniMax(Reverse(p), depth+1, alpha, beta, currentHash, possibleMoves->at(i)->score);
 
 			// Directly undo this move
 			UndoMove(possibleMoves->at(i));
 
 			// Was the last move the best move?
-			if(p==Player::Red) {
+			if(p==Player::RED) {
 				if(lastBestMove->score > bestMove->score) {
 					bestMove = possibleMoves->at(i);
 					bestMove->score = lastBestMove->score;
