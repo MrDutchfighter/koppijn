@@ -18,7 +18,7 @@ namespace KaroXNA
     {
         public Game1 game;
         public Model PieceModel { get; set; }
-        public Tile onTopofTile { get; set; }
+        public Tile OnTopofTile { get; set; }
         public Vector3 Color { get; set; }
         
         public bool IsFlipped { get; set; }
@@ -27,17 +27,20 @@ namespace KaroXNA
 
         private Vector3 moveDirection;
         private Matrix world;
+
         public Piece(Game game, Model pieceModel, bool visible, Tile onTopofTile, Vector3 color)
             : base(game)
         {
             this.game = (Game1)game;
-            this.IsMoving = false;
             PieceModel = pieceModel;
-            IsVisible = visible;
-            this.onTopofTile=onTopofTile;
+            OnTopofTile = onTopofTile;
             Color = color;
-            world= Matrix.Identity;
+
             IsFlipped = false;
+            IsMoving = false;
+            IsVisible = visible;
+            
+            world= Matrix.Identity;
         }
 
         public override void Initialize()
@@ -45,26 +48,33 @@ namespace KaroXNA
             base.Initialize();
         }
 
-        public override void Update(GameTime gameTime){
-            if (IsMoving) {
-                float x =this.moveDirection.X / 100;
-                float y =this.moveDirection.Y / 100;
-                float z = this.moveDirection.Z / 100;
-                this.world *= Matrix.CreateTranslation(x, y, z);
-                Vector3 moving = this.onTopofTile.TileMatrix.Translation - this.world.Translation ;
-                if (moving.X < 0.1f && moving.Y < 0.1f && moving.Z < 0.1f) {
+        public override void Update(GameTime gameTime)
+        {
+            if (IsMoving) 
+            {
+                float x = moveDirection.X / 100;
+                float y = moveDirection.Y / 100;
+                float z = moveDirection.Z / 100;
+
+                world *= Matrix.CreateTranslation(x, y, z);
+                Vector3 moving = OnTopofTile.TileMatrix.Translation - world.Translation;
+
+                if (moving.X < 0.1f && moving.Y < 0.1f && moving.Z < 0.1f) 
+                {
                     IsMoving = false;
                 }
             }
+
             base.Update(gameTime);
         }
-        public void MoveTo(Tile newTile){
-            moveDirection = newTile.TileMatrix.Translation - this.onTopofTile.TileMatrix.Translation;
-            this.world = this.onTopofTile.TileMatrix;
-            this.onTopofTile = newTile;
-            this.IsMoving = true;
-        }
 
+        public void MoveTo(Tile newTile)
+        {
+            moveDirection = newTile.TileMatrix.Translation - OnTopofTile.TileMatrix.Translation;
+            world = OnTopofTile.TileMatrix;
+            OnTopofTile = newTile;
+            IsMoving = true;
+        }
 
         public override void Draw(GameTime gameTime)
         {
@@ -75,21 +85,25 @@ namespace KaroXNA
                     foreach (BasicEffect e in mesh.Effects)
                     {
                         e.EnableDefaultLighting();
+                        //e.DirectionalLight0.Enabled = true;
+                        //e.DirectionalLight0.DiffuseColor = Color;
+                        //e.DirectionalLight0.Direction = new Vector3(0, -50, 0);
+                        
                         e.PreferPerPixelLighting = true;
                         e.DiffuseColor = Color;
                         e.World = Matrix.Identity;
-                        if (!IsFlipped){
-                            e.World *= Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(0f, 3.4f, 0f);
-                        }
-                        else {
-                            e.World *= Matrix.CreateTranslation(0f, 1f, 0f);
-                        }
-                        if (!this.IsMoving){
-                            e.World *= this.onTopofTile.TileMatrix ;
-                        } else {
-                            //hier kan later de matrix voor het door de lucht laten zweven etc voor een mooie animatie.
+
+                        if (!this.IsMoving)
+                        {
+                            if (!IsFlipped)
+                                e.World *= Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(0f, 3.4f, 0f);
+                            else
+                                e.World *= Matrix.CreateTranslation(0f, 1f, 0f);
+
+                            e.World *= this.OnTopofTile.TileMatrix;
+                        } 
+                        else 
                             e.World *= this.world;
-                        }
                         
                         e.View = game.cam.View;
                         e.Projection = game.cam.Projection;
