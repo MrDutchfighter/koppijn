@@ -13,7 +13,10 @@ using Microsoft.Xna.Framework.Media;
 namespace KaroXNA
 {
     using XNAColor = Microsoft.Xna.Framework.Color;
-        
+
+    public enum Rotations {
+        NONE, ROTATIONPLUS, ROTATIONMIN
+    }
     public class Piece : Microsoft.Xna.Framework.DrawableGameComponent
     {
         public Game1 game;
@@ -25,8 +28,13 @@ namespace KaroXNA
         public bool IsMoving { get; set; }
         public bool IsVisible { get; set; }
 
-        private Vector3 moveDirection;
+
+        private Vector3 moveDirection,moveDestination;
+        public Rotations rotationDirectionX;
+        public Rotations rotationDirectionZ;
         private Matrix world;
+        private int rotationX;
+        private int rotationZ;
 
         public Piece(Game game, Model pieceModel, bool visible, Tile onTopofTile, Vector3 color)
             : base(game)
@@ -52,15 +60,31 @@ namespace KaroXNA
         {
             if (IsMoving) 
             {
-                float x = moveDirection.X / 100;
-                float y = moveDirection.Y / 100;
-                float z = moveDirection.Z / 100;
+                float x = moveDirection.X / 180;
+                float z = moveDirection.Z / 180;
 
-                world *= Matrix.CreateTranslation(x, y, z);
-                Vector3 moving = OnTopofTile.TileMatrix.Translation - world.Translation;
+                switch (this.rotationDirectionX) {
+                    case Rotations.ROTATIONPLUS:
+                        rotationX += 1;
+                        break;
+                    case Rotations.ROTATIONMIN:
+                        rotationX -= 1;
+                        break;
+                }
+                switch (this.rotationDirectionZ) {
+                    case Rotations.ROTATIONPLUS:
+                        rotationZ += 1;
+                        break;
+                    case Rotations.ROTATIONMIN:
+                        rotationZ -= 1;
+                        break;
+                }
 
-                if (moving.X < 0.1f && moving.Y < 0.1f && moving.Z < 0.1f) 
-                {
+                world *= Matrix.CreateTranslation(x, 0, z);
+                
+                Vector3 moving = moveDestination - world.Translation;
+
+                if (moving.X < 0.1f && moving.Z < 0.1f){
                     IsMoving = false;
                 }
             }
@@ -71,9 +95,13 @@ namespace KaroXNA
         public void MoveTo(Tile newTile)
         {
             moveDirection = newTile.TileMatrix.Translation - OnTopofTile.TileMatrix.Translation;
+            moveDestination = newTile.TileMatrix.Translation;
             world = OnTopofTile.TileMatrix;
+            world *= Matrix.CreateTranslation(0f,4f,0f);
             OnTopofTile = newTile;
             IsMoving = true;
+            this.rotationX = (this.IsFlipped) ? 0 : 180;
+            this.rotationZ = 0;
         }
 
         public override void Draw(GameTime gameTime)
@@ -101,10 +129,13 @@ namespace KaroXNA
                                 e.World *= Matrix.CreateTranslation(0f, 1f, 0f);
 
                             e.World *= this.OnTopofTile.TileMatrix;
-                        } 
-                        else 
+                        }
+                        else {
+                            e.World *= Matrix.CreateFromQuaternion(new Quaternion(rotationX, 0, rotationZ, 0));
+                            //e.World *= Matrix.CreateRotationZ(MathHelper.ToRadians(this.rotationZ));
+                            //e.World *= Matrix.CreateRotationX(MathHelper.ToRadians(this.rotationX));
                             e.World *= this.world;
-                        
+                        }
                         e.View = game.cam.View;
                         e.Projection = game.cam.Projection;
                     }
