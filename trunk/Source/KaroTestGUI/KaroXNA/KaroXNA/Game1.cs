@@ -14,11 +14,12 @@ using KaroEngine;
 namespace KaroXNA
 {
     public enum GameState { MENU, PLAYING };
+    
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : Microsoft.Xna.Framework.Game
-    {
+    public class Game1 : Microsoft.Xna.Framework.Game{
+        DepthStencilState dss;
         GraphicsDeviceManager graphics;
         GraphicsDevice device;
 
@@ -38,6 +39,7 @@ namespace KaroXNA
         public int insertionCount;
         MouseState oldMouseState;
         public bool spacePressed;
+        public bool leftMouseDown;
         private bool f1Pressed;
 
         Random random = new Random();
@@ -104,6 +106,10 @@ namespace KaroXNA
                 4,5,1
             };
             ShowBoxes = false;
+
+            dss = new DepthStencilState();
+            dss.DepthBufferEnable = true;
+            
         }
 
         protected override void Initialize()
@@ -145,7 +151,7 @@ namespace KaroXNA
                     KaroEngine.Tile tile = engine.GetByXY(x, y);
                     if (tile != KaroEngine.Tile.BORDER && tile != KaroEngine.Tile.EMPTY){
                         Tile t = new Tile(this, tileModel, false, new Point(x, y));
-                        t.TileMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(random.Next(0, 4) * 90)) * Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
+                        t.TileMatrix =  Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
                         this.TileComponents.Add(y * BOARDWIDTH + x, t);
                         Components.Add(t);
                     }
@@ -328,36 +334,53 @@ namespace KaroXNA
 
             oldMouseState = Mouse.GetState();
 
-            if (oldMouseState.LeftButton == ButtonState.Pressed)
-            {
+            if (Mouse.GetState().LeftButton==ButtonState.Pressed){
+                this.leftMouseDown=true;
+            }
+            if(this.leftMouseDown && Mouse.GetState().LeftButton == ButtonState.Released){
+                this.leftMouseDown = false;
                 Vector2 mousePosition = new Vector2(oldMouseState.X, oldMouseState.Y);
 
-                Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
-                Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
-                Matrix tempw=world;
-                tempw.Translation=new Vector3(0f,0f,0f);
-                nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, proj, view, tempw);
-                farPlane = GraphicsDevice.Viewport.Unproject(farPlane, proj, view, tempw);
+                //Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
+                //Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
+                //nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, proj, view,world);
+                //farPlane = GraphicsDevice.Viewport.Unproject(farPlane, proj, view, world);
 
-                Vector3 direction = farPlane - nearPlane;
-                direction.Normalize();
+                //Vector3 direction = farPlane - nearPlane;
+                //direction.Normalize();
 
-                Ray ray = new Ray(nearPlane, direction);
+                //Ray ray = new Ray(nearPlane, direction);
 
                 List<float?> results = new List<float?>();
                 
                 foreach (var tile in TileComponents){
+                    Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
+                    Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
+                    nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, proj, view, tile.Value.TileMatrix);
+                    farPlane = GraphicsDevice.Viewport.Unproject(farPlane, proj, view, tile.Value.TileMatrix);
+                    Vector3 direction = farPlane - nearPlane;
+                    direction.Normalize();
+                    Ray ray = new Ray(nearPlane, direction);
+
                     float? result = ray.Intersects((BoundingBox)tile.Value.TileModel.Tag);
                     if (result != null)
                         results.Add(result);
 	            }
-                foreach (var tile in PieceComponents)
-                {
+                foreach (var tile in PieceComponents){
+                    Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
+                    Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
+                    nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, proj, view, tile.Value.world);
+                    farPlane = GraphicsDevice.Viewport.Unproject(farPlane, proj, view, tile.Value.world);
+                    Vector3 direction = farPlane - nearPlane;
+                    direction.Normalize();
+                    Ray ray = new Ray(nearPlane, direction);
                     float? result = ray.Intersects((BoundingBox)tile.Value.PieceModel.Tag);
                     if (result != null)
                         results.Add(result);
                 }
-
+                if (results.Count > 0) {
+                    Console.WriteLine("Aantal gevonden: "+results.Count);
+                }
             }
 
         }
@@ -365,22 +388,9 @@ namespace KaroXNA
         protected override void Draw(GameTime gameTime)
         {
 
-            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
-            if (gameState == GameState.PLAYING)
-            {
-                foreach (ModelMesh mesh in tableModel.Meshes)
-                {
-                    foreach (BasicEffect e in mesh.Effects)
-                    {
-                        e.EnableDefaultLighting();
-                        e.World = tableMatrix;
-                        e.Projection = cam.Projection;
-                        e.View = cam.View;
-                    }
-
-                    mesh.Draw();
-                }
-
+            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);            
+            if (gameState == GameState.PLAYING) {
+                GraphicsDevice.DepthStencilState = dss;
                 foreach (ModelMesh mesh in lampModel.Meshes)
                 {
                     foreach (BasicEffect e in mesh.Effects)
@@ -394,6 +404,18 @@ namespace KaroXNA
                         e.DiffuseColor = Color.CadetBlue.ToVector3();
 
                         e.World = lampMatrix;
+                        e.Projection = cam.Projection;
+                        e.View = cam.View;
+                    }
+                    mesh.Draw();
+                }
+                
+                foreach (ModelMesh mesh in tableModel.Meshes)
+                {
+                    foreach (BasicEffect e in mesh.Effects)
+                    {
+                        e.EnableDefaultLighting();
+                        e.World = tableMatrix;
                         e.Projection = cam.Projection;
                         e.View = cam.View;
                     }
@@ -421,6 +443,7 @@ namespace KaroXNA
                     mesh.Draw();
                 }
             }
+
             Matrix[] transforms = new Matrix[computerModel.Bones.Count];
             computerModel.CopyAbsoluteBoneTransformsTo(transforms);
 

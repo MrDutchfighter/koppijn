@@ -32,7 +32,7 @@ namespace KaroXNA
         private Vector3 moveDirection,moveDestination;
         public Rotations rotationDirectionX;
         public Rotations rotationDirectionZ;
-        private Matrix world;
+        public Matrix world;
         private int rotationX;
         private int rotationZ;
         private float y;
@@ -55,8 +55,8 @@ namespace KaroXNA
             IsFlipped = false;
             IsMoving = false;
             IsVisible = visible;
-            
-            world= Matrix.Identity;
+            world = onTopofTile.TileMatrix;
+            world *= Matrix.CreateTranslation(0f, 1f, 0f);
         }
 
         public override void Initialize()
@@ -94,12 +94,14 @@ namespace KaroXNA
 
         public override void Update(GameTime gameTime)
         {
-            if (IsMoving) 
+            if (IsMoving)
             {
                 float x = moveDirection.X / 180;
                 float z = moveDirection.Z / 180;
+                Vector3 moving = moveDestination - world.Translation;
 
-                switch (this.rotationDirectionX) {
+                switch (this.rotationDirectionX)
+                {
                     case Rotations.ROTATIONPLUS:
                         rotationX += 1;
                         break;
@@ -107,31 +109,52 @@ namespace KaroXNA
                         rotationX -= 1;
                         break;
                 }
-                switch (this.rotationDirectionZ) {
-                    case Rotations.ROTATIONPLUS:
-                        rotationZ += 1;
-                        break;
-                    case Rotations.ROTATIONMIN:
-                        rotationZ -= 1;
-                        break;
-                }
-                
-                Vector3 moving = moveDestination - world.Translation;
 
-                if (moving.X < 0.1f && moving.Z < 0.1f){
+                if (moving.X < 0.1f && moving.Z < 0.1f)
+                {
                     IsMoving = false;
                 }
 
-                if (moving.X > (moveDirection.X / 2) || moving.Y > (moveDirection.X / 2))
+                if (moving.X <= (moveDirection.X / 2) && moving.Y <= (moveDirection.X / 2))
+                {
+                    if (world.Translation.Y > 0)
+                    {
+                        y = -0.07f;
+                    }
+                    else
+                    {
+                        y = 0;
+                    }
+                    switch (this.rotationDirectionZ)
+                    {
+                        case Rotations.ROTATIONPLUS:
+                            rotationZ += 1;
+                            break;
+                        case Rotations.ROTATIONMIN:
+                            rotationZ -= 1;
+                            break;
+                    }
+                }
+                else
                 {
                     y = 0.07f;
+                    switch (this.rotationDirectionZ)
+                    {
+                        case Rotations.ROTATIONPLUS:
+                            rotationZ -= 1;
+                            break;
+                        case Rotations.ROTATIONMIN:
+                            rotationZ -= 1;
+                            break;
+                    }
                 }
-                else 
-                {
-                    y = -0.07f;
-                }
-
                 world *= Matrix.CreateTranslation(x, y, z);
+            }
+            else if(this.rotationDirectionX!= Rotations.NONE || this.rotationDirectionZ != Rotations.NONE){
+                this.world = this.OnTopofTile.TileMatrix;
+                this.world *= Matrix.CreateTranslation(0f, 1f, 0f);
+                this.rotationDirectionX = Rotations.NONE;
+                this.rotationDirectionZ = Rotations.NONE;
             }
 
             base.Update(gameTime);
@@ -142,10 +165,15 @@ namespace KaroXNA
             moveDirection = newTile.TileMatrix.Translation - OnTopofTile.TileMatrix.Translation;
             moveDestination = newTile.TileMatrix.Translation;
             world = OnTopofTile.TileMatrix;
-            world *= Matrix.CreateTranslation(0f,1f,0f);
+            
             OnTopofTile = newTile;
             IsMoving = true;
-            this.rotationX = (this.IsFlipped) ? 0 : 180;
+            if (IsFlipped)
+                world *= Matrix.CreateTranslation(0f,4.4f,0f);
+            else
+                world *= Matrix.CreateTranslation(0f,2f,0f);
+            y = 0;
+            this.rotationX = (this.IsFlipped) ? 180 : 10;
             this.rotationZ = 0;
         }
 
@@ -167,21 +195,14 @@ namespace KaroXNA
                         e.DiffuseColor = Color;
                         e.World = Matrix.Identity;
 
-                        if (!this.IsMoving)
-                        {
+                        if (!this.IsMoving) {
                             if (!IsFlipped)
-                                e.World *= Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(0f, 3.4f, 0f);
-                            else
-                                e.World *= Matrix.CreateTranslation(0f, 1f, 0f);
-
-                            e.World *= this.OnTopofTile.TileMatrix;
+                                e.World *= Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(0f, 2.4f, 0f);
+                            e.World *= this.world;
                         }
                         else {
                             e.World *= Matrix.CreateFromYawPitchRoll(MathHelper.ToRadians(rotationZ), MathHelper.ToRadians(rotationX), 0);
-                            //e.World *= MyMatrix.CreateRotationXZ(this.rotationX, this.rotationZ);
-                            e.World *= Matrix.CreateFromYawPitchRoll(0, MathHelper.ToRadians(this.rotationX), MathHelper.ToRadians(this.rotationZ));
                             e.World *= this.world;
-                            
                         }
                         e.View = game.cam.View;
                         e.Projection = game.cam.Projection;
