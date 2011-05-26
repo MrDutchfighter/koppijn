@@ -52,8 +52,7 @@
     <Compile Include="tile.FBX">
       <Name>tile</Name>
       <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-      <ProcessorParameters_RotationX>-90</ProcessorParameters_RotationX>
+      <Processor>CustomModelProcessor</Processor>
       <ProcessorParameters_ResizeTexturesToPowerOfTwo>True</ProcessorParameters_ResizeTexturesToPowerOfTwo>
     </Compile>
   </ItemGroup>
@@ -68,8 +67,8 @@
     <Compile Include="piece.FBX">
       <Name>piece</Name>
       <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-      <ProcessorParameters_RotationX>-90</ProcessorParameters_RotationX>
+      <Processor>CustomModelProcessor</Processor>
+      <ProcessorParameters_ResizeTexturesToPowerOfTwo>True</ProcessorParameters_ResizeTexturesToPowerOfTwo>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +77,7 @@
       <Importer>FbxImporter</Importer>
       <Processor>ModelProcessor</Processor>
       <ProcessorParameters_RotationX>-180</ProcessorParameters_RotationX>
+      <ProcessorParameters_ResizeTexturesToPowerOfTwo>True</ProcessorParameters_ResizeTexturesToPowerOfTwo>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -86,6 +86,7 @@
       <Importer>FbxImporter</Importer>
       <Processor>ModelProcessor</Processor>
       <ProcessorParameters_RotationX>-90</ProcessorParameters_RotationX>
+      <ProcessorParameters_ResizeTexturesToPowerOfTwo>True</ProcessorParameters_ResizeTexturesToPowerOfTwo>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -102,6 +103,12 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ModelProcessor\CustomModelProcessor.csproj">
+      <Project>{DDEDAD55-11B1-4AD8-9868-580BB6AC6A06}</Project>
+      <Name>CustomModelProcessor</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!--  To modify your build process, add your task inside one of the targets below and uncomment it. 
