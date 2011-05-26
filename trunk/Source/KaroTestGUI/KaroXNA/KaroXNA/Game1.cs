@@ -61,7 +61,7 @@ namespace KaroXNA
             this.Window.Title = "Karo XNA";
             Content.RootDirectory = "Content";
             cam = new Camera(graphics.GraphicsDevice.Viewport.Width / graphics.GraphicsDevice.Viewport.Height);
-            gameState = GameState.PLAYING;
+            gameState = GameState.MENU;
             gameMenu = new Menu(this, 0);
             Components.Add(gameMenu);
             spacePressed = false;
@@ -273,41 +273,43 @@ namespace KaroXNA
 
         protected override void Draw(GameTime gameTime)
         {
+
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            foreach (ModelMesh mesh in tableModel.Meshes)
+            if (gameState == GameState.PLAYING)
             {
-                foreach (BasicEffect e in mesh.Effects)
+                foreach (ModelMesh mesh in tableModel.Meshes)
                 {
-                    e.EnableDefaultLighting();
-                    e.World = tableMatrix;
-                    e.Projection = cam.Projection;
-                    e.View = cam.View;
+                    foreach (BasicEffect e in mesh.Effects)
+                    {
+                        e.EnableDefaultLighting();
+                        e.World = tableMatrix;
+                        e.Projection = cam.Projection;
+                        e.View = cam.View;
+                    }
+
+                    mesh.Draw();
                 }
 
-                mesh.Draw();
-            }
-
-            foreach (ModelMesh mesh in lampModel.Meshes)
-            {
-                foreach (BasicEffect e in mesh.Effects)
+                foreach (ModelMesh mesh in lampModel.Meshes)
                 {
-                    e.EnableDefaultLighting();
+                    foreach (BasicEffect e in mesh.Effects)
+                    {
+                        e.EnableDefaultLighting();
 
-                    //e.DirectionalLight0.Enabled = true;
-                    //e.DirectionalLight0.DiffuseColor = Color.White.ToVector3();
-                    //e.DirectionalLight0.Direction = new Vector3(0, 50, 0);
+                        //e.DirectionalLight0.Enabled = true;
+                        //e.DirectionalLight0.DiffuseColor = Color.White.ToVector3();
+                        //e.DirectionalLight0.Direction = new Vector3(0, 50, 0);
 
-                    e.DiffuseColor = Color.CadetBlue.ToVector3();
+                        e.DiffuseColor = Color.CadetBlue.ToVector3();
 
-                    e.World = lampMatrix;
-                    e.Projection = cam.Projection;
-                    e.View = cam.View;
+                        e.World = lampMatrix;
+                        e.Projection = cam.Projection;
+                        e.View = cam.View;
+                    }
+
+                    mesh.Draw();
                 }
-
-                mesh.Draw();
             }
-
             base.Draw(gameTime);
         }
     }

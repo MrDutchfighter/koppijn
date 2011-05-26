@@ -45,16 +45,19 @@ namespace KaroXNA
 
         public override void Update(GameTime gameTime)
         {
-            if (IsMoving)
+            if (game.gameState == GameState.PLAYING)
             {
-                float x = this.moveDirection.X / 100;
-                float y = this.moveDirection.Y / 100;
-                float z = this.moveDirection.Z / 100;
-                this.world *= Matrix.CreateTranslation(x, y, z);
-                Vector3 moving = TileMatrix.Translation - this.world.Translation;
-                if (moving.X < 0.1f && moving.Y < 0.1f && moving.Z < 0.1f)
+                if (IsMoving)
                 {
-                    IsMoving = false;
+                    float x = this.moveDirection.X / 100;
+                    float y = this.moveDirection.Y / 100;
+                    float z = this.moveDirection.Z / 100;
+                    this.world *= Matrix.CreateTranslation(x, y, z);
+                    Vector3 moving = TileMatrix.Translation - this.world.Translation;
+                    if (moving.X < 0.1f && moving.Y < 0.1f && moving.Z < 0.1f)
+                    {
+                        IsMoving = false;
+                    }
                 }
             }
             base.Update(gameTime);
@@ -69,23 +72,27 @@ namespace KaroXNA
         }
         public override void Draw(GameTime gameTime)
         {
-            foreach (ModelMesh mesh in TileModel.Meshes)
+            if (game.gameState == GameState.PLAYING)
             {
-                foreach (BasicEffect e in mesh.Effects)
+                foreach (ModelMesh mesh in TileModel.Meshes)
                 {
-                    e.EnableDefaultLighting();
-                    if (IsMoving) {
-                        e.World = this.world;
-                    }
-                    else
+                    foreach (BasicEffect e in mesh.Effects)
                     {
-                        e.World = TileMatrix;
+                        e.EnableDefaultLighting();
+                        if (IsMoving)
+                        {
+                            e.World = this.world;
+                        }
+                        else
+                        {
+                            e.World = TileMatrix;
+                        }
+                        e.View = game.cam.View;
+                        e.Projection = game.cam.Projection;
                     }
-                    e.View = game.cam.View;
-                    e.Projection = game.cam.Projection;
-                }
 
-                mesh.Draw();
+                    mesh.Draw();
+                }
             }
             
             base.Draw(gameTime);
