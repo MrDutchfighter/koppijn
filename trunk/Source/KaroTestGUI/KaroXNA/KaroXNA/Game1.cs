@@ -27,8 +27,8 @@ namespace KaroXNA
         public Menu gameMenu;
         public GameState gameState;
 
-        Matrix world, view, proj, tableMatrix, lampMatrix;
-        public Model tableModel, pieceModel, lampModel;
+        Matrix world, view, proj, tableMatrix, lampMatrix, teapotMatrix;
+        public Model tableModel, pieceModel, lampModel, teapotModel;
         public Camera cam;
         float rotY = 0.0f;
         float rotX = 0.0f;
@@ -114,6 +114,7 @@ namespace KaroXNA
             view = cam.View;
             proj = cam.Projection;
 
+            teapotMatrix = Matrix.CreateScale(10) * Matrix.CreateTranslation(new Vector3(70, 0, 10));
             tableMatrix = Matrix.CreateScale(200) * Matrix.CreateTranslation(new Vector3(140, 22, 20));
             lampMatrix = Matrix.CreateScale(25) * Matrix.CreateTranslation(new Vector3(0, 50, 0));
 
@@ -126,6 +127,7 @@ namespace KaroXNA
             pieceModel = Content.Load<Model>("piece");
             tableModel = Content.Load<Model>("table");
             lampModel = Content.Load<Model>("lamp");
+            teapotModel = Content.Load<Model>("teapot");
 
             //RasterizerState rs = new RasterizerState();
             //rs.CullMode = CullMode.None;
@@ -389,6 +391,26 @@ namespace KaroXNA
                         e.DiffuseColor = Color.CadetBlue.ToVector3();
 
                         e.World = lampMatrix;
+                        e.Projection = cam.Projection;
+                        e.View = cam.View;
+                    }
+
+                    mesh.Draw();
+                }
+
+                foreach (ModelMesh mesh in teapotModel.Meshes)
+                {
+                    foreach (BasicEffect e in mesh.Effects)
+                    {
+                        e.EnableDefaultLighting();
+
+                        //e.DirectionalLight0.Enabled = true;
+                        //e.DirectionalLight0.DiffuseColor = Color.White.ToVector3();
+                        //e.DirectionalLight0.Direction = new Vector3(0, 50, 0);
+
+                        e.DiffuseColor = Color.SlateGray.ToVector3();
+
+                        e.World = teapotMatrix;
                         e.Projection = cam.Projection;
                         e.View = cam.View;
                     }
