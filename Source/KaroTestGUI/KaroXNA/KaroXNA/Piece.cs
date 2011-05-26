@@ -35,6 +35,7 @@ namespace KaroXNA
         private Matrix world;
         private int rotationX;
         private int rotationZ;
+        private float y;
 
         public Piece(Game game, Model pieceModel, bool visible, Tile onTopofTile, Vector3 color)
             : base(game)
@@ -79,14 +80,23 @@ namespace KaroXNA
                         rotationZ -= 1;
                         break;
                 }
-
-                world *= Matrix.CreateTranslation(x, 0, z);
                 
                 Vector3 moving = moveDestination - world.Translation;
 
                 if (moving.X < 0.1f && moving.Z < 0.1f){
                     IsMoving = false;
                 }
+
+                if (moving.X > (moveDirection.X / 2) || moving.Y > (moveDirection.X / 2))
+                {
+                    y = 0.07f;
+                }
+                else 
+                {
+                    y = -0.07f;
+                }
+
+                world *= Matrix.CreateTranslation(x, y, z);
             }
 
             base.Update(gameTime);
@@ -97,7 +107,7 @@ namespace KaroXNA
             moveDirection = newTile.TileMatrix.Translation - OnTopofTile.TileMatrix.Translation;
             moveDestination = newTile.TileMatrix.Translation;
             world = OnTopofTile.TileMatrix;
-            world *= Matrix.CreateTranslation(0f,4f,0f);
+            world *= Matrix.CreateTranslation(0f,1f,0f);
             OnTopofTile = newTile;
             IsMoving = true;
             this.rotationX = (this.IsFlipped) ? 0 : 180;
@@ -131,9 +141,7 @@ namespace KaroXNA
                             e.World *= this.OnTopofTile.TileMatrix;
                         }
                         else {
-                            
-                            //e.World *= Matrix.CreateRotationZ(MathHelper.ToRadians(this.rotationZ));
-                            //e.World *= Matrix.CreateRotationX(MathHelper.ToRadians(this.rotationX));
+                            e.World *= Matrix.CreateFromYawPitchRoll(MathHelper.ToRadians(rotationZ), MathHelper.ToRadians(rotationX), 0);
                             //e.World *= MyMatrix.CreateRotationXZ(this.rotationX, this.rotationZ);
                             e.World *= Matrix.CreateFromYawPitchRoll(0, MathHelper.ToRadians(this.rotationX), MathHelper.ToRadians(this.rotationZ));
                             e.World *= this.world;
