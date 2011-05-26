@@ -22,6 +22,7 @@ namespace KaroXNA
         public KeyboardState oldState;
         public MouseState curMousePos;
         public Game1 game;
+        ScrollingBackground background;
 
         public Menu(Game game, int drawOrder)
             : base(game)
@@ -59,6 +60,11 @@ namespace KaroXNA
             menuList.Add(new MenuItem("Credits"));
             menuList.Add(new MenuItem("Exit"));
 
+            //background
+
+            Texture2D backgroundImage = game.Content.Load<Texture2D>("koppijnkaro");
+            background = new ScrollingBackground(GraphicsDevice, backgroundImage, 100);
+
         }
 
 
@@ -68,8 +74,11 @@ namespace KaroXNA
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
-           if(game.gameState == GameState.MENU)
-            UpdateInput();
+            if (game.gameState == GameState.MENU)
+            {
+                UpdateInput();
+                background.Update(gameTime);
+            }
         }
 
         private void UpdateInput()
@@ -103,6 +112,19 @@ namespace KaroXNA
                 if (!oldState.IsKeyDown(Keys.Enter))
                 {
                     // do item action
+                    switch (menuList[selectedItem].MenuName)
+                    {
+                        case "Play":
+                            game.gameState = GameState.PLAYING;
+                            break;
+                        case "Options":
+                            break;
+                        case "Credits":
+                            break;
+                        case "Exit":
+                            game.Exit();
+                            break;
+                    }
                 }
             }
 
@@ -118,9 +140,11 @@ namespace KaroXNA
             if (game.gameState == GameState.MENU)
             {
                 spriteBatch.Begin();
+                background.Draw(spriteBatch);
                 //spriteBatch.DrawString(spriteFont, "Play", new Vector2(300, 300), Color.LightGreen);
                 for (int i = 0; i < menuList.Count; i++)
                 {
+                    
                     // Find the center of the string
                     Vector2 FontOrigin = spriteFont.MeasureString(menuList[i].MenuName) / 2;
                     //fontPosition = Vector2.Subtract(fontPosition, FontOrigin);
