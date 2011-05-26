@@ -66,6 +66,7 @@
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
     </Reference>
@@ -126,8 +127,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KaroXNAContent\KaroXNAContent.contentproj">
-      <Name>KaroXNAContent</Name>
+      <Name>KaroXNAContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
+      <Project>{39986653-08AE-4292-B2E1-F9CE02CAD268}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

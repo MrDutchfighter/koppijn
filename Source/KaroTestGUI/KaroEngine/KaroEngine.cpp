@@ -335,6 +335,8 @@ namespace KaroEngine
 
 				if(this->IsWinner(Reverse(turn), theMove->positionTo))
 					gameState = GameState::GAMEFINISHED;
+			} else {
+				SetMessageLog("Geen move gevonden");
 			}
 		}
 		QueryPerformanceCounter((LARGE_INTEGER *)&ctr2);
@@ -400,6 +402,7 @@ namespace KaroEngine
 		// Check all the possible (normal) moves
 		for(int i=0; i<8; i++) {
 				// Kan ik verplaatsen naar deze tegel
+
 			if(board[curTile+possibleSteps[i]] == Tile::SOLIDTILE ||
 				board[curTile+possibleSteps[i]] == Tile::MOVEABLETILE ||
 				(moveableTiles.size() > 0 && GetAmountConnectedNeighbours(curTile+possibleSteps[i]) > 0 && board[curTile+possibleSteps[i]] == Tile::EMPTY)) {
