@@ -38,6 +38,7 @@ namespace KaroXNA
         public int insertionCount;
         MouseState oldMouseState;
         public bool spacePressed;
+        private bool f1Pressed;
 
         Random random = new Random();
 
@@ -47,6 +48,9 @@ namespace KaroXNA
 
         Dictionary<int, Tile> TileComponents;
         Dictionary<int, Piece> PieceComponents;
+
+        public short[] BoxIndexes { get; set; }
+        public bool ShowBoxes { get; set; }
 
         public Game1()
         {
@@ -65,10 +69,41 @@ namespace KaroXNA
             gameMenu = new Menu(this, 0);
             Components.Add(gameMenu);
             spacePressed = false;
+            f1Pressed = false;
             insertionCount = 0;
             engine = new KaroEngineWrapper();
+
             this.PieceComponents = new Dictionary<int, Piece>();
             this.TileComponents = new Dictionary<int, Tile>();
+
+
+            BoxIndexes = new short[36] 
+            {
+                //front
+                0,2,3,
+                0,1,3,
+
+                //right
+                1,3,7,
+                1,5,7,
+                
+                //left
+                0,2,6,
+                0,4,6,
+
+                //back
+                4,6,7,
+                4,5,7,
+
+                //bottom
+                6,2,3,
+                6,7,3,
+
+                //top
+                4,0,1,
+                4,5,1
+            };
+            ShowBoxes = false;
         }
 
         protected override void Initialize()
@@ -91,6 +126,12 @@ namespace KaroXNA
             pieceModel = Content.Load<Model>("piece");
             tableModel = Content.Load<Model>("table");
             lampModel = Content.Load<Model>("lamp");
+
+            //RasterizerState rs = new RasterizerState();
+            //rs.CullMode = CullMode.None;
+            //rs.FillMode = FillMode.WireFrame;
+            //GraphicsDevice.RasterizerState = rs;
+
 
             for (int x = 0; x < BOARDWIDTH; x++)
             {
@@ -268,7 +309,52 @@ namespace KaroXNA
                 spacePressed = false;
             }
 
+            if (Keyboard.GetState().IsKeyDown(Keys.F1))
+            {
+                if (!f1Pressed)
+                {
+                    ShowBoxes = (ShowBoxes) ? false : true;
+                    f1Pressed = true;
+                }
+            }
+
+            if (Keyboard.GetState().IsKeyUp(Keys.F1))
+                f1Pressed = false;
+
             oldMouseState = Mouse.GetState();
+
+            if (oldMouseState.LeftButton == ButtonState.Pressed)
+            {
+                Vector2 mousePosition = new Vector2(oldMouseState.X, oldMouseState.Y);
+
+                Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
+                Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
+                Matrix tempw=world;
+                tempw.Translation=new Vector3(0f,0f,0f);
+                nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, proj, view, tempw);
+                farPlane = GraphicsDevice.Viewport.Unproject(farPlane, proj, view, tempw);
+
+                Vector3 direction = farPlane - nearPlane;
+                direction.Normalize();
+
+                Ray ray = new Ray(nearPlane, direction);
+
+                List<float?> results = new List<float?>();
+                
+                foreach (var tile in TileComponents){
+                    float? result = ray.Intersects((BoundingBox)tile.Value.TileModel.Tag);
+                    if (result != null)
+                        results.Add(result);
+	            }
+                foreach (var tile in PieceComponents)
+                {
+                    float? result = ray.Intersects((BoundingBox)tile.Value.PieceModel.Tag);
+                    if (result != null)
+                        results.Add(result);
+                }
+
+            }
+
         }
 
         protected override void Draw(GameTime gameTime)
@@ -312,5 +398,6 @@ namespace KaroXNA
             }
             base.Draw(gameTime);
         }
+
     }
 }
