@@ -27,8 +27,8 @@ namespace KaroXNA
         public Menu gameMenu;
         public GameState gameState;
 
-        Matrix world, view, proj, tableMatrix;
-        public Model tableModel,pieceModel;
+        Matrix world, view, proj, tableMatrix, lampMatrix;
+        public Model tableModel, pieceModel, lampModel;
         public Camera cam;
         float rotY = 0.0f;
         float rotX = 0.0f;
@@ -80,6 +80,7 @@ namespace KaroXNA
             proj = cam.Projection;
 
             tableMatrix = Matrix.CreateScale(200) * Matrix.CreateTranslation(new Vector3(140, 22, 20));
+            lampMatrix = Matrix.CreateScale(25) * Matrix.CreateTranslation(new Vector3(0, 50, 0));
 
             base.Initialize();
         }
@@ -89,6 +90,7 @@ namespace KaroXNA
             Model tileModel = Content.Load<Model>("tile");
             pieceModel = Content.Load<Model>("piece");
             tableModel = Content.Load<Model>("table");
+            lampModel = Content.Load<Model>("lamp");
 
             for (int x = 0; x < BOARDWIDTH; x++)
             {
@@ -245,6 +247,26 @@ namespace KaroXNA
                 {
                     e.EnableDefaultLighting();
                     e.World = tableMatrix;
+                    e.Projection = cam.Projection;
+                    e.View = cam.View;
+                }
+
+                mesh.Draw();
+            }
+
+            foreach (ModelMesh mesh in lampModel.Meshes)
+            {
+                foreach (BasicEffect e in mesh.Effects)
+                {
+                    e.EnableDefaultLighting();
+
+                    //e.DirectionalLight0.Enabled = true;
+                    //e.DirectionalLight0.DiffuseColor = Color.White.ToVector3();
+                    //e.DirectionalLight0.Direction = new Vector3(0, 50, 0);
+
+                    e.DiffuseColor = Color.CadetBlue.ToVector3();
+
+                    e.World = lampMatrix;
                     e.Projection = cam.Projection;
                     e.View = cam.View;
                 }
