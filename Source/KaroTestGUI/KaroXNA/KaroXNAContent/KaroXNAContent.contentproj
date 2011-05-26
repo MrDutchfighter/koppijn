@@ -89,6 +89,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="computer.FBX">
+      <Name>computer</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+      <ProcessorParameters_ResizeTexturesToPowerOfTwo>True</ProcessorParameters_ResizeTexturesToPowerOfTwo>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="koppijnkaro.jpg">
       <Name>koppijnkaro</Name>
       <Importer>TextureImporter</Importer>

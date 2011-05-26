@@ -27,8 +27,8 @@ namespace KaroXNA
         public Menu gameMenu;
         public GameState gameState;
 
-        Matrix world, view, proj, tableMatrix, lampMatrix, teapotMatrix;
-        public Model tableModel, pieceModel, lampModel, teapotModel;
+        Matrix world, view, proj, tableMatrix, lampMatrix, computerMatrix, teapotMatrix;
+        public Model tableModel, pieceModel, lampModel, computerModel, teapotModel;
         public Camera cam;
         float rotY = 0.0f;
         float rotX = 0.0f;
@@ -118,6 +118,8 @@ namespace KaroXNA
             tableMatrix = Matrix.CreateScale(200) * Matrix.CreateTranslation(new Vector3(140, 22, 20));
             lampMatrix = Matrix.CreateScale(25) * Matrix.CreateTranslation(new Vector3(0, 50, 0));
 
+            computerMatrix = Matrix.CreateScale(0.5f) * Matrix.CreateTranslation(new Vector3(240, -2, 60));
+
             base.Initialize();
         }
 
@@ -127,6 +129,7 @@ namespace KaroXNA
             pieceModel = Content.Load<Model>("piece");
             tableModel = Content.Load<Model>("table");
             lampModel = Content.Load<Model>("lamp");
+            computerModel = Content.Load<Model>("computer");
             teapotModel = Content.Load<Model>("teapot");
 
             //RasterizerState rs = new RasterizerState();
@@ -418,6 +421,22 @@ namespace KaroXNA
                     mesh.Draw();
                 }
             }
+            Matrix[] transforms = new Matrix[computerModel.Bones.Count];
+            computerModel.CopyAbsoluteBoneTransformsTo(transforms);
+
+            foreach (ModelMesh mesh in computerModel.Meshes)
+            {
+                foreach (BasicEffect e in mesh.Effects)
+                {
+                    e.EnableDefaultLighting();
+                    e.World = transforms[mesh.ParentBone.Index] * computerMatrix;
+                    e.Projection = cam.Projection;
+                    e.View = cam.View;
+                }
+
+                mesh.Draw();
+            }
+
             base.Draw(gameTime);
         }
 
