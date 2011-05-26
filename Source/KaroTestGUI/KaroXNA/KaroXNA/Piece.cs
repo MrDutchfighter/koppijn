@@ -131,10 +131,13 @@ namespace KaroXNA
                             e.World *= this.OnTopofTile.TileMatrix;
                         }
                         else {
-                            e.World *= Matrix.CreateFromQuaternion(new Quaternion(rotationX, 0, rotationZ, 0));
+                            
                             //e.World *= Matrix.CreateRotationZ(MathHelper.ToRadians(this.rotationZ));
                             //e.World *= Matrix.CreateRotationX(MathHelper.ToRadians(this.rotationX));
+                            //e.World *= MyMatrix.CreateRotationXZ(this.rotationX, this.rotationZ);
+                            e.World *= Matrix.CreateFromYawPitchRoll(0, MathHelper.ToRadians(this.rotationX), MathHelper.ToRadians(this.rotationZ));
                             e.World *= this.world;
+                            
                         }
                         e.View = game.cam.View;
                         e.Projection = game.cam.Projection;
