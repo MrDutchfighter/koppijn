@@ -74,7 +74,6 @@ namespace KaroXNA
 
             rsWire.CullMode = CullMode.None;
             rsWire.FillMode = FillMode.WireFrame;
-
             rsSolid.FillMode = FillMode.Solid;
         }
 
