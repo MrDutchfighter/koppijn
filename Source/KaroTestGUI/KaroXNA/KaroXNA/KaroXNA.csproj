@@ -60,9 +60,6 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="KaroEngine">
-      <HintPath>..\..\Release\KaroEngine.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
     </Reference>
@@ -126,6 +123,10 @@
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\KaroEngine\KaroEngine.vcxproj">
+      <Project>{B75CE65E-81E1-4EF3-B6F2-092E7B3A4C36}</Project>
+      <Name>KaroEngine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\KaroXNAContent\KaroXNAContent.contentproj">
       <Name>KaroXNAContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
