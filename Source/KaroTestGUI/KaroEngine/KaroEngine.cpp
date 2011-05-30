@@ -11,7 +11,7 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION;
 		this->insertionCount = 0;
-		this->maxDepth = 3;
+		this->maxDepth = 1;
 		this->evaluationScore = 0;
 		this->visitedList = new VisitedList();
 		this->markedRed=0;
@@ -30,9 +30,9 @@ namespace KaroEngine
 			}
 		}
 
-		for(int j = 4; j < 8; j++) {
-			for( int k = 5; k < 10; k++ ) {
-				if((j == 4 && k == 5) || (j == 4 && k == 9) || (j == 7 && k == 5) || (j == 7 && k == 9)) {
+		for(int j = 5; j < 9; j++) {
+			for( int k = 6; k < 11; k++ ) {
+				if((j == 5 && k == 6) || (j == 5 && k == 10) || (j == 8 && k == 6) || (j == 8 && k == 10)) {
 					board[j  *BOARDWIDTH + k] = Tile::MOVEABLETILE;
 					//board[j  *BOARDWIDTH + k] = Tile::SOLIDTILE;
 					moveableTiles.insert(std::pair<int,int>((j * BOARDWIDTH + k), 2));
@@ -314,8 +314,8 @@ namespace KaroEngine
 		if(gameState == GameState::INSERTION) {
 			bool foundInsertPosition = false;
 			while(!foundInsertPosition){
-				int x = 5+rand()%5;
-				int y = 4+rand()%4;
+				int x = 6+rand()%5;
+				int y = 5+rand()%4;
 
 				int position=(y*BOARDWIDTH)+x;
 
