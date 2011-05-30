@@ -30,12 +30,13 @@ namespace KaroXNA
             // center of the left edge
             origin = new Vector2(0, Device.Viewport.Width / 2);
             // Set the screen position to the center of the screen.
-            screenpos = new Vector2(screenwidth / 2, screenheight / 2);
+            screenpos = new Vector2(1180, screenheight / 2);
+
             // Offset to draw the second texture, when necessary.
             texturesize = new Vector2(mytexture.Width, 0);
 
             //Speed in pixels per second
-            this.speed = speed;
+            this.speed = 0; //speed;
         }
         // ScrollingBackground.Update
         public void Update(GameTime gameTime)
