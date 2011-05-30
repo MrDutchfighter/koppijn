@@ -127,11 +127,13 @@ namespace KaroXNA
 
                         if (IsSelected)
                         {
-                            e.DirectionalLight0.Enabled = true;
-                            e.LightingEnabled = true;
-                            e.DirectionalLight0.DiffuseColor = Color.Red.ToVector3();
-                            e.DirectionalLight0.Direction = game.cam.View.Translation;
+                            e.DiffuseColor = Color.White.ToVector3();
                         }
+                        else
+                        {
+                            e.DiffuseColor = Color.Gray.ToVector3();
+                        }
+
                         e.View = game.cam.View;
                         e.Projection = game.cam.Projection;
                         boxWorld = e.World;
