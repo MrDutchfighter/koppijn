@@ -112,8 +112,8 @@ namespace KaroXNA
         {
             this.SetPreviousValues();
 
-            this.YAngle = 0f;
-            this.XAngle = 180f;
+            this.YAngle = 180f;
+            this.XAngle = 0f;
             this.ZoomValue = 1f;
 
             this.UpdateView();
