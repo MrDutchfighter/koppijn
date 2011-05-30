@@ -51,7 +51,6 @@ namespace KaroXNA
             // Draw the texture, if it is still onscreen
             if (screenpos.X < screenwidth)
             {
-
                 Batch.Draw(mytexture, screenpos, null,
                      Color.White, 0, origin, 1, SpriteEffects.None, 0f);
             }

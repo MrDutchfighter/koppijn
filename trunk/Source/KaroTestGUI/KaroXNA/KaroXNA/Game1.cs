@@ -525,11 +525,6 @@ namespace KaroXNA
                     {
                         e.EnableDefaultLighting();
 
-                        //e.DirectionalLight0.Enabled = true;
-                        //e.LightingEnabled = true;
-                        //e.DirectionalLight0.DiffuseColor = Color.Red.ToVector3();
-                        //e.DirectionalLight0.Direction = new Vector3(0, 50, 0);
-
                         e.DiffuseColor = Color.CadetBlue.ToVector3();
 
                         e.World = lampMatrix;
