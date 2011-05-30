@@ -45,9 +45,7 @@ namespace KaroXNA
         RasterizerState rsWire = new RasterizerState();
         RasterizerState rsSolid = new RasterizerState();
 
-        public Piece(Game game, Model pieceModel, bool visible, Tile onTopofTile, Vector3 color)
-            : base(game)
-        {
+        public Piece(Game game, Model pieceModel, bool visible, Tile onTopofTile, Vector3 color) : base(game) {
             this.game = (Game1)game;
             PieceModel = pieceModel;
             OnTopofTile = onTopofTile;
@@ -96,14 +94,12 @@ namespace KaroXNA
 
         public override void Update(GameTime gameTime)
         {
-            if (IsMoving)
-            {
+            if (IsMoving) {
                 float x = moveDirection.X / 180;
                 float z = moveDirection.Z / 180;
                 Vector3 moving = moveDestination - world.Translation;
 
-                switch (this.rotationDirectionX)
-                {
+                switch (this.rotationDirectionX) {
                     case Rotations.ROTATIONPLUS:
                         rotationX += 1;
                         break;
@@ -112,23 +108,18 @@ namespace KaroXNA
                         break;
                 }
 
-                if (moving.X < 0.1f && moving.Z < 0.1f)
-                {
+                if (moving.X < 0.1f && moving.Z < 0.1f) {
                     IsMoving = false;
                 }
 
-                if (moving.X <= (moveDirection.X / 2) && moving.Y <= (moveDirection.X / 2))
-                {
-                    if (world.Translation.Y > 0)
-                    {
+                if((moving.X <= (moveDirection.X / 2) && moving.Y <= (moveDirection.X / 2))) {
+                    if (world.Translation.Y > 0) {
                         y = -0.07f;
                     }
-                    else
-                    {
+                    else {
                         y = 0;
                     }
-                    switch (this.rotationDirectionZ)
-                    {
+                    switch (this.rotationDirectionZ) {
                         case Rotations.ROTATIONPLUS:
                             rotationZ += 1;
                             break;
@@ -137,11 +128,9 @@ namespace KaroXNA
                             break;
                     }
                 }
-                else
-                {
+                else {
                     y = 0.07f;
-                    switch (this.rotationDirectionZ)
-                    {
+                    switch (this.rotationDirectionZ) {
                         case Rotations.ROTATIONPLUS:
                             rotationZ -= 1;
                             break;
@@ -152,30 +141,34 @@ namespace KaroXNA
                 }
                 world *= Matrix.CreateTranslation(x, y, z);
             }
-            else if(this.rotationDirectionX!= Rotations.NONE || this.rotationDirectionZ != Rotations.NONE){
+            
+            if(!IsMoving){
                 this.world = this.OnTopofTile.TileMatrix;
                 this.world *= Matrix.CreateTranslation(0f, 1f, 0f);
                 this.rotationDirectionX = Rotations.NONE;
                 this.rotationDirectionZ = Rotations.NONE;
             }
-
             base.Update(gameTime);
         }
 
-        public void MoveTo(Tile newTile)
-        {
+        public void MoveTo(Tile newTile) {
             moveDirection = newTile.TileMatrix.Translation - OnTopofTile.TileMatrix.Translation;
             moveDestination = newTile.TileMatrix.Translation;
-            world = OnTopofTile.TileMatrix;
+            world = Matrix.Identity;
+            if (!IsFlipped){
+                world *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
+            }
             
+            world *= Matrix.CreateTranslation(OnTopofTile.TileMatrix.Translation);
             OnTopofTile = newTile;
-            IsMoving = true;
+            IsMoving = true;            
+
             if (IsFlipped)
-                world *= Matrix.CreateTranslation(0f,4.4f,0f);
+                world *= Matrix.CreateTranslation(0f, 4.4f, 0f);
             else
-                world *= Matrix.CreateTranslation(0f,2f,0f);
+                world *= Matrix.CreateTranslation(0f, 2f, 0f) ;
             y = 0;
-            this.rotationX = (this.IsFlipped) ? 180 : 10;
+            this.rotationX = 0;
             this.rotationZ = 0;
         }
 
@@ -238,7 +231,6 @@ namespace KaroXNA
                         GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vb.VertexCount, 0, ib.IndexCount / 3);
                         GraphicsDevice.RasterizerState = rsSolid; //reset
                     }
-                    
                 }
             }
 
