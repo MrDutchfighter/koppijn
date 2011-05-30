@@ -348,6 +348,12 @@ namespace KaroXNA
                 cam.DoYRotation(180f);
             }
 
+            // Set view player 1 & 2 with the number keys
+            if (Keyboard.GetState().IsKeyDown(Keys.D1))
+                cam.SetFixedViewPlayerOne();
+            if (Keyboard.GetState().IsKeyDown(Keys.D2))
+                cam.SetFixedViewPlayerTwo();
+
             // Restore pressed states
             if (Keyboard.GetState().IsKeyUp(Keys.T))
                 tPressed = false;
