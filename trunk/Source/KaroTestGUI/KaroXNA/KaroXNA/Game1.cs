@@ -170,27 +170,26 @@ namespace KaroXNA
                 }
                 else if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
                     TileComponents[tile].IsSelected = true;
+                    this.selectedTile = tile;
                     if (this.selectedPiece > 0){
                         Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
                         int from = location.X + (location.Y * BOARDWIDTH);
                         Point location2 = TileComponents[this.selectedTile].Location;
                         int to = location2.X + (location2.Y * BOARDWIDTH);
+                        this.ClearSelectedItems();
                         if (engine.DoMove(from, to, -1)){
                             this.ShowMove(location, location2, new Point());
                         }
-                        this.ClearSelectedItems();
                     }
                 }
             }
-            if (piece > 0) { 
+            if (piece > 0) {
                 //Check if the game is in insertion state
                 if (engine.GetGameState() == KaroEngine.GameState.PLAYING || engine.GetGameState() == KaroEngine.GameState.INSERTION) {                 
                     this.selectedPiece = piece;
                     PieceComponents[piece].IsSelected = true;
                 }
             }
-
-
         }
 
         private void ShowMove(Point positionFrom, Point positionTo, Point tileFrom)
@@ -291,6 +290,7 @@ namespace KaroXNA
                             Point positionTo = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
                             Point tileFrom = new Point(move[2] % Game1.BOARDWIDTH, move[2] / Game1.BOARDWIDTH);
                             this.ShowMove(positionFrom, positionTo, tileFrom);
+                            this.ClearSelectedItems();
                         }
                     }
                 }
