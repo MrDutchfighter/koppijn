@@ -284,13 +284,13 @@ namespace KaroXNA
                 cam.DoYRotation(rotY*-1);
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Home))
+            if (Keyboard.GetState().IsKeyDown(Keys.Home) || Keyboard.GetState().IsKeyDown(Keys.OemMinus))
             {
                 rotX -= 0.5f;
                 cam.DoXRotation(rotX);
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.End))
+            if (Keyboard.GetState().IsKeyDown(Keys.End) || Keyboard.GetState().IsKeyDown(Keys.OemPlus))
             {
                 rotX += 0.5f;
                 cam.DoXRotation(rotX);
