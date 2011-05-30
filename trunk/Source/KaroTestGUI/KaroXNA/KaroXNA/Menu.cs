@@ -24,16 +24,13 @@ namespace KaroXNA
         public Game1 game;
         ScrollingBackground background;
 
-        public Menu(Game game, int drawOrder)
-            : base(game)
+        public Menu(Game game, int drawOrder) : base(game)
         {
             this.game = (Game1)game;
             this.DrawOrder = drawOrder;
-            
-            
+
             // TODO: Construct any child components here
         }
-
 
         /// <summary>
         /// Allows the game component to perform any initialization it needs to before starting
@@ -64,9 +61,7 @@ namespace KaroXNA
 
             Texture2D backgroundImage = game.Content.Load<Texture2D>("koppijnkaro");
             background = new ScrollingBackground(GraphicsDevice, backgroundImage, 100);
-
         }
-
 
         /// <summary>
         /// Allows the game component to update itself.
@@ -133,8 +128,8 @@ namespace KaroXNA
 
             // MOUSE
             curMousePos = Mouse.GetState();
-            
         }
+
         public override void Draw(GameTime gameTime)
         {
             if (game.gameState == GameState.MENU)
@@ -164,8 +159,6 @@ namespace KaroXNA
                 }
                 spriteBatch.End();
             }
-
-            
         }
     }
 }

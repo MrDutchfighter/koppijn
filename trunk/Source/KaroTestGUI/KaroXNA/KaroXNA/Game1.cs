@@ -110,8 +110,7 @@ namespace KaroXNA
             ShowBoxes = false;
 
             dss = new DepthStencilState();
-            dss.DepthBufferEnable = true;
-            
+            dss.DepthBufferEnable = true; 
         }
 
         protected override void Initialize()
@@ -139,12 +138,6 @@ namespace KaroXNA
             lampModel = Content.Load<Model>("lamp");
             computerModel = Content.Load<Model>("computer");
             teapotModel = Content.Load<Model>("teapot");
-
-            //RasterizerState rs = new RasterizerState();
-            //rs.CullMode = CullMode.None;
-            //rs.FillMode = FillMode.WireFrame;
-            //GraphicsDevice.RasterizerState = rs;
-
 
             for (int x = 0; x < BOARDWIDTH; x++)
             {
@@ -463,10 +456,6 @@ namespace KaroXNA
                     {
                         e.EnableDefaultLighting();
 
-                        //e.DirectionalLight0.Enabled = true;
-                        //e.DirectionalLight0.DiffuseColor = Color.White.ToVector3();
-                        //e.DirectionalLight0.Direction = new Vector3(0, 50, 0);
-
                         e.DiffuseColor = Color.CadetBlue.ToVector3();
 
                         e.World = lampMatrix;
@@ -494,10 +483,6 @@ namespace KaroXNA
                     foreach (BasicEffect e in mesh.Effects)
                     {
                         e.EnableDefaultLighting();
-
-                        //e.DirectionalLight0.Enabled = true;
-                        //e.DirectionalLight0.DiffuseColor = Color.White.ToVector3();
-                        //e.DirectionalLight0.Direction = new Vector3(0, 50, 0);
 
                         e.DiffuseColor = Color.SlateGray.ToVector3();
 
@@ -528,6 +513,5 @@ namespace KaroXNA
 
             base.Draw(gameTime);
         }
-
     }
 }

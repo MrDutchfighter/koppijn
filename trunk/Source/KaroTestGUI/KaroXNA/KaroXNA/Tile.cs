@@ -33,8 +33,7 @@ namespace KaroXNA
         RasterizerState rsWire = new RasterizerState();
         RasterizerState rsSolid = new RasterizerState();
 
-        public Tile(Game game, Model model, bool isMovable, Point location)
-            : base(game)
+        public Tile(Game game, Model model, bool isMovable, Point location) : base(game)
         {
             this.game = (Game1)game;
 
@@ -106,6 +105,7 @@ namespace KaroXNA
             this.IsMoving = true;
 
         }
+
         public override void Draw(GameTime gameTime)
         {
             if (game.gameState == GameState.PLAYING)
