@@ -39,6 +39,10 @@ namespace KaroXNA
         public bool spacePressed;
         public bool leftMouseDown;
         private bool f1Pressed;
+        double undoTimer;
+        private bool moveUndone;
+        private bool startUndoTimer = false;
+
 
         private int selectedPiece, selectedTile;
         Random random = new Random();
@@ -76,6 +80,7 @@ namespace KaroXNA
             spacePressed = false;
             f1Pressed = false;
             insertionCount = 0;
+            undoTimer = 0;
             engine = new KaroEngineWrapper();
 
             this.PieceComponents = new Dictionary<int, Piece>();
@@ -161,6 +166,9 @@ namespace KaroXNA
                     if (engine.InsertByXY(location2.X, location2.Y)){
                         this.ShowMove(location2,location2,location2);
                         Console.WriteLine("TODO => Animation for insertionstate!");
+                        //start undo timer
+                        startUndoTimer = true;
+                        moveUndone = false;
                     }
                 }
                 else if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
@@ -174,6 +182,9 @@ namespace KaroXNA
                         this.ClearSelectedItems();
                         if (engine.DoMove(from, to, -1)){
                             this.ShowMove(location, location2, new Point());
+                            //start undo timer
+                            startUndoTimer = true;
+                            moveUndone = false;
                         }
                     }
                 }
@@ -280,6 +291,12 @@ namespace KaroXNA
 
         protected override void Update(GameTime gameTime)
         {
+            if (this.startUndoTimer)
+            {
+                this.undoTimer = gameTime.TotalGameTime.TotalMilliseconds;
+                startUndoTimer = false;
+            }
+
             if (gameState == GameState.PLAYING)
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.Space)){
@@ -299,7 +316,7 @@ namespace KaroXNA
                 }
 
                 // handles mouse and keyboard inputs
-                UpdateInput();
+                UpdateInput(gameTime);
             }
 
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -316,7 +333,7 @@ namespace KaroXNA
             base.Update(gameTime);
         }
 
-        private void UpdateInput()
+        private void UpdateInput(GameTime gameTime)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.gameState = GameState.MENU;
@@ -491,7 +508,20 @@ namespace KaroXNA
 
             if (oldMouseState.RightButton == ButtonState.Pressed)
             {
-                this.ClearSelectedItems();
+                if ((gameTime.TotalGameTime.TotalMilliseconds - this.undoTimer) < 1000 && !moveUndone)
+                {
+                    //undo
+                    int[] move = engine.UndoLastMove();
+                    Point positionTo = new Point(move[0] % Game1.BOARDWIDTH, move[0] / Game1.BOARDWIDTH);
+                    Point positionFrom = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
+                    Point tileFrom = new Point(move[2] % Game1.BOARDWIDTH, move[2] / Game1.BOARDWIDTH);
+                    this.ShowMove(positionFrom, positionTo, tileFrom);
+                    moveUndone = true;
+                }
+                else
+                {
+                    this.ClearSelectedItems();
+                }
             }
             #endregion
         }

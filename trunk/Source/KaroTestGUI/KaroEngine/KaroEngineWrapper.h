@@ -26,6 +26,6 @@ namespace KaroEngine {
 		int KaroEngineWrapper::GetBoardLeft();
 		int KaroEngineWrapper::GetBoardRight();
 		int KaroEngineWrapper::GetBoardTop();
-		void UndoLastMove();
+		array<int>^ UndoLastMove();
 	};
 }

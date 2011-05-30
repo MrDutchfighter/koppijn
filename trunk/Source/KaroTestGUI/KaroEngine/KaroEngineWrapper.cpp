@@ -108,6 +108,18 @@ array<array<int>^>^ KaroEngineWrapper::GetPossibleMoves(int x, int y,int tileFro
 	return params;
 }
 
-void KaroEngineWrapper::UndoLastMove() {
+array<int>^ KaroEngineWrapper::UndoLastMove() {
 	_karoEngine->UndoMove(_karoEngine->lastMove);
+
+	array<int>^ theMove = gcnew array<int>(4);
+
+	theMove[0] = _karoEngine->lastMove->positionFrom;
+	theMove[1] = _karoEngine->lastMove->positionTo;
+	theMove[2] = _karoEngine->lastMove->tileFrom;
+	if(_karoEngine->lastMove->isJumpMove)
+		theMove[3] = 1;
+	else
+		theMove[3] = 0;
+	
+	return theMove;
 }
