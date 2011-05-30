@@ -38,6 +38,7 @@ namespace KaroXNA
             //Speed in pixels per second
             this.speed = 0; //speed;
         }
+
         // ScrollingBackground.Update
         public void Update(GameTime gameTime)
         {
@@ -46,6 +47,7 @@ namespace KaroXNA
             screenpos.X += elapsed;
             screenpos.X = screenpos.X % mytexture.Width;
         }
+
         // ScrollingBackground.Draw
         public void Draw(SpriteBatch Batch)
         {
