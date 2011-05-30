@@ -111,7 +111,7 @@ namespace KaroXNA
             ShowBoxes = false;
 
             dss = new DepthStencilState();
-            dss.DepthBufferEnable = true; 
+            dss.DepthBufferEnable = true;
         }
 
         protected override void Initialize()
@@ -184,10 +184,18 @@ namespace KaroXNA
                 }
             }
             if (piece > 0) {
-                //Check if the game is in insertion state
-                if (engine.GetGameState() == KaroEngine.GameState.PLAYING || engine.GetGameState() == KaroEngine.GameState.INSERTION) {                 
-                    this.selectedPiece = piece;
-                    PieceComponents[piece].IsSelected = true;
+             
+                if (engine.GetGameState() == KaroEngine.GameState.PLAYING || engine.GetGameState() == KaroEngine.GameState.INSERTION) {
+                    
+                    Player player = engine.GetTurn();
+                    Vector3 red = Color.Tomato.ToVector3();
+                    Vector3 white = Color.White.ToVector3();
+                    if (PieceComponents[piece].Color.Equals(white) && player == Player.WHITE ||
+                        PieceComponents[piece].Color.Equals(red) && player == Player.RED)
+                    {
+                        this.selectedPiece = piece;
+                        PieceComponents[piece].IsSelected = true;
+                    }
                 }
             }
         }
@@ -197,7 +205,7 @@ namespace KaroXNA
             if (engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12)
             {
                 Piece p = new Piece(this, pieceModel, true, this.TileComponents[positionTo.Y * BOARDWIDTH + positionTo.X], Color.Black.ToVector3());
-                if (engine.GetTurn() == KaroEngine.Player.RED)
+                if (engine.GetTurn() == KaroEngine.Player.WHITE) //move just executed, get previous color
                 {
                     p.Color = Color.Tomato.ToVector3();
                 }
@@ -513,6 +521,11 @@ namespace KaroXNA
                     foreach (BasicEffect e in mesh.Effects)
                     {
                         e.EnableDefaultLighting();
+
+                        //e.DirectionalLight0.Enabled = true;
+                        //e.LightingEnabled = true;
+                        //e.DirectionalLight0.DiffuseColor = Color.Red.ToVector3();
+                        //e.DirectionalLight0.Direction = new Vector3(0, 50, 0);
 
                         e.DiffuseColor = Color.CadetBlue.ToVector3();
 
