@@ -40,6 +40,7 @@ namespace KaroXNA
         public bool leftMouseDown;
         private bool f1Pressed;
 
+        private int selectedPiece, selectedTile;
         Random random = new Random();
         float rotX = 0.0f;
         float rotY = 0.0f;
@@ -158,6 +159,91 @@ namespace KaroXNA
         {
             Content.Unload();
         }
+        private void DoMove() {
+        }
+
+        private void ShowMove(Point positionFrom, Point positionTo, Point tileFrom)
+        {
+            if (engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12)
+            {
+                Piece p = new Piece(this, pieceModel, true, this.TileComponents[positionTo.Y * BOARDWIDTH + positionTo.X], Color.Black.ToVector3());
+                if (engine.GetTurn() == KaroEngine.Player.RED)
+                {
+                    p.Color = Color.Tomato.ToVector3();
+                }
+                else
+                {
+                    p.Color = Color.White.ToVector3();
+                }
+                //Turn the piece upside down, default is flipped, which we don't want!
+                //p.T = Matrix.Identity;
+                //p.T *= Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 3.4f, positionTo.Y * 5.5f));
+                Components.Add(p);
+                this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, p);
+                insertionCount++;
+            }
+            else
+            {
+                if (tileFrom.X > 0)
+                {
+                    Tile movedTile = this.TileComponents[tileFrom.Y * BOARDWIDTH + tileFrom.X];
+                    this.TileComponents.Remove(tileFrom.Y * BOARDWIDTH + tileFrom.X);
+                    movedTile.Location = positionTo;
+                    movedTile.moveTo(Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 0, positionTo.Y * 5.5f)));
+                    this.TileComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, movedTile);
+                }
+                Piece movedPiece = this.PieceComponents[positionFrom.Y * BOARDWIDTH + positionFrom.X];
+                this.PieceComponents.Remove(positionFrom.Y * BOARDWIDTH + positionFrom.X);
+                movedPiece.MoveTo(this.TileComponents[(positionTo.Y * BOARDWIDTH) + positionTo.X]);
+                KaroEngine.Tile t = engine.GetByXY(positionTo.X, positionTo.Y);
+                bool flipping;
+                if (t == KaroEngine.Tile.REDMARKED || t == KaroEngine.Tile.WHITEMARKED)
+                {
+                    flipping = true;
+                }
+                else
+                {
+                    flipping = false;
+                }
+                if (flipping != movedPiece.IsFlipped)
+                {
+                    movedPiece.IsFlipped = flipping;
+                    //x en y op het bord(engine) zijn x en z in de karogui
+                    if (positionFrom.X == positionTo.X)
+                    {
+                        movedPiece.rotationDirectionX = Rotations.NONE;
+                    }
+                    else if (positionFrom.X < positionTo.X)
+                    {
+                        movedPiece.rotationDirectionX = Rotations.ROTATIONPLUS;
+                    }
+                    else
+                    {
+                        movedPiece.rotationDirectionX = Rotations.ROTATIONMIN;
+                    }
+
+                    //x en y op het bord(engine) zijn x en z in de karogui
+                    if (positionFrom.Y == positionTo.Y)
+                    {
+                        movedPiece.rotationDirectionZ = Rotations.NONE;
+                    }
+                    else if (positionFrom.Y < positionTo.Y)
+                    {
+                        movedPiece.rotationDirectionZ = Rotations.ROTATIONPLUS;
+                    }
+                    else
+                    {
+                        movedPiece.rotationDirectionZ = Rotations.ROTATIONMIN;
+                    }
+                }
+                else
+                {
+                    movedPiece.rotationDirectionZ = Rotations.NONE;
+                    movedPiece.rotationDirectionX = Rotations.NONE;
+                }
+                this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, movedPiece);
+            }
+        }
 
         protected override void Update(GameTime gameTime)
         {
@@ -173,70 +259,7 @@ namespace KaroXNA
                             Point positionFrom = new Point(move[0] % Game1.BOARDWIDTH, move[0] / Game1.BOARDWIDTH);
                             Point positionTo = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
                             Point tileFrom = new Point(move[2] % Game1.BOARDWIDTH, move[2] / Game1.BOARDWIDTH);
-                            if (engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12)
-                            {
-
-                                Piece p = new Piece(this, pieceModel, true, this.TileComponents[positionTo.Y * BOARDWIDTH + positionTo.X], Color.Black.ToVector3());
-                                if (engine.GetTurn() == KaroEngine.Player.RED)
-                                    p.Color = Color.Tomato.ToVector3();
-                                else
-                                    p.Color = Color.White.ToVector3();
-                                //Turn the piece upside down, default is flipped, which we don't want!
-                                //p.T = Matrix.Identity;
-                                //p.T *= Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 3.4f, positionTo.Y * 5.5f));
-                                Components.Add(p);
-                                this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, p);
-                                insertionCount++;
-                            }
-                            else
-                            {
-                                if (tileFrom.X > 0)
-                                {
-                                    Tile movedTile = this.TileComponents[tileFrom.Y * BOARDWIDTH + tileFrom.X];
-                                    this.TileComponents.Remove(tileFrom.Y * BOARDWIDTH + tileFrom.X);
-                                    movedTile.Location = positionTo;
-                                    movedTile.moveTo(Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 0, positionTo.Y * 5.5f)));
-                                    this.TileComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, movedTile);
-                                }
-                                Piece movedPiece = this.PieceComponents[positionFrom.Y * BOARDWIDTH + positionFrom.X];
-                                this.PieceComponents.Remove(positionFrom.Y * BOARDWIDTH + positionFrom.X);
-                                movedPiece.MoveTo(this.TileComponents[(positionTo.Y * BOARDWIDTH) + positionTo.X]);
-                                KaroEngine.Tile t = engine.GetByXY(positionTo.X, positionTo.Y);
-                                bool flipping;
-                                if (t == KaroEngine.Tile.REDMARKED || t == KaroEngine.Tile.WHITEMARKED){
-                                    flipping = true;
-                                }
-                                else
-                                {
-                                    flipping = false;
-                                }
-                                if (flipping != movedPiece.IsFlipped)
-                                {
-                                    movedPiece.IsFlipped = flipping;
-                                    //x en y op het bord(engine) zijn x en z in de karogui
-                                    if (positionFrom.X == positionTo.X) {
-                                        movedPiece.rotationDirectionX = Rotations.NONE;
-                                    } else if (positionFrom.X < positionTo.X) {
-                                        movedPiece.rotationDirectionX = Rotations.ROTATIONPLUS;
-                                    } else {
-                                        movedPiece.rotationDirectionX = Rotations.ROTATIONMIN;
-                                    }
-
-                                    //x en y op het bord(engine) zijn x en z in de karogui
-                                    if (positionFrom.Y == positionTo.Y) {
-                                        movedPiece.rotationDirectionZ = Rotations.NONE;
-                                    } else if (positionFrom.Y < positionTo.Y) {
-                                        movedPiece.rotationDirectionZ = Rotations.ROTATIONPLUS;
-                                    } else {
-                                        movedPiece.rotationDirectionZ = Rotations.ROTATIONMIN;
-                                    }
-                                }
-                                else {
-                                    movedPiece.rotationDirectionZ = Rotations.NONE;
-                                    movedPiece.rotationDirectionX = Rotations.NONE;
-                                }
-                                this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, movedPiece);
-                            }
+                            this.ShowMove(positionFrom, positionTo, tileFrom);
                         }
                     }
                 }
@@ -427,9 +450,29 @@ namespace KaroXNA
                     Console.WriteLine("Aantal gevonden: " + results.Count);
 
                     if (results[index].Value.Value == typeof(Tile))
+                    {
+                        this.selectedTile = results[index].Value.Key;
                         TileComponents[results[index].Value.Key].IsSelected = true;
+                        if (this.selectedPiece > 0)
+                        {
+                            Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
+                            int from = location.X + (location.Y * BOARDWIDTH);
+                            Point location2 = TileComponents[this.selectedTile].Location;
+                            int to = location2.X + (location2.Y * BOARDWIDTH);
+                            if (engine.DoMove(from, to, -1))
+                            {
+                                this.ShowMove(location, location2, new Point());
+                            }
+                            this.selectedTile = 0;
+                            this.selectedPiece = 0;
+                            TileComponents[results[index].Value.Key].IsSelected = false;
+                        }
+                    }
                     else
+                    {
+                        this.selectedPiece = results[index].Value.Key;
                         PieceComponents[results[index].Value.Key].IsSelected = true;
+                    }
                 }
             }
 

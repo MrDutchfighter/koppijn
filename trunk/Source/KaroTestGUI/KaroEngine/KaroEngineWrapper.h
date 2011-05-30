@@ -15,7 +15,7 @@ namespace KaroEngine {
 
 		Tile GetByXY(int x, int y);
 		bool InsertByXY(int x, int y);
-		void DoMove(int from,int to,int tile);
+		bool DoMove(int from,int to,int tile);
 		GameState GetGameState();
 		Player GetTurn();
 		array<int>^ CalculateComputerMove();

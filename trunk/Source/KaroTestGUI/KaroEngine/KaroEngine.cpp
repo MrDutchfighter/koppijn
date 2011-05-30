@@ -85,7 +85,7 @@ namespace KaroEngine
 	/**
 	* Executes a given move (if valid)
 	*/
-	void KaroEngine::DoMove(int from, int to, int tileFrom)
+	bool KaroEngine::DoMove(int from, int to, int tileFrom)
 	{
 		bool validMove=false;
 		Move* move;
@@ -93,13 +93,13 @@ namespace KaroEngine
 		if(turn== Player::RED){
 			if(board[from] != Tile::REDUNMARKED &&
 				board[from] != Tile::REDMARKED) {
-					return;
+					return false;
 			}
 		}
 		else if(turn== Player::WHITE){
 			if(board[from] != Tile::WHITEUNMARKED &&
 				board[from] != Tile::WHITEMARKED) {
-					return;
+					return false;
 			}
 		}
 
@@ -114,7 +114,7 @@ namespace KaroEngine
 
 		// If not a valid move, then return, stop proces
 		if(!validMove) {
-			return;
+			return false;
 		}
 		else {
 			DoMove(move);
@@ -135,6 +135,7 @@ namespace KaroEngine
 				gameState == GameState::GAMEFINISHED;
 			}
 		}
+		return true;
 	}
 
 	/**
