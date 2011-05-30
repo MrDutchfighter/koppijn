@@ -272,7 +272,7 @@ namespace KaroXNA
                 this.Exit();
 
             #region Rotation
-            if (Keyboard.GetState().IsKeyDown(Keys.R) || Keyboard.GetState().IsKeyDown(Keys.Right))
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
                 rotY += 0.1f;
                 cam.DoYRotation(rotY);
