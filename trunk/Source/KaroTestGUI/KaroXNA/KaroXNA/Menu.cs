@@ -136,27 +136,24 @@ namespace KaroXNA
             {
                 spriteBatch.Begin();
                 background.Draw(spriteBatch);
-                //spriteBatch.DrawString(spriteFont, "Play", new Vector2(300, 300), Color.LightGreen);
+
                 for (int i = 0; i < menuList.Count; i++)
                 {
-                    
                     // Find the center of the string
-                    Vector2 FontOrigin = spriteFont.MeasureString(menuList[i].MenuName) / 2;
-                    //fontPosition = Vector2.Subtract(fontPosition, FontOrigin);
-                    Vector2 currentFontPosition = fontPosition;
-                    currentFontPosition = Vector2.Subtract(fontPosition, FontOrigin);
-                    currentFontPosition.Y = currentFontPosition.Y + i * 14;
+                    Vector2 currentFontPosition = Vector2.Subtract(fontPosition, (spriteFont.MeasureString(menuList[i].MenuName) / 2));
+                    currentFontPosition.Y = currentFontPosition.Y + (i * 24);
 
-                    // draw selected item different
+                    // Draw selected item
                     if (selectedItem == i)
                         spriteBatch.DrawString(spriteFont, menuList[i].MenuName, currentFontPosition, Color.DarkOrange);
                     else
                         spriteBatch.DrawString(spriteFont, menuList[i].MenuName, currentFontPosition, Color.LightGreen);
-
-                    Vector2 pos = new Vector2(Game.GraphicsDevice.Viewport.Width / 4, (Game.GraphicsDevice.Viewport.Height / 2) - 200);
-
-                    spriteBatch.DrawString(spriteFont, "FPS: " + game.FPS, pos, Color.LightGreen);
                 }
+
+                // Draw FPS
+                Vector2 pos = new Vector2((Game.GraphicsDevice.Viewport.Width - (spriteFont.MeasureString("FPS: " + game.FPS).X + 10)), (Game.GraphicsDevice.Viewport.Height - 24));
+                spriteBatch.DrawString(spriteFont, "FPS: " + game.FPS, pos, Color.LightGreen);
+
                 spriteBatch.End();
             }
         }
