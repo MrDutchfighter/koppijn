@@ -157,7 +157,7 @@ namespace KaroXNA
             world = Matrix.Identity;
             if (!IsFlipped){
                 world *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
-            }            
+            }
             world *= Matrix.CreateTranslation(OnTopofTile.TileMatrix.Translation);
             OnTopofTile = newTile;
             IsMoving = true;            
@@ -165,7 +165,7 @@ namespace KaroXNA
             if (IsFlipped)
                 world *= Matrix.CreateTranslation(0f, 4.4f, 0f);
             else
-                world *= Matrix.CreateTranslation(0f, 2f, 0f) ;
+                world *= Matrix.CreateTranslation(0f, 2f, 0f);
             y = 0;
             this.rotationX = 0;
             this.rotationZ = 0;
