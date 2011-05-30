@@ -159,6 +159,7 @@ namespace KaroXNA
         {
             Content.Unload();
         }
+
         private void DoMove(int piece,int tile) {
             if (tile > 0) { //If the move should be on a tile
                 if (engine.GetGameState() == KaroEngine.GameState.INSERTION) {
@@ -324,7 +325,7 @@ namespace KaroXNA
         private void UpdateInput()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                this.Exit();
+                this.gameState = GameState.MENU;
 
             #region Rotation
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
@@ -422,6 +423,7 @@ namespace KaroXNA
             if (Keyboard.GetState().IsKeyUp(Keys.F1))
                 f1Pressed = false;
 
+            #region Handle Mouse
             oldMouseState = Mouse.GetState();
 
             if (oldMouseState.LeftButton == ButtonState.Pressed)
@@ -497,7 +499,7 @@ namespace KaroXNA
             {
                 this.ClearSelectedItems();
             }
-
+            #endregion
         }
 
         private void ClearSelectedItems() {
@@ -510,10 +512,11 @@ namespace KaroXNA
                 this.selectedTile = 0;
             }
         }
+
         protected override void Draw(GameTime gameTime)
         {
-
-            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);            
+            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);  
+          
             if (gameState == GameState.PLAYING) {
                 GraphicsDevice.DepthStencilState = dss;
                 foreach (ModelMesh mesh in lampModel.Meshes)
@@ -564,25 +567,32 @@ namespace KaroXNA
 
                     mesh.Draw();
                 }
-            }
 
-            Matrix[] transforms = new Matrix[computerModel.Bones.Count];
-            computerModel.CopyAbsoluteBoneTransformsTo(transforms);
+                Matrix[] transforms = new Matrix[computerModel.Bones.Count];
+                computerModel.CopyAbsoluteBoneTransformsTo(transforms);
 
-            foreach (ModelMesh mesh in computerModel.Meshes)
-            {
-                foreach (BasicEffect e in mesh.Effects)
+                foreach (ModelMesh mesh in computerModel.Meshes)
                 {
-                    e.EnableDefaultLighting();
-                    e.World = transforms[mesh.ParentBone.Index] * computerMatrix;
-                    e.Projection = cam.Projection;
-                    e.View = cam.View;
-                }
+                    foreach (BasicEffect e in mesh.Effects)
+                    {
+                        e.EnableDefaultLighting();
+                        e.World = transforms[mesh.ParentBone.Index] * computerMatrix;
+                        e.Projection = cam.Projection;
+                        e.View = cam.View;
+                    }
 
-                mesh.Draw();
+                    mesh.Draw();
+                }
             }
 
+            // Roep de base draw aan van andere klasse
             base.Draw(gameTime);
+
+            // Draw FPS (Teken NADAT het menu getekend wordt, anders verdwijnt hij achter de background)
+            gameMenu.spriteBatch.Begin();
+            Vector2 pos = new Vector2((GraphicsDevice.Viewport.Width - (gameMenu.spriteFont.MeasureString("FPS: " + FPS).X + 10)), (GraphicsDevice.Viewport.Height - 24));
+            gameMenu.spriteBatch.DrawString(gameMenu.spriteFont, "FPS: " + FPS, pos, Color.Blue);
+            gameMenu.spriteBatch.End();
         }
     }
 }

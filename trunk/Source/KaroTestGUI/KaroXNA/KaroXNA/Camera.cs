@@ -57,6 +57,12 @@ namespace KaroXNA
             if (this.XAngle < -135)
                 this.XAngle = -135;
 
+            // Zorgen dat hij niet gaat flippen op 45 graden
+            if (this.XAngle == -45f && angle > 0)
+                this.XAngle = -44.999f;
+            else if (this.XAngle == -45f && angle < 0)
+                this.XAngle = -45.001f;
+
             this.UpdateView();
         }
 
@@ -97,7 +103,6 @@ namespace KaroXNA
 
                 this.YAngle = 0f;
                 this.XAngle = -44.999f;
-                this.ZoomValue = 1f;
 
                 this.UpdateView();
 

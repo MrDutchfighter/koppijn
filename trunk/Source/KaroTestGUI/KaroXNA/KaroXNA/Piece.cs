@@ -142,7 +142,7 @@ namespace KaroXNA
                 world *= Matrix.CreateTranslation(x, y, z);
             }
             
-            if(!IsMoving){
+            if(!IsMoving) {
                 this.world = this.OnTopofTile.TileMatrix;
                 this.world *= Matrix.CreateTranslation(0f, 1f, 0f);
                 this.rotationDirectionX = Rotations.NONE;
@@ -173,7 +173,7 @@ namespace KaroXNA
 
         public override void Draw(GameTime gameTime)
         {
-            if (Visible)
+            if (game.gameState == GameState.PLAYING)
             {
                 foreach (ModelMesh mesh in PieceModel.Meshes)
                 {
