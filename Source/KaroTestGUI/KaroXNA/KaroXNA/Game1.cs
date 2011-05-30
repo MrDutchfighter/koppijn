@@ -170,6 +170,9 @@ namespace KaroXNA
                     if (result){
                         this.ClearSelectedItems();
                         this.ShowMove(location, location3, location2);
+                        //start undo timer
+                        startUndoTimer = true;
+                        moveUndone = false;
                     }
                 }
             }
@@ -179,29 +182,25 @@ namespace KaroXNA
                     if (engine.InsertByXY(location2.X, location2.Y)){
                         this.ShowMove(location2,location2,location2);
                         Console.WriteLine("TODO => Animation for insertionstate!");
-                        //start undo timer
-                        startUndoTimer = true;
-                        moveUndone = false;
                     }
                 }
                 else if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
                     Point location2 = TileComponents[tile].Location;
                     int to = location2.X + (location2.Y * BOARDWIDTH);
-                    
-                    if(engine.GetByXY(location2.X,location2.Y) == KaroEngine.Tile.MOVEABLETILE){
+                    if (engine.GetByXY(location2.X, location2.Y) == KaroEngine.Tile.MOVEABLETILE){
                         TileComponents[tile].IsSelected = true;
                         this.selectedTile = tile;
-                        if (this.selectedPiece > 0){
-                            Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
-                            int from = location.X + (location.Y * BOARDWIDTH);
-                            this.ClearSelectedItems();
-                            if (engine.DoMove(from, to, -1)) {
-                                this.ShowMove(location, location2, new Point());
-                            }
-                            //start undo timer
-                            startUndoTimer = true;
-                            moveUndone = false;
+                    }
+                    if (this.selectedPiece > 0){
+                        Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
+                        int from = location.X + (location.Y * BOARDWIDTH);
+                        this.ClearSelectedItems();
+                        if (engine.DoMove(from, to, -1)) {
+                            this.ShowMove(location, location2, new Point());
                         }
+                        //start undo timer
+                        startUndoTimer = true;
+                        moveUndone = false;
                     }
                 }
             }
