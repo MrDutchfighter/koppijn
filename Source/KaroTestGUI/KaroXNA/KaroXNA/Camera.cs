@@ -52,10 +52,10 @@ namespace KaroXNA
 
             this.XAngle += angle;
 
-            if (this.XAngle > 45)
-                this.XAngle = 45f;
-            if (this.XAngle < -135)
-                this.XAngle = -135;
+            //if (this.XAngle > 45)
+            //    this.XAngle = 45f;
+            //if (this.XAngle < -135)
+            //    this.XAngle = -135;
 
             // Zorgen dat hij niet gaat flippen op 45 graden
             if (this.XAngle == -45f && angle > 0)
