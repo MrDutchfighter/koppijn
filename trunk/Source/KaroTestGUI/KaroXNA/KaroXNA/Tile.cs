@@ -39,6 +39,7 @@ namespace KaroXNA
 
             TileModel = model;
             TileMatrix = Matrix.Identity;
+            TileMatrix *= Matrix.CreateTranslation(new Vector3(location.X * 5.5f, 0, location.Y * 5.5f));
             IsMovable = isMovable;
             IsSelected = false;
 
@@ -128,6 +129,9 @@ namespace KaroXNA
                         if (IsSelected)
                         {
                             e.DiffuseColor = Color.White.ToVector3();
+                        }
+                        else if (IsMovable) {
+                            e.DiffuseColor = Color.Aqua.ToVector3();
                         }
                         else
                         {
