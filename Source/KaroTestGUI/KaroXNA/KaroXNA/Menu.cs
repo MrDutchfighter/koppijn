@@ -15,8 +15,8 @@ namespace KaroXNA
     public class Menu : DrawableGameComponent
     {
         public List<MenuItem> menuList;
-        SpriteBatch spriteBatch;
-        SpriteFont spriteFont;
+        public SpriteBatch spriteBatch;
+        public SpriteFont spriteFont;
         Vector2 fontPosition;
         public int selectedItem;
         public KeyboardState oldState;
@@ -88,6 +88,8 @@ namespace KaroXNA
                 {
                     if (selectedItem < menuList.Count - 1)
                         selectedItem++;
+                    else
+                        selectedItem = 0;
                 }
             }
 
@@ -96,8 +98,10 @@ namespace KaroXNA
             {
                 if (!oldState.IsKeyDown(Keys.Up))
                 {
-                    if (selectedItem > 0 )
-                       selectedItem--;
+                    if (selectedItem > 0)
+                        selectedItem--;
+                    else
+                        selectedItem = menuList.Count - 1;
                 }
             }
 
@@ -149,10 +153,6 @@ namespace KaroXNA
                     else
                         spriteBatch.DrawString(spriteFont, menuList[i].MenuName, currentFontPosition, Color.LightGreen);
                 }
-
-                // Draw FPS
-                Vector2 pos = new Vector2((Game.GraphicsDevice.Viewport.Width - (spriteFont.MeasureString("FPS: " + game.FPS).X + 10)), (Game.GraphicsDevice.Viewport.Height - 24));
-                spriteBatch.DrawString(spriteFont, "FPS: " + game.FPS, pos, Color.LightGreen);
 
                 spriteBatch.End();
             }
