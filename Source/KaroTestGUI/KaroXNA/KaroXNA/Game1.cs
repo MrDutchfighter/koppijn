@@ -29,7 +29,7 @@ namespace KaroXNA
         public GameState gameState;
 
         Matrix world, view, proj, roomMatrix;
-        public Model pieceModel, roomModel; 
+        public Model pieceModel, roomModel, tileModel; 
         public Camera cam;
 
         public int[] move;
@@ -55,6 +55,7 @@ namespace KaroXNA
 
         Dictionary<int, Tile> TileComponents;
         Dictionary<int, Piece> PieceComponents;
+        List<Tile> moveToList;
 
         public short[] BoxIndexes { get; set; }
         public bool ShowBoxes { get; set; }
@@ -63,6 +64,7 @@ namespace KaroXNA
 
         public Game1()
         {
+            moveToList = new List<Tile>();
             this.IsFixedTimeStep = false;
             IsMouseVisible = true;
             graphics = new GraphicsDeviceManager(this);
@@ -135,18 +137,15 @@ namespace KaroXNA
 
         protected override void LoadContent()
         {
-            Model tileModel = Content.Load<Model>("tile");
+            tileModel = Content.Load<Model>("tile");
             pieceModel = Content.Load<Model>("piece");
             roomModel = Content.Load<Model>("room");
 
-            for (int x = 0; x < BOARDWIDTH; x++)
-            {
-                for (int y = 0; y < BOARDWIDTH; y++)
-                {
+            for (int x = 0; x < BOARDWIDTH; x++) {
+                for (int y = 0; y < BOARDWIDTH; y++) {
                     KaroEngine.Tile tile = engine.GetByXY(x, y);
                     if (tile != KaroEngine.Tile.BORDER && tile != KaroEngine.Tile.EMPTY){
                         Tile t = new Tile(this, tileModel, false, new Point(x, y));
-                        t.TileMatrix =  Matrix.CreateTranslation(new Vector3(x * 5.5f, 0, y * 5.5f));
                         this.TileComponents.Add(y * BOARDWIDTH + x, t);
                         Components.Add(t);
                     }
@@ -158,9 +157,23 @@ namespace KaroXNA
         {
             Content.Unload();
         }
-
-        private void DoMove(int piece,int tile) {
-            if (tile > 0) { //If the move should be on a tile
+        private void DoMove(int piece,int tile,int tileFrom) {
+            if (tileFrom >= 0) {
+                if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
+                    Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
+                    int from = location.X + (location.Y * BOARDWIDTH);
+                    Point location2 = TileComponents[this.selectedTile].Location;
+                    int fromTile = location2.X + (location2.Y * BOARDWIDTH);
+                    Point location3 = this.moveToList[tileFrom].Location;
+                    int to= location3.X + (location3.Y * BOARDWIDTH);
+                    bool result = engine.DoMove(from, to, fromTile);
+                    if (result){
+                        this.ClearSelectedItems();
+                        this.ShowMove(location, location3, location2);
+                    }
+                }
+            }
+            if (tile >= 0) { //If the move should be on a tile
                 if (engine.GetGameState() == KaroEngine.GameState.INSERTION) {
                     Point location2 = TileComponents[tile].Location;
                     if (engine.InsertByXY(location2.X, location2.Y)){
@@ -172,16 +185,19 @@ namespace KaroXNA
                     }
                 }
                 else if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
-                    TileComponents[tile].IsSelected = true;
-                    this.selectedTile = tile;
-                    if (this.selectedPiece > 0){
-                        Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
-                        int from = location.X + (location.Y * BOARDWIDTH);
-                        Point location2 = TileComponents[this.selectedTile].Location;
-                        int to = location2.X + (location2.Y * BOARDWIDTH);
-                        this.ClearSelectedItems();
-                        if (engine.DoMove(from, to, -1)){
-                            this.ShowMove(location, location2, new Point());
+                    Point location2 = TileComponents[tile].Location;
+                    int to = location2.X + (location2.Y * BOARDWIDTH);
+                    
+                    if(engine.GetByXY(location2.X,location2.Y) == KaroEngine.Tile.MOVEABLETILE){
+                        TileComponents[tile].IsSelected = true;
+                        this.selectedTile = tile;
+                        if (this.selectedPiece > 0){
+                            Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
+                            int from = location.X + (location.Y * BOARDWIDTH);
+                            this.ClearSelectedItems();
+                            if (engine.DoMove(from, to, -1)) {
+                                this.ShowMove(location, location2, new Point());
+                            }
                             //start undo timer
                             startUndoTimer = true;
                             moveUndone = false;
@@ -189,8 +205,8 @@ namespace KaroXNA
                     }
                 }
             }
-            if (piece > 0) {
-             
+            if (piece >= 0) {
+                // If the game is still running.
                 if (engine.GetGameState() == KaroEngine.GameState.PLAYING || engine.GetGameState() == KaroEngine.GameState.INSERTION) {
                     
                     Player player = engine.GetTurn();
@@ -201,6 +217,15 @@ namespace KaroXNA
                     {
                         this.selectedPiece = piece;
                         PieceComponents[piece].IsSelected = true;
+                        if (this.selectedTile > 0) {
+                            Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
+                            Point location2 = TileComponents[this.selectedTile].Location;                            
+                            int[][] possibleMoves = engine.GetPossibleMoves(location.X, location.Y, location2.X, location2.Y);
+                            moveToList.Clear();
+                            foreach (int[] item in possibleMoves){
+                                moveToList.Add(new Tile(this,tileModel,true,new Point(item[0],item[1])));
+                            }
+                        }
                     }
                 }
             }
@@ -219,9 +244,6 @@ namespace KaroXNA
                 {
                     p.Color = Color.White.ToVector3();
                 }
-                //Turn the piece upside down, default is flipped, which we don't want!
-                //p.T = Matrix.Identity;
-                //p.T *= Matrix.CreateRotationX(MathHelper.ToRadians(180)) * Matrix.CreateTranslation(new Vector3(positionTo.X * 5.5f, 3.4f, positionTo.Y * 5.5f));
                 Components.Add(p);
                 this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, p);
                 insertionCount++;
@@ -481,27 +503,54 @@ namespace KaroXNA
                     }
                 }
 
+                Dictionary<float,int> moveableClick = new Dictionary<float,int>();
+                for (int i = 0; i < moveToList.Count; i++){
+                    Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
+                    Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
+                    nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, moveToList[i].TileMatrix);
+                    farPlane = GraphicsDevice.Viewport.Unproject(farPlane, cam.Projection, cam.View, moveToList[i].TileMatrix);
+                    Vector3 direction = farPlane - nearPlane;
+                    direction.Normalize();
+                    Ray ray = new Ray(nearPlane, direction);
+                    float? result = ray.Intersects((BoundingBox)moveToList[i].TileModel.Tag);
+                    if (result.HasValue){
+                        moveableClick.Add(result.Value,i);
+                    }
+                }
 
                 float shortestDistance = float.PositiveInfinity;
                 int index = 0;
-                int i=0;
+                int j=0;
                 foreach (var result in results)
                 {
                     if (result.Key < shortestDistance)
-                        index = i;
-                    i++;
+                        index = j;
+                    j++;
                 }
 
+                if (moveableClick.Count > 0) {
+                    if (index != 0)
+                    {
+                        if (results[index].Key < moveableClick.First().Key)
+                        {
+                            DoMove(0, 0, moveableClick.First().Value);
+                            results.Clear();
+                        }
+                    }
+                    else {
+                        DoMove(-1, -1, moveableClick.First().Value);
+                    }
+                }
 
                 if (results.Count > 0)
                 {
                     if (results[index].Value.Value == typeof(Tile))
                     {                        
-                        this.DoMove(0,results[index].Value.Key);
+                        this.DoMove(-1,results[index].Value.Key,-1);
                     }
                     else
                     {
-                        this.DoMove(results[index].Value.Key, 0);
+                        this.DoMove(results[index].Value.Key, -1,-1);
                     }
                 }
             }
@@ -535,6 +584,7 @@ namespace KaroXNA
                 this.TileComponents[this.selectedTile].IsSelected = false;
                 this.selectedTile = 0;
             }
+            this.moveToList.Clear();
         }
 
         protected override void Draw(GameTime gameTime)
@@ -558,6 +608,9 @@ namespace KaroXNA
                     }
 
                     mesh.Draw();
+                }
+                foreach (var item in this.moveToList){
+                    item.Draw(gameTime);
                 }
             }
 
