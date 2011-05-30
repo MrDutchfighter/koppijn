@@ -28,8 +28,8 @@ namespace KaroXNA
         public Menu gameMenu;
         public GameState gameState;
 
-        Matrix world, view, proj, tableMatrix, lampMatrix, computerMatrix, teapotMatrix;
-        public Model tableModel, pieceModel, lampModel, computerModel, teapotModel;
+        Matrix world, view, proj, roomMatrix;
+        public Model pieceModel, roomModel; 
         public Camera cam;
 
         public int[] move;
@@ -122,11 +122,8 @@ namespace KaroXNA
             view = cam.View;
             proj = cam.Projection;
 
-            teapotMatrix = Matrix.CreateScale(10) * Matrix.CreateTranslation(new Vector3(70, 0, 10));
-            tableMatrix = Matrix.CreateScale(200) * Matrix.CreateTranslation(new Vector3(140, 22, 20));
-            lampMatrix = Matrix.CreateScale(25) * Matrix.CreateTranslation(new Vector3(0, 50, 0));
+            roomMatrix = Matrix.CreateScale(1.4f) * Matrix.CreateTranslation(new Vector3(-20, -20, 45));
 
-            computerMatrix = Matrix.CreateScale(0.5f) * Matrix.CreateTranslation(new Vector3(240, -2, 60));
 
             base.Initialize();
         }
@@ -135,10 +132,7 @@ namespace KaroXNA
         {
             Model tileModel = Content.Load<Model>("tile");
             pieceModel = Content.Load<Model>("piece");
-            tableModel = Content.Load<Model>("table");
-            lampModel = Content.Load<Model>("lamp");
-            computerModel = Content.Load<Model>("computer");
-            teapotModel = Content.Load<Model>("teapot");
+            roomModel = Content.Load<Model>("room");
 
             for (int x = 0; x < BOARDWIDTH; x++)
             {
@@ -519,59 +513,16 @@ namespace KaroXNA
           
             if (gameState == GameState.PLAYING) {
                 GraphicsDevice.DepthStencilState = dss;
-                foreach (ModelMesh mesh in lampModel.Meshes)
-                {
-                    foreach (BasicEffect e in mesh.Effects)
-                    {
-                        e.EnableDefaultLighting();
-
-                        e.DiffuseColor = Color.CadetBlue.ToVector3();
-
-                        e.World = lampMatrix;
-                        e.Projection = cam.Projection;
-                        e.View = cam.View;
-                    }
-                    mesh.Draw();
-                }
                 
-                foreach (ModelMesh mesh in tableModel.Meshes)
+                Matrix[] transforms = new Matrix[roomModel.Bones.Count];
+                roomModel.CopyAbsoluteBoneTransformsTo(transforms);
+
+                foreach (ModelMesh mesh in roomModel.Meshes)
                 {
                     foreach (BasicEffect e in mesh.Effects)
                     {
                         e.EnableDefaultLighting();
-                        e.World = tableMatrix;
-                        e.Projection = cam.Projection;
-                        e.View = cam.View;
-                    }
-
-                    mesh.Draw();
-                }
-
-                foreach (ModelMesh mesh in teapotModel.Meshes)
-                {
-                    foreach (BasicEffect e in mesh.Effects)
-                    {
-                        e.EnableDefaultLighting();
-
-                        e.DiffuseColor = Color.SlateGray.ToVector3();
-
-                        e.World = teapotMatrix;
-                        e.Projection = cam.Projection;
-                        e.View = cam.View;
-                    }
-
-                    mesh.Draw();
-                }
-
-                Matrix[] transforms = new Matrix[computerModel.Bones.Count];
-                computerModel.CopyAbsoluteBoneTransformsTo(transforms);
-
-                foreach (ModelMesh mesh in computerModel.Meshes)
-                {
-                    foreach (BasicEffect e in mesh.Effects)
-                    {
-                        e.EnableDefaultLighting();
-                        e.World = transforms[mesh.ParentBone.Index] * computerMatrix;
+                        e.World = transforms[mesh.ParentBone.Index] * roomMatrix;
                         e.Projection = cam.Projection;
                         e.View = cam.View;
                     }

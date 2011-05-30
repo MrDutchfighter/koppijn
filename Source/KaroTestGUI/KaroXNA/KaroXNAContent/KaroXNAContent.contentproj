@@ -72,32 +72,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="table.FBX">
-      <Name>table</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-      <ProcessorParameters_RotationX>-180</ProcessorParameters_RotationX>
-      <ProcessorParameters_ResizeTexturesToPowerOfTwo>True</ProcessorParameters_ResizeTexturesToPowerOfTwo>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="lamp.FBX">
-      <Name>lamp</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-      <ProcessorParameters_RotationX>-90</ProcessorParameters_RotationX>
-      <ProcessorParameters_ResizeTexturesToPowerOfTwo>True</ProcessorParameters_ResizeTexturesToPowerOfTwo>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="computer.FBX">
-      <Name>computer</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-      <ProcessorParameters_ResizeTexturesToPowerOfTwo>True</ProcessorParameters_ResizeTexturesToPowerOfTwo>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="koppijnkaro.jpg">
       <Name>koppijnkaro</Name>
       <Importer>TextureImporter</Importer>
@@ -109,6 +83,14 @@
       <Project>{DDEDAD55-11B1-4AD8-9868-580BB6AC6A06}</Project>
       <Name>CustomModelProcessor</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="room.FBX">
+      <Name>room</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+      <ProcessorParameters_ResizeTexturesToPowerOfTwo>True</ProcessorParameters_ResizeTexturesToPowerOfTwo>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!--  To modify your build process, add your task inside one of the targets below and uncomment it. 
