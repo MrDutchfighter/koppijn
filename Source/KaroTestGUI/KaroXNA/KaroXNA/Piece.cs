@@ -27,6 +27,7 @@ namespace KaroXNA
         public bool IsFlipped { get; set; }
         public bool IsMoving { get; set; }
         public bool IsVisible { get; set; }
+        public bool IsSelected { get; set; }
 
 
         private Vector3 moveDirection,moveDestination;
@@ -55,6 +56,7 @@ namespace KaroXNA
             IsFlipped = false;
             IsMoving = false;
             IsVisible = visible;
+            IsSelected = false;
             world = onTopofTile.TileMatrix;
             world *= Matrix.CreateTranslation(0f, 1f, 0f);
         }
@@ -203,6 +205,15 @@ namespace KaroXNA
                         else {
                             e.World *= Matrix.CreateFromYawPitchRoll(MathHelper.ToRadians(rotationZ), MathHelper.ToRadians(rotationX), 0);
                             e.World *= this.world;
+                        }
+
+
+                        if (IsSelected)
+                        {
+                            e.DirectionalLight0.Enabled = true;
+                            e.LightingEnabled = true;
+                            e.DirectionalLight0.DiffuseColor = XNAColor.Purple.ToVector3();
+                            e.DirectionalLight0.Direction = game.cam.View.Translation;
                         }
                         e.View = game.cam.View;
                         e.Projection = game.cam.Projection;

@@ -286,13 +286,13 @@ namespace KaroXNA
 
             if (Keyboard.GetState().IsKeyDown(Keys.Home))
             {
-                rotX += 0.1f;
+                rotX -= 0.5f;
                 cam.DoXRotation(rotX);
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.End))
             {
-                rotX += 0.1f;
+                rotX += 0.5f;
                 cam.DoXRotation(rotX);
             }
 
@@ -387,48 +387,74 @@ namespace KaroXNA
                 this.leftMouseDown = false;
                 Vector2 mousePosition = new Vector2(oldMouseState.X, oldMouseState.Y);
 
-                //Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
-                //Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
-                //nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, proj, view,world);
-                //farPlane = GraphicsDevice.Viewport.Unproject(farPlane, proj, view, world);
 
-                //Vector3 direction = farPlane - nearPlane;
-                //direction.Normalize();
+                List<KeyValuePair<float?, KeyValuePair<int, Type>>> results = new List<KeyValuePair<float?, KeyValuePair<int, Type>>>();
 
-                //Ray ray = new Ray(nearPlane, direction);
-
-                List<float?> results = new List<float?>();
-                
                 foreach (var tile in TileComponents){
+                    tile.Value.IsSelected = false;
+
                     Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
                     Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
-                    nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, proj, view, tile.Value.TileMatrix);
-                    farPlane = GraphicsDevice.Viewport.Unproject(farPlane, proj, view, tile.Value.TileMatrix);
+                    nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, tile.Value.TileMatrix);
+                    farPlane = GraphicsDevice.Viewport.Unproject(farPlane, cam.Projection, cam.View, tile.Value.TileMatrix);
                     Vector3 direction = farPlane - nearPlane;
                     direction.Normalize();
                     Ray ray = new Ray(nearPlane, direction);
 
                     float? result = ray.Intersects((BoundingBox)tile.Value.TileModel.Tag);
-                    if (result != null)
-                        results.Add(result);
-	            }
-                foreach (var tile in PieceComponents){
+                    if (result.HasValue)
+                    {
+                        results.Add(new KeyValuePair<float?, KeyValuePair<int, Type>>(result, new KeyValuePair<int, Type>(tile.Key, typeof(Tile))));
+                        //tile.Value.IsSelected = true;
+                    }
+                }
+
+                foreach (var piece in PieceComponents){
+                    piece.Value.IsSelected = false;
+
                     Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
                     Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
-                    nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, proj, view, tile.Value.world);
-                    farPlane = GraphicsDevice.Viewport.Unproject(farPlane, proj, view, tile.Value.world);
+                    nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, piece.Value.world);
+                    farPlane = GraphicsDevice.Viewport.Unproject(farPlane, cam.Projection, cam.View, piece.Value.world);
                     Vector3 direction = farPlane - nearPlane;
                     direction.Normalize();
                     Ray ray = new Ray(nearPlane, direction);
-                    float? result = ray.Intersects((BoundingBox)tile.Value.PieceModel.Tag);
-                    if (result != null)
-                        results.Add(result);
+                    float? result = ray.Intersects((BoundingBox)piece.Value.PieceModel.Tag);
+                    if (result.HasValue)
+                    {
+                        results.Add(new KeyValuePair<float?, KeyValuePair<int, Type>>(result, new KeyValuePair<int, Type>(piece.Key, typeof(Piece))));
+                        //piece.Value.IsSelected = true;
+                    }
                 }
-                if (results.Count > 0) {
-                    Console.WriteLine("Aantal gevonden: "+results.Count);
+
+
+                float shortestDistance = float.PositiveInfinity;
+                int index = 0;
+                int i=0;
+                foreach (var result in results)
+                {
+                    if (result.Key < shortestDistance)
+                    {
+                        index = i;
+                    }
+                    i++;
+                }
+
+
+                if (results.Count > 0)
+                {
+                    Console.WriteLine("Aantal gevonden: " + results.Count);
+
+                    if (results[index].Value.Value == typeof(Tile))
+                    {
+                        TileComponents[results[index].Value.Key].IsSelected = true;
+                    }
+                    else
+                    {
+                        PieceComponents[results[index].Value.Key].IsSelected = true;
+                    }
                 }
             }
-
         }
 
         protected override void Draw(GameTime gameTime)

@@ -19,10 +19,11 @@ namespace KaroXNA
         public Model TileModel { get; set; }
         public Matrix TileMatrix { get; set; }
         private Vector3 moveDirection;
-        private Matrix world;
+        public Matrix world;
         
         public bool IsMovable { get; set; }
         public bool IsMoving { get; set; }
+        public bool IsSelected { get; set; }
 
         public Point Location { get; set; }
         
@@ -40,6 +41,7 @@ namespace KaroXNA
             TileModel = model;
             TileMatrix = Matrix.Identity;
             IsMovable = isMovable;
+            IsSelected = false;
 
             Location = location;
             Initialize();
@@ -121,6 +123,14 @@ namespace KaroXNA
                         else
                         {
                             e.World = TileMatrix;
+                        }
+
+                        if (IsSelected)
+                        {
+                            e.DirectionalLight0.Enabled = true;
+                            e.LightingEnabled = true;
+                            e.DirectionalLight0.DiffuseColor = Color.Red.ToVector3();
+                            e.DirectionalLight0.Direction = game.cam.View.Translation;
                         }
                         e.View = game.cam.View;
                         e.Projection = game.cam.Projection;
