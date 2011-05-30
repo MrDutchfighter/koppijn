@@ -182,9 +182,6 @@ namespace KaroXNA
                     foreach (BasicEffect e in mesh.Effects)
                     {
                         e.EnableDefaultLighting();
-                        //e.DirectionalLight0.Enabled = true;
-                        //e.DirectionalLight0.DiffuseColor = Color;
-                        //e.DirectionalLight0.Direction = new Vector3(0, -50, 0);
                         
                         e.PreferPerPixelLighting = true;
                        
