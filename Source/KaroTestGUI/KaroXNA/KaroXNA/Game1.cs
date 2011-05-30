@@ -159,7 +159,38 @@ namespace KaroXNA
         {
             Content.Unload();
         }
-        private void DoMove() {
+        private void DoMove(int piece,int tile) {
+            if (tile > 0) { //If the move should be on a tile
+                if (engine.GetGameState() == KaroEngine.GameState.INSERTION) {
+                    Point location2 = TileComponents[tile].Location;
+                    if (engine.InsertByXY(location2.X, location2.Y)){
+                        this.ShowMove(location2,location2,location2);
+                        Console.WriteLine("TODO => Animation for insertionstate!");
+                    }
+                }
+                else if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
+                    TileComponents[tile].IsSelected = true;
+                    if (this.selectedPiece > 0){
+                        Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
+                        int from = location.X + (location.Y * BOARDWIDTH);
+                        Point location2 = TileComponents[this.selectedTile].Location;
+                        int to = location2.X + (location2.Y * BOARDWIDTH);
+                        if (engine.DoMove(from, to, -1)){
+                            this.ShowMove(location, location2, new Point());
+                        }
+                        this.ClearSelectedItems();
+                    }
+                }
+            }
+            if (piece > 0) { 
+                //Check if the game is in insertion state
+                if (engine.GetGameState() == KaroEngine.GameState.PLAYING || engine.GetGameState() == KaroEngine.GameState.INSERTION) {                 
+                    this.selectedPiece = piece;
+                    PieceComponents[piece].IsSelected = true;
+                }
+            }
+
+
         }
 
         private void ShowMove(Point positionFrom, Point positionTo, Point tileFrom)
@@ -388,8 +419,7 @@ namespace KaroXNA
             if (oldMouseState.LeftButton == ButtonState.Pressed)
                 this.leftMouseDown=true;
 
-            if (this.leftMouseDown && oldMouseState.LeftButton == ButtonState.Released)
-            {
+            if (this.leftMouseDown && oldMouseState.LeftButton == ButtonState.Released) {
 
                 this.leftMouseDown = false;
                 Vector2 mousePosition = new Vector2(oldMouseState.X, oldMouseState.Y);
@@ -411,7 +441,6 @@ namespace KaroXNA
                     if (result.HasValue)
                     {
                         results.Add(new KeyValuePair<float?, KeyValuePair<int, Type>>(result, new KeyValuePair<int, Type>(tile.Key, typeof(Tile))));
-                        //tile.Value.IsSelected = true;
                     }
                 }
 
@@ -426,10 +455,8 @@ namespace KaroXNA
                     direction.Normalize();
                     Ray ray = new Ray(nearPlane, direction);
                     float? result = ray.Intersects((BoundingBox)piece.Value.PieceModel.Tag);
-                    if (result.HasValue)
-                    {
+                    if (result.HasValue) {
                         results.Add(new KeyValuePair<float?, KeyValuePair<int, Type>>(result, new KeyValuePair<int, Type>(piece.Key, typeof(Piece))));
-                        //piece.Value.IsSelected = true;
                     }
                 }
 
@@ -447,46 +474,34 @@ namespace KaroXNA
 
                 if (results.Count > 0)
                 {
-                    Console.WriteLine("Aantal gevonden: " + results.Count);
-
                     if (results[index].Value.Value == typeof(Tile))
-                    {
-                        this.selectedTile = results[index].Value.Key;
-                        TileComponents[results[index].Value.Key].IsSelected = true;
-                        if (this.selectedPiece > 0)
-                        {
-                            Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
-                            int from = location.X + (location.Y * BOARDWIDTH);
-                            Point location2 = TileComponents[this.selectedTile].Location;
-                            int to = location2.X + (location2.Y * BOARDWIDTH);
-                            if (engine.DoMove(from, to, -1))
-                            {
-                                this.ShowMove(location, location2, new Point());
-                            }
-                            this.selectedTile = 0;
-                            this.selectedPiece = 0;
-                            TileComponents[results[index].Value.Key].IsSelected = false;
-                        }
+                    {                        
+                        this.DoMove(0,results[index].Value.Key);
                     }
                     else
                     {
-                        this.selectedPiece = results[index].Value.Key;
-                        PieceComponents[results[index].Value.Key].IsSelected = true;
+                        this.DoMove(results[index].Value.Key, 0);
                     }
                 }
             }
 
             if (oldMouseState.RightButton == ButtonState.Pressed)
             {
-                foreach (var piece in PieceComponents)
-                    piece.Value.IsSelected = false;
-
-                foreach (var tile in TileComponents)
-                    tile.Value.IsSelected = false;
+                this.ClearSelectedItems();
             }
 
         }
 
+        private void ClearSelectedItems() {
+            if (this.selectedPiece > 0){
+                this.PieceComponents[this.selectedPiece].IsSelected = false;
+                this.selectedPiece = 0;
+            }
+            if (this.selectedTile > 0){
+                this.TileComponents[this.selectedTile].IsSelected = false;
+                this.selectedTile = 0;
+            }
+        }
         protected override void Draw(GameTime gameTime)
         {
 
