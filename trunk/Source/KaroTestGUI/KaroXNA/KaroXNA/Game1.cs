@@ -54,7 +54,7 @@ namespace KaroXNA
         public short[] BoxIndexes { get; set; }
         public bool ShowBoxes { get; set; }
 
-        bool tPressed, rPresssed, restoreDefault;
+        bool tPressed, rPresssed;
 
         public Game1()
         {
@@ -326,19 +326,8 @@ namespace KaroXNA
             #endregion
 
             #region FixedCameraPositions
-            if (Keyboard.GetState().IsKeyDown(Keys.T) && !tPressed)
-            {
-                if (restoreDefault)
-                {
-                    cam.RestorePreviousValues();
-                    restoreDefault = false;
-                }
-                else
-                {
-                    cam.SetFixedTop();
-                    restoreDefault = true;
-                }
-
+            if (Keyboard.GetState().IsKeyDown(Keys.T) && !tPressed) {
+                cam.SetFixedTop();
                 tPressed = true;
             }
 
