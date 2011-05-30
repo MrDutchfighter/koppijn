@@ -369,13 +369,14 @@ namespace KaroXNA
 
             oldMouseState = Mouse.GetState();
 
-            if (Mouse.GetState().LeftButton==ButtonState.Pressed){
+            if (oldMouseState.LeftButton == ButtonState.Pressed)
                 this.leftMouseDown=true;
-            }
-            if(this.leftMouseDown && Mouse.GetState().LeftButton == ButtonState.Released){
+
+            if (this.leftMouseDown && oldMouseState.LeftButton == ButtonState.Released)
+            {
+
                 this.leftMouseDown = false;
                 Vector2 mousePosition = new Vector2(oldMouseState.X, oldMouseState.Y);
-
 
                 List<KeyValuePair<float?, KeyValuePair<int, Type>>> results = new List<KeyValuePair<float?, KeyValuePair<int, Type>>>();
 
@@ -423,9 +424,7 @@ namespace KaroXNA
                 foreach (var result in results)
                 {
                     if (result.Key < shortestDistance)
-                    {
                         index = i;
-                    }
                     i++;
                 }
 
@@ -435,15 +434,21 @@ namespace KaroXNA
                     Console.WriteLine("Aantal gevonden: " + results.Count);
 
                     if (results[index].Value.Value == typeof(Tile))
-                    {
                         TileComponents[results[index].Value.Key].IsSelected = true;
-                    }
                     else
-                    {
                         PieceComponents[results[index].Value.Key].IsSelected = true;
-                    }
                 }
             }
+
+            if (oldMouseState.RightButton == ButtonState.Pressed)
+            {
+                foreach (var piece in PieceComponents)
+                    piece.Value.IsSelected = false;
+
+                foreach (var tile in TileComponents)
+                    tile.Value.IsSelected = false;
+            }
+
         }
 
         protected override void Draw(GameTime gameTime)

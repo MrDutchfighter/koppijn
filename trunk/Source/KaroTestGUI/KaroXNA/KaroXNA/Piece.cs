@@ -187,7 +187,7 @@ namespace KaroXNA
                         //e.DirectionalLight0.Direction = new Vector3(0, -50, 0);
                         
                         e.PreferPerPixelLighting = true;
-                        e.DiffuseColor = Color;
+                       
                         e.World = Matrix.Identity;
 
                         if (!this.IsMoving) {
@@ -200,14 +200,15 @@ namespace KaroXNA
                             e.World *= this.world;
                         }
 
-
                         if (IsSelected)
                         {
-                            e.DirectionalLight0.Enabled = true;
-                            e.LightingEnabled = true;
-                            e.DirectionalLight0.DiffuseColor = XNAColor.Purple.ToVector3();
-                            e.DirectionalLight0.Direction = game.cam.View.Translation;
+                            e.DiffuseColor = XNAColor.Yellow.ToVector3();
                         }
+                        else
+                        {
+                            e.DiffuseColor = Color;
+                        }
+
                         e.View = game.cam.View;
                         e.Projection = game.cam.Projection;
                         boxWorld = e.World;
