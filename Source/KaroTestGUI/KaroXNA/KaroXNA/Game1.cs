@@ -31,8 +31,6 @@ namespace KaroXNA
         Matrix world, view, proj, tableMatrix, lampMatrix, computerMatrix, teapotMatrix;
         public Model tableModel, pieceModel, lampModel, computerModel, teapotModel;
         public Camera cam;
-        float rotY = 0.0f;
-        float rotX = 0.0f;
 
         public int[] move;
         
@@ -43,6 +41,8 @@ namespace KaroXNA
         private bool f1Pressed;
 
         Random random = new Random();
+        float rotX = 0.0f;
+        float rotY = 0.0f;
 
         public float frames = 0f;
         public float deltaFPSTime = 0f;
@@ -53,6 +53,8 @@ namespace KaroXNA
 
         public short[] BoxIndexes { get; set; }
         public bool ShowBoxes { get; set; }
+
+        bool tPressed, rPresssed, restoreDefault;
 
         public Game1()
         {
@@ -269,6 +271,7 @@ namespace KaroXNA
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
 
+            #region Rotation
             if (Keyboard.GetState().IsKeyDown(Keys.R) || Keyboard.GetState().IsKeyDown(Keys.Right))
             {
                 rotY += 0.1f;
@@ -278,7 +281,7 @@ namespace KaroXNA
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
                 rotY += 0.1f;
-                cam.DoYRotation(rotY * -1);
+                cam.DoYRotation(rotY*-1);
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Home))
@@ -290,19 +293,25 @@ namespace KaroXNA
             if (Keyboard.GetState().IsKeyDown(Keys.End))
             {
                 rotX += 0.1f;
-                cam.DoXRotation(rotX * -1);
+                cam.DoXRotation(rotX);
             }
 
-            if (!Keyboard.GetState().IsKeyDown(Keys.R) && !Keyboard.GetState().IsKeyDown(Keys.Right) && !Keyboard.GetState().IsKeyDown(Keys.Left) && !Keyboard.GetState().IsKeyDown(Keys.Home) && !Keyboard.GetState().IsKeyDown(Keys.End))
-                rotY = 0.5f;
-            rotX = 0.5f;
+            // Reset rotation
+            if (!Keyboard.GetState().IsKeyDown(Keys.Left) && !Keyboard.GetState().IsKeyDown(Keys.Right))
+                rotY = 0.0f;
+            if (!Keyboard.GetState().IsKeyDown(Keys.Down) && !Keyboard.GetState().IsKeyDown(Keys.Up))
+                rotX = 0.0f;
+            if (!Keyboard.GetState().IsKeyDown(Keys.Home) && !Keyboard.GetState().IsKeyDown(Keys.End))
+                rotX = 0.0f;
 
-            if (rotY > 4)
-                rotY = 4f;
+            // Rest rotX & rotY
+            if (rotY >= 1.0f)
+                rotY = 0.9f;
+            if (rotX >= 1.0f)
+                rotX = 0.9f;
+            #endregion
 
-            if (rotX > 4)
-                rotX = 2f;
-
+            #region Zoom
             if (Keyboard.GetState().IsKeyDown(Keys.PageUp) || Keyboard.GetState().IsKeyDown(Keys.Up))
                 cam.DoZoom(-0.01f);
 
@@ -314,6 +323,37 @@ namespace KaroXNA
                 float difference = (Mouse.GetState().ScrollWheelValue - oldMouseState.ScrollWheelValue);
                 cam.DoZoom(difference / 1000);
             }
+            #endregion
+
+            #region FixedCameraPositions
+            if (Keyboard.GetState().IsKeyDown(Keys.T) && !tPressed)
+            {
+                if (restoreDefault)
+                {
+                    cam.RestorePreviousValues();
+                    restoreDefault = false;
+                }
+                else
+                {
+                    cam.SetFixedTop();
+                    restoreDefault = true;
+                }
+
+                tPressed = true;
+            }
+
+            if ((Keyboard.GetState().IsKeyDown(Keys.R) || Mouse.GetState().MiddleButton == ButtonState.Pressed) && !rPresssed)
+            {
+                rPresssed = true;
+                cam.DoYRotation(180f);
+            }
+
+            // Restore pressed states
+            if (Keyboard.GetState().IsKeyUp(Keys.T))
+                tPressed = false;
+            if (Keyboard.GetState().IsKeyUp(Keys.R) && Mouse.GetState().MiddleButton == ButtonState.Released)
+                rPresssed = false;
+            #endregion
 
             if (Keyboard.GetState().IsKeyUp(Keys.Space))
             {
