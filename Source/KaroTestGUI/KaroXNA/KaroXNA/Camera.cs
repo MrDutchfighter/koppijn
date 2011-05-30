@@ -16,6 +16,8 @@ namespace KaroXNA
         float prevYAngle = 0f;
         float prevZoomValue = 1f;
 
+        bool restore = false;
+
         private Vector3 CenterBoard = new Vector3(40f, 5f, 30f);
 
 		public Camera(float aspectRatio)
@@ -81,6 +83,7 @@ namespace KaroXNA
         {
             Matrix m = Matrix.Identity * Matrix.CreateTranslation(CameraPosition) * Matrix.CreateFromYawPitchRoll(MathHelper.ToRadians(this.YAngle), MathHelper.ToRadians(this.XAngle), 0f) * Matrix.CreateScale(this.ZoomValue);
             this.View = Matrix.CreateLookAt(m.Translation + CenterBoard, CenterBoard, Vector3.Up);
+            this.restore = false;
         }
 
         /// <summary>
@@ -88,13 +91,23 @@ namespace KaroXNA
         /// </summary>
         public void SetFixedTop()
         {
-            this.SetPreviousValues();
+            if (!restore)
+            {
+                this.SetPreviousValues();
 
-            this.YAngle = 0f;
-            this.XAngle = -44.999f;
-            this.ZoomValue = 1f;
+                this.YAngle = 0f;
+                this.XAngle = -44.999f;
+                this.ZoomValue = 1f;
 
-            this.UpdateView();
+                this.UpdateView();
+
+                // Set na update view!!
+                this.restore = true;
+            }
+            else
+            {
+                this.RestorePreviousValues();
+            }
         }
 
         /// <summary>
