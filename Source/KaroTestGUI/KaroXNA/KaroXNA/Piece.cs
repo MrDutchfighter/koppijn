@@ -36,7 +36,9 @@ namespace KaroXNA
         public Matrix world;
         private int rotationX;
         private int rotationZ;
+        private int rotationY;
         private float y;
+        private double totalDistance;
 
 
         private VertexBuffer vb;
@@ -91,6 +93,9 @@ namespace KaroXNA
 
             rsSolid.FillMode = FillMode.Solid;
         }
+        private double CalculateDistance(Vector3 p1, Vector3 p2){
+            return Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Z - p2.Z, 2));
+        }
 
         public override void Update(GameTime gameTime)
         {
@@ -98,7 +103,7 @@ namespace KaroXNA
                 float x = moveDirection.X / 180;
                 float z = moveDirection.Z / 180;
                 Vector3 moving = moveDestination - world.Translation;
-
+                double distance = this.CalculateDistance(world.Translation,moveDestination);
                 switch (this.rotationDirectionX) {
                     case Rotations.ROTATIONPLUS:
                         rotationX += 1;
@@ -107,46 +112,48 @@ namespace KaroXNA
                         rotationX -= 1;
                         break;
                 }
+                switch (this.rotationDirectionZ)
+                {
+                    case Rotations.ROTATIONPLUS:
+                        if (this.rotationDirectionX == Rotations.NONE){ rotationZ += 1;}
+                        else { rotationY += 1; }
+                        break;
+                    case Rotations.ROTATIONMIN:
+                        if (this.rotationDirectionX == Rotations.NONE) { rotationZ -= 1; }
+                        else { rotationY -= 1; }
+                        break;
+                }
 
-                if (moving.X < 0.1f && moving.Z < 0.1f) {
+                if (moving.X < 0) { moving.X *= -1; }
+                if (moving.Y < 0) { moving.Y *= -1; }
+                if (distance < 0.1) {
                     IsMoving = false;
+                    this.world = this.OnTopofTile.TileMatrix;
+                    this.world *= Matrix.CreateTranslation(0f, 1f, 0f);
+                    this.rotationDirectionX = Rotations.NONE;
+                    this.rotationDirectionZ = Rotations.NONE;
+                } else {
+                    if (this.rotationDirectionX != Rotations.NONE && this.rotationDirectionZ != Rotations.NONE)
+                    {
+                        if (distance < (totalDistance / 2))
+                        {
+                            if (world.Translation.Y > 1)
+                            {
+                                y = -0.07f;
+                            }
+                            else
+                            {
+                                y = 0;
+                            }
+                        }
+                        else
+                        {
+                            y = 0.07f;
+                        }
+                    }
+                    else { y = 0; }
+                    world *= Matrix.CreateTranslation(x, y, z);
                 }
-
-                if((moving.X <= (moveDirection.X / 2) && moving.Y <= (moveDirection.X / 2))) {
-                    if (world.Translation.Y > 0) {
-                        y = -0.07f;
-                    }
-                    else {
-                        y = 0;
-                    }
-                    switch (this.rotationDirectionZ) {
-                        case Rotations.ROTATIONPLUS:
-                            rotationZ += 1;
-                            break;
-                        case Rotations.ROTATIONMIN:
-                            rotationZ -= 1;
-                            break;
-                    }
-                }
-                else {
-                    y = 0.07f;
-                    switch (this.rotationDirectionZ) {
-                        case Rotations.ROTATIONPLUS:
-                            rotationZ -= 1;
-                            break;
-                        case Rotations.ROTATIONMIN:
-                            rotationZ -= 1;
-                            break;
-                    }
-                }
-                world *= Matrix.CreateTranslation(x, y, z);
-            }
-            
-            if(!IsMoving) {
-                this.world = this.OnTopofTile.TileMatrix;
-                this.world *= Matrix.CreateTranslation(0f, 1f, 0f);
-                this.rotationDirectionX = Rotations.NONE;
-                this.rotationDirectionZ = Rotations.NONE;
             }
             base.Update(gameTime);
         }
@@ -160,15 +167,16 @@ namespace KaroXNA
             }
             world *= Matrix.CreateTranslation(OnTopofTile.TileMatrix.Translation);
             OnTopofTile = newTile;
-            IsMoving = true;            
+            IsMoving = true;
+            if (rotationDirectionX == Rotations.NONE && rotationDirectionZ == Rotations.NONE){
+                world *= Matrix.CreateTranslation(0f, 3.8f, 0f);
+            }
 
-            if (IsFlipped)
-                world *= Matrix.CreateTranslation(0f, 4.4f, 0f);
-            else
-                world *= Matrix.CreateTranslation(0f, 2f, 0f);
             y = 0;
             this.rotationX = 0;
             this.rotationZ = 0;
+            this.rotationY=0;
+            this.totalDistance = this.CalculateDistance(moveDestination, world.Translation);
         }
 
         public override void Draw(GameTime gameTime)
@@ -192,7 +200,7 @@ namespace KaroXNA
                             e.World *= this.world;
                         }
                         else {
-                            e.World *= Matrix.CreateFromYawPitchRoll(MathHelper.ToRadians(rotationZ), MathHelper.ToRadians(rotationX), 0);
+                            e.World *= Matrix.CreateFromYawPitchRoll(MathHelper.ToRadians(rotationY), MathHelper.ToRadians(rotationX), MathHelper.ToRadians(rotationZ));
                             e.World *= this.world;
                         }
 
