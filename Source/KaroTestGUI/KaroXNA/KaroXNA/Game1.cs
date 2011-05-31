@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Storage;
+using System.Threading;
 using KaroEngine;
 
 namespace KaroXNA
@@ -326,12 +327,8 @@ namespace KaroXNA
 
                         if (engine.GetGameState() == KaroEngine.GameState.PLAYING || engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12)
                         {
-                            move = engine.CalculateComputerMove();
-                            Point positionFrom = new Point(move[0] % Game1.BOARDWIDTH, move[0] / Game1.BOARDWIDTH);
-                            Point positionTo = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
-                            Point tileFrom = new Point(move[2] % Game1.BOARDWIDTH, move[2] / Game1.BOARDWIDTH);
-                            this.ShowMove(positionFrom, positionTo, tileFrom);
-                            this.ClearSelectedItems();
+                            Thread t = new Thread(new ThreadStart(ThreadedMove));
+                            t.Start();
                         }
                     }
                 }
@@ -352,6 +349,16 @@ namespace KaroXNA
             }
 
             base.Update(gameTime);
+        }
+
+        private void ThreadedMove()
+        {
+            move = engine.CalculateComputerMove();
+            Point positionFrom = new Point(move[0] % Game1.BOARDWIDTH, move[0] / Game1.BOARDWIDTH);
+            Point positionTo = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
+            Point tileFrom = new Point(move[2] % Game1.BOARDWIDTH, move[2] / Game1.BOARDWIDTH);
+            this.ShowMove(positionFrom, positionTo, tileFrom);
+            this.ClearSelectedItems();
         }
 
         private void UpdateInput(GameTime gameTime)
