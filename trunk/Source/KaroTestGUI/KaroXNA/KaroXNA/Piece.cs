@@ -188,8 +188,13 @@ namespace KaroXNA
                     Matrix boxWorld = Matrix.Identity;
                     foreach (BasicEffect e in mesh.Effects)
                     {
-                        e.EnableDefaultLighting();
-                        
+                        //e.EnableDefaultLighting();
+                        e.LightingEnabled = true;
+                        e.DirectionalLight0.Enabled = true;
+                        e.DirectionalLight0.DiffuseColor = XNAColor.White.ToVector3();
+                        e.DirectionalLight0.Direction = new Vector3(1, -1, 0);
+
+
                         e.PreferPerPixelLighting = true;
                        
                         e.World = Matrix.Identity;
