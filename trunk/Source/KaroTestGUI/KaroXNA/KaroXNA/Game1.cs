@@ -31,8 +31,12 @@ namespace KaroXNA
         public GameState gameState;
 
         Random random = new Random();
+       
 
         int selectedPiece, selectedTile;
+        private int hourGlassRotation = 0;
+        private float hourGlassSinus = 0f;
+        private bool computerIsThinking = false;
         #endregion
 
         #region Engine Properties
@@ -373,6 +377,8 @@ namespace KaroXNA
         /// <param name="gameTime">Elapsed time</param>
         protected override void Update(GameTime gameTime)
         {
+            hourGlassRotation++;
+            hourGlassSinus += 0.1f;
             if (this.startUndoTimer)
             {
                 this.undoTimer = gameTime.TotalGameTime.TotalMilliseconds;
@@ -387,6 +393,7 @@ namespace KaroXNA
 
                         if (engine.GetGameState() == KaroEngine.GameState.PLAYING || engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12)
                         {
+                            computerIsThinking = true;
                             Thread t = new Thread(new ThreadStart(ThreadedMove));
                             t.Start();
                         }
@@ -416,12 +423,16 @@ namespace KaroXNA
         /// </summary>
         private void ThreadedMove()
         {
-            move = engine.CalculateComputerMove();
-            Point positionFrom = new Point(move[0] % Game1.BOARDWIDTH, move[0] / Game1.BOARDWIDTH);
-            Point positionTo = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
-            Point tileFrom = new Point(move[2] % Game1.BOARDWIDTH, move[2] / Game1.BOARDWIDTH);
-            this.ShowMove(positionFrom, positionTo, tileFrom);
-            this.ClearSelectedItems();
+            lock (engine)
+            {
+                move = engine.CalculateComputerMove();
+                Point positionFrom = new Point(move[0] % Game1.BOARDWIDTH, move[0] / Game1.BOARDWIDTH);
+                Point positionTo = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
+                Point tileFrom = new Point(move[2] % Game1.BOARDWIDTH, move[2] / Game1.BOARDWIDTH);
+                this.ShowMove(positionFrom, positionTo, tileFrom);
+                this.ClearSelectedItems();
+                computerIsThinking = false;
+            }
         }
 
         /// <summary>
@@ -677,13 +688,40 @@ namespace KaroXNA
 
                 foreach (ModelMesh mesh in roomModel.Meshes)
                 {
-                    foreach (BasicEffect e in mesh.Effects)
+                    if (mesh.Name.Equals("hourglass"))
                     {
-                        //e.EnableDefaultLighting();
+                        foreach (BasicEffect e in mesh.Effects)
+                        {
+                            e.EnableDefaultLighting();
+                            if (computerIsThinking)
+                            {
 
-                        e.World = transforms[mesh.ParentBone.Index] * roomMatrix;
-                        e.Projection = cam.Projection;
-                        e.View = cam.View;                     
+                                e.World =
+
+                                    Matrix.CreateTranslation(0, 200, (float)Math.Sin(hourGlassSinus) * 10)
+                                    * Matrix.CreateRotationZ(MathHelper.ToRadians(hourGlassRotation))
+                                    * transforms[mesh.ParentBone.Index] 
+                                    * Matrix.CreateWorld(new Vector3(33f, -10f, 60f), Vector3.Forward, Vector3.Up); //offset to middle of board
+                            }
+                            else
+                            {
+                                e.World = transforms[mesh.ParentBone.Index] * roomMatrix;// hourGlassMatrix;
+                            }
+                            e.Projection = cam.Projection;
+                            e.View = cam.View;
+                        }
+
+                    }
+                    else
+                    {
+                        foreach (BasicEffect e in mesh.Effects)
+                        {
+                            //e.EnableDefaultLighting();
+
+                            e.World = transforms[mesh.ParentBone.Index] * roomMatrix;
+                            e.Projection = cam.Projection;
+                            e.View = cam.View;
+                        }
                     }
 
                     mesh.Draw();
@@ -693,17 +731,7 @@ namespace KaroXNA
                     item.Draw(gameTime);
                 }
             }
-            //foreach (ModelMesh mesh in pieceModel.Meshes)
-            //{
-            //    foreach (BasicEffect e in mesh.Effects)
-            //    {
-            //        e.World = Matrix.CreateTranslation(0, 50, 0);
-            //        e.Projection = cam.Projection;
-            //        e.View = cam.View;
-            //    }
 
-            //    mesh.Draw();
-            //}
 
             // Roep de base draw aan van andere klasse
             base.Draw(gameTime);
