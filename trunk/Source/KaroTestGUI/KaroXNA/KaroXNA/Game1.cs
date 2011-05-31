@@ -19,50 +19,67 @@ namespace KaroXNA
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : Microsoft.Xna.Framework.Game{
+    public class Game1 : Microsoft.Xna.Framework.Game
+    {
+        #region Properties
+        #region General Properties
         DepthStencilState dss;
         GraphicsDeviceManager graphics;
         GraphicsDevice device;
 
-        public KaroEngine.KaroEngineWrapper engine;
-        public const int BOARDWIDTH = 17;
         public Menu gameMenu;
         public GameState gameState;
 
-        Matrix world, view, proj, roomMatrix;
-        public Model pieceModel, roomModel, tileModel; 
-        public Camera cam;
+        Random random = new Random();
+
+        int selectedPiece, selectedTile;
+        #endregion
+
+        #region Engine Properties
+        public KaroEngine.KaroEngineWrapper engine;
+        public const int BOARDWIDTH = 17;
+
+        public int insertionCount;
+
+        double undoTimer;
+        bool moveUndone;
+        bool startUndoTimer = false;
+
+        Dictionary<int, Tile> TileComponents;
+        Dictionary<int, Piece> PieceComponents;
+        List<Tile> moveToList;
 
         public int[] move;
-        
-        public int insertionCount;
+        public short[] BoxIndexes { get; set; }
+        public bool ShowBoxes { get; set; }
+        #endregion   
+
+        #region Input Properties
         MouseState oldMouseState;
         public bool spacePressed;
         public bool leftMouseDown;
-        private bool f1Pressed;
 
-        double undoTimer;
-        private bool moveUndone;
-        private bool startUndoTimer = false;
+        bool f1Pressed;
+        bool tPressed, rPresssed;
+        #endregion
 
-        private int selectedPiece, selectedTile;
-        Random random = new Random();
+        #region Camera Properties
+        Matrix world, view, proj, roomMatrix;
+        public Model pieceModel, roomModel, tileModel;
+        public Camera cam;
+      
         float rotX = 0.0f;
         float rotY = 0.0f;
 
         public float frames = 0f;
         public float deltaFPSTime = 0f;
         public float FPS { get { return this.frames; } set { this.frames = value; } }
+        #endregion        
+        #endregion
 
-        Dictionary<int, Tile> TileComponents;
-        Dictionary<int, Piece> PieceComponents;
-        List<Tile> moveToList;
-
-        public short[] BoxIndexes { get; set; }
-        public bool ShowBoxes { get; set; }
-
-        bool tPressed, rPresssed;
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public Game1(){
             moveToList = new List<Tile>();
             this.IsFixedTimeStep = false;
@@ -121,6 +138,9 @@ namespace KaroXNA
             dss.DepthBufferEnable = true;
         }
 
+        /// <summary>
+        /// Initialise game
+        /// </summary>
         protected override void Initialize()
         {
             device = graphics.GraphicsDevice;
@@ -139,6 +159,9 @@ namespace KaroXNA
             //-----------------------------------------------------------
         }
 
+        /// <summary>
+        /// Load the content
+        /// </summary>
         protected override void LoadContent()
         {
             tileModel = Content.Load<Model>("tile");
@@ -157,11 +180,17 @@ namespace KaroXNA
             }
         }
 
+        /// <summary>
+        /// Unloads the content
+        /// </summary>
         protected override void UnloadContent()
         {
             Content.Unload();
         }
 
+        /// <summary>
+        /// Starts a new game
+        /// </summary>
         public void NewGame()
         {
             // clear tiles
@@ -196,7 +225,13 @@ namespace KaroXNA
             engine = new KaroEngineWrapper();
         }
 
-        private void DoMove(int piece,int tile,int tileFrom) {
+        /// <summary>
+        /// Executes a given move
+        /// </summary>
+        /// <param name="piece">Index of piece</param>
+        /// <param name="tile">Index of tile to</param>
+        /// <param name="tileFrom">Index of tile from</param>
+        private void DoMove(int piece, int tile, int tileFrom) {
             if (tileFrom >= 0) {
                 if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
                     Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
@@ -269,6 +304,12 @@ namespace KaroXNA
             }
         }
 
+        /// <summary>
+        /// Handles the movement animation of the pawns & tiles
+        /// </summary>
+        /// <param name="positionFrom">Move from</param>
+        /// <param name="positionTo">Move to</param>
+        /// <param name="tileFrom">Tile from</param>
         private void ShowMove(Point positionFrom, Point positionTo, Point tileFrom)
         {
             if (engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12)
@@ -326,6 +367,10 @@ namespace KaroXNA
             }
         }
 
+        /// <summary>
+        /// Game update, handles the updates
+        /// </summary>
+        /// <param name="gameTime">Elapsed time</param>
         protected override void Update(GameTime gameTime)
         {
             if (this.startUndoTimer)
@@ -366,6 +411,9 @@ namespace KaroXNA
             base.Update(gameTime);
         }
 
+        /// <summary>
+        /// Generates computer move (for multithreading)
+        /// </summary>
         private void ThreadedMove()
         {
             move = engine.CalculateComputerMove();
@@ -376,6 +424,10 @@ namespace KaroXNA
             this.ClearSelectedItems();
         }
 
+        /// <summary>
+        /// Updates the user input, handles all the keypresses, mouse movements etc.
+        /// </summary>
+        /// <param name="gameTime">Elapsed time</param>
         private void UpdateInput(GameTime gameTime)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -595,6 +647,9 @@ namespace KaroXNA
             #endregion
         }
 
+        /// <summary>
+        /// Clears all the items that were selected
+        /// </summary>
         private void ClearSelectedItems() {
             if (this.selectedPiece > 0){
                 this.PieceComponents[this.selectedPiece].IsSelected = false;
@@ -607,6 +662,10 @@ namespace KaroXNA
             this.moveToList.Clear();
         }
 
+        /// <summary>
+        /// Draws the whore game
+        /// </summary>
+        /// <param name="gameTime">Elapsed time</param>
         protected override void Draw(GameTime gameTime)
         {
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);            
