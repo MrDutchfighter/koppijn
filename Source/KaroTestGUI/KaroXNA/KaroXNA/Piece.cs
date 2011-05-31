@@ -124,9 +124,12 @@ namespace KaroXNA
                     {
                         if (distance < (totalDistance / 2))
                         {
-                            if (world.Translation.Y > 1)
+                            if ((world.Translation.Y > 1 && IsFlipped))
                             {
-                                y = -0.07f;
+                                y = -0.11f; //to marked
+                            }
+                            else if(!IsFlipped && world.Translation.Y > 3.4f){
+                                y = -0.043f; //to unmarked
                             }
                             else
                             {
@@ -149,16 +152,16 @@ namespace KaroXNA
             moveDirection = newTile.TileMatrix.Translation - OnTopofTile.TileMatrix.Translation;
             moveDestination = newTile.TileMatrix.Translation;
             world = Matrix.Identity;
-            if (!IsFlipped){
+            if (!IsFlipped)
+            {
                 world *= Matrix.CreateRotationX(MathHelper.ToRadians(180));
+                world *= Matrix.CreateTranslation(0f, 4.4f, 0f);
             }
+            else { world*= Matrix.CreateTranslation(0f, 1.0f, 0f);}
             world *= Matrix.CreateTranslation(OnTopofTile.TileMatrix.Translation);
             OnTopofTile = newTile;
             IsMoving = true;
-            if (rotationDirectionX == Rotations.NONE && rotationDirectionZ == Rotations.NONE){
-                world *= Matrix.CreateTranslation(0f, 3.8f, 0f);
-            }
-
+          
             y = 0;
             this.rotationX = 0;
             this.totalDistance = this.CalculateDistance(moveDestination, world.Translation);
