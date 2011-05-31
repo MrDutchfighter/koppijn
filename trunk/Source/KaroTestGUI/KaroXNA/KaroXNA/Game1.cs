@@ -393,7 +393,8 @@ namespace KaroXNA
 
                         if (engine.GetGameState() == KaroEngine.GameState.PLAYING || engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12)
                         {
-                            computerIsThinking = true;
+                            if(engine.GetGameState() != KaroEngine.GameState.INSERTION)
+                                computerIsThinking = true;
                             Thread t = new Thread(new ThreadStart(ThreadedMove));
                             t.Start();
                         }
@@ -542,117 +543,129 @@ namespace KaroXNA
 
 
             #region Handle Mouse
-            oldMouseState = Mouse.GetState();
+            //Disable moving while computer is calculating move
+            if (!computerIsThinking)
+            {
+                oldMouseState = Mouse.GetState();
 
-            if (oldMouseState.LeftButton == ButtonState.Pressed)
-                this.leftMouseDown=true;
+                if (oldMouseState.LeftButton == ButtonState.Pressed)
+                    this.leftMouseDown = true;
 
-            if (this.leftMouseDown && oldMouseState.LeftButton == ButtonState.Released) {
-
-                this.leftMouseDown = false;
-                Vector2 mousePosition = new Vector2(oldMouseState.X, oldMouseState.Y);
-
-                List<KeyValuePair<float?, KeyValuePair<int, Type>>> results = new List<KeyValuePair<float?, KeyValuePair<int, Type>>>();
-
-                foreach (var tile in TileComponents){
-                    tile.Value.IsSelected = false;
-                    Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
-                    Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
-                    nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, tile.Value.TileMatrix);
-                    farPlane = GraphicsDevice.Viewport.Unproject(farPlane, cam.Projection, cam.View, tile.Value.TileMatrix);
-                    Vector3 direction = farPlane - nearPlane;
-                    direction.Normalize();
-                    Ray ray = new Ray(nearPlane, direction);
-
-                    float? result = ray.Intersects((BoundingBox)tile.Value.TileModel.Tag);
-                    if (result.HasValue)
-                    {
-                        results.Add(new KeyValuePair<float?, KeyValuePair<int, Type>>(result, new KeyValuePair<int, Type>(tile.Key, typeof(Tile))));
-                    }
-                }
-
-                foreach (var piece in PieceComponents){
-                    piece.Value.IsSelected = false;
-                    Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
-                    Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
-                    nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, piece.Value.world);
-                    farPlane = GraphicsDevice.Viewport.Unproject(farPlane, cam.Projection, cam.View, piece.Value.world);
-                    Vector3 direction = farPlane - nearPlane;
-                    direction.Normalize();
-                    Ray ray = new Ray(nearPlane, direction);
-                    float? result = ray.Intersects((BoundingBox)piece.Value.PieceModel.Tag);
-                    if (result.HasValue) {
-                        results.Add(new KeyValuePair<float?, KeyValuePair<int, Type>>(result, new KeyValuePair<int, Type>(piece.Key, typeof(Piece))));
-                    }
-                }
-
-                Dictionary<float,int> moveableClick = new Dictionary<float,int>();
-                for (int i = 0; i < moveToList.Count; i++){
-                    Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
-                    Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
-                    nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, moveToList[i].TileMatrix);
-                    farPlane = GraphicsDevice.Viewport.Unproject(farPlane, cam.Projection, cam.View, moveToList[i].TileMatrix);
-                    Vector3 direction = farPlane - nearPlane;
-                    direction.Normalize();
-                    Ray ray = new Ray(nearPlane, direction);
-                    float? result = ray.Intersects((BoundingBox)moveToList[i].TileModel.Tag);
-                    if (result.HasValue){
-                        moveableClick.Add(result.Value,i);
-                    }
-                }
-
-                float shortestDistance = float.PositiveInfinity;
-                int index = 0;
-                int j=0;
-                foreach (var result in results)
+                if (this.leftMouseDown && oldMouseState.LeftButton == ButtonState.Released)
                 {
-                    if (result.Key < shortestDistance)
-                        index = j;
-                    j++;
-                }
 
-                if (moveableClick.Count > 0) {
-                    if (index != 0)
+                    this.leftMouseDown = false;
+                    Vector2 mousePosition = new Vector2(oldMouseState.X, oldMouseState.Y);
+
+                    List<KeyValuePair<float?, KeyValuePair<int, Type>>> results = new List<KeyValuePair<float?, KeyValuePair<int, Type>>>();
+
+                    foreach (var tile in TileComponents)
                     {
-                        if (results[index].Key < moveableClick.First().Key)
+                        tile.Value.IsSelected = false;
+                        Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
+                        Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
+                        nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, tile.Value.TileMatrix);
+                        farPlane = GraphicsDevice.Viewport.Unproject(farPlane, cam.Projection, cam.View, tile.Value.TileMatrix);
+                        Vector3 direction = farPlane - nearPlane;
+                        direction.Normalize();
+                        Ray ray = new Ray(nearPlane, direction);
+
+                        float? result = ray.Intersects((BoundingBox)tile.Value.TileModel.Tag);
+                        if (result.HasValue)
                         {
-                            DoMove(0, 0, moveableClick.First().Value);
-                            results.Clear();
+                            results.Add(new KeyValuePair<float?, KeyValuePair<int, Type>>(result, new KeyValuePair<int, Type>(tile.Key, typeof(Tile))));
                         }
                     }
-                    else {
-                        DoMove(-1, -1, moveableClick.First().Value);
+
+                    foreach (var piece in PieceComponents)
+                    {
+                        piece.Value.IsSelected = false;
+                        Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
+                        Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
+                        nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, piece.Value.world);
+                        farPlane = GraphicsDevice.Viewport.Unproject(farPlane, cam.Projection, cam.View, piece.Value.world);
+                        Vector3 direction = farPlane - nearPlane;
+                        direction.Normalize();
+                        Ray ray = new Ray(nearPlane, direction);
+                        float? result = ray.Intersects((BoundingBox)piece.Value.PieceModel.Tag);
+                        if (result.HasValue)
+                        {
+                            results.Add(new KeyValuePair<float?, KeyValuePair<int, Type>>(result, new KeyValuePair<int, Type>(piece.Key, typeof(Piece))));
+                        }
+                    }
+
+                    Dictionary<float, int> moveableClick = new Dictionary<float, int>();
+                    for (int i = 0; i < moveToList.Count; i++)
+                    {
+                        Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
+                        Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
+                        nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, moveToList[i].TileMatrix);
+                        farPlane = GraphicsDevice.Viewport.Unproject(farPlane, cam.Projection, cam.View, moveToList[i].TileMatrix);
+                        Vector3 direction = farPlane - nearPlane;
+                        direction.Normalize();
+                        Ray ray = new Ray(nearPlane, direction);
+                        float? result = ray.Intersects((BoundingBox)moveToList[i].TileModel.Tag);
+                        if (result.HasValue)
+                        {
+                            moveableClick.Add(result.Value, i);
+                        }
+                    }
+
+                    float shortestDistance = float.PositiveInfinity;
+                    int index = 0;
+                    int j = 0;
+                    foreach (var result in results)
+                    {
+                        if (result.Key < shortestDistance)
+                            index = j;
+                        j++;
+                    }
+
+                    if (moveableClick.Count > 0)
+                    {
+                        if (index != 0)
+                        {
+                            if (results[index].Key < moveableClick.First().Key)
+                            {
+                                DoMove(0, 0, moveableClick.First().Value);
+                                results.Clear();
+                            }
+                        }
+                        else
+                        {
+                            DoMove(-1, -1, moveableClick.First().Value);
+                        }
+                    }
+
+                    if (results.Count > 0)
+                    {
+                        if (results[index].Value.Value == typeof(Tile))
+                        {
+                            this.DoMove(-1, results[index].Value.Key, -1);
+                        }
+                        else
+                        {
+                            this.DoMove(results[index].Value.Key, -1, -1);
+                        }
                     }
                 }
 
-                if (results.Count > 0)
+                if (oldMouseState.RightButton == ButtonState.Pressed)
                 {
-                    if (results[index].Value.Value == typeof(Tile))
-                    {                        
-                        this.DoMove(-1,results[index].Value.Key,-1);
+                    if ((gameTime.TotalGameTime.TotalMilliseconds - this.undoTimer) < 1000 && !moveUndone)
+                    {
+                        //undo
+                        int[] move = engine.UndoLastMove();
+                        Point positionTo = new Point(move[0] % Game1.BOARDWIDTH, move[0] / Game1.BOARDWIDTH);
+                        Point positionFrom = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
+                        Point tileFrom = new Point(move[2] % Game1.BOARDWIDTH, move[2] / Game1.BOARDWIDTH);
+                        this.ShowMove(positionFrom, positionTo, tileFrom);
+                        moveUndone = true;
                     }
                     else
                     {
-                        this.DoMove(results[index].Value.Key, -1,-1);
+                        this.ClearSelectedItems();
                     }
-                }
-            }
-
-            if (oldMouseState.RightButton == ButtonState.Pressed)
-            {
-                if ((gameTime.TotalGameTime.TotalMilliseconds - this.undoTimer) < 1000 && !moveUndone)
-                {
-                    //undo
-                    int[] move = engine.UndoLastMove();
-                    Point positionTo = new Point(move[0] % Game1.BOARDWIDTH, move[0] / Game1.BOARDWIDTH);
-                    Point positionFrom = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
-                    Point tileFrom = new Point(move[2] % Game1.BOARDWIDTH, move[2] / Game1.BOARDWIDTH);
-                    this.ShowMove(positionFrom, positionTo, tileFrom);
-                    moveUndone = true;
-                }
-                else
-                {
-                    this.ClearSelectedItems();
                 }
             }
             #endregion
