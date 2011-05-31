@@ -162,6 +162,40 @@ namespace KaroXNA
             Content.Unload();
         }
 
+        public void NewGame()
+        {
+            // clear tiles
+            foreach (var tile in TileComponents)
+            {
+                Components.Remove(tile.Value);
+            }
+            TileComponents.Clear();
+
+            // clear pieces
+            foreach (var piece in PieceComponents)
+            {
+                Components.Remove(piece.Value);
+            }
+            PieceComponents.Clear();
+
+            // add the tiles
+            for (int x = 0; x < BOARDWIDTH; x++)
+            {
+                for (int y = 0; y < BOARDWIDTH; y++)
+                {
+                    KaroEngine.Tile tile = engine.GetByXY(x, y);
+                    if (tile != KaroEngine.Tile.BORDER && tile != KaroEngine.Tile.EMPTY)
+                    {
+                        Tile t = new Tile(this, tileModel, false, new Point(x, y));
+                        this.TileComponents.Add(y * BOARDWIDTH + x, t);
+                        Components.Add(t);
+                    }
+                }
+            }
+
+            engine = new KaroEngineWrapper();
+        }
+
         private void DoMove(int piece,int tile,int tileFrom) {
             if (tileFrom >= 0) {
                 if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
