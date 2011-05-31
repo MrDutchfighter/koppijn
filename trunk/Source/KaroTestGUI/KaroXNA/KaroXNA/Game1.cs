@@ -29,8 +29,8 @@ namespace KaroXNA
         public Menu gameMenu;
         public GameState gameState;
 
-        Matrix world, view, proj, roomMatrix, hourGlassMatrix;
-        public Model pieceModel, roomModel, tileModel, hourGlassModel; 
+        Matrix world, view, proj, roomMatrix;
+        public Model pieceModel, roomModel, tileModel; 
         public Camera cam;
 
         public int[] move;
@@ -130,8 +130,7 @@ namespace KaroXNA
             proj = cam.Projection;
 
             roomMatrix = Matrix.CreateScale(1.4f) * Matrix.CreateTranslation(new Vector3(-20, -20, 45));
-            hourGlassMatrix = Matrix.CreateTranslation(0,10,0);
-
+            
             base.Initialize();
             //------------------TESTCODE--------------------------------
             RasterizerState rs = new RasterizerState();
@@ -145,7 +144,6 @@ namespace KaroXNA
             tileModel = Content.Load<Model>("tile");
             pieceModel = Content.Load<Model>("piece");
             roomModel = Content.Load<Model>("room");
-            hourGlassModel = Content.Load<Model>("hourglass");
 
             for (int x = 0; x < BOARDWIDTH; x++) {
                 for (int y = 0; y < BOARDWIDTH; y++) {
@@ -598,29 +596,6 @@ namespace KaroXNA
                         e.World = transforms[mesh.ParentBone.Index] * roomMatrix;
                         e.Projection = cam.Projection;
                         e.View = cam.View;                     
-                    }
-
-                    mesh.Draw();
-                }
-
-                Matrix[] transforms1 = new Matrix[hourGlassModel.Bones.Count];
-                hourGlassModel.CopyAbsoluteBoneTransformsTo(transforms1);
-                foreach (ModelMesh mesh in hourGlassModel.Meshes)
-                {
-                    foreach (BasicEffect e in mesh.Effects)
-                    {
-                        e.EnableDefaultLighting();
-
-                        e.World = transforms1[mesh.ParentBone.Index] * hourGlassMatrix;
-                        e.Projection = cam.Projection;
-                        e.View = cam.View;
-
-
-                        e.LightingEnabled = true;
-                        e.DirectionalLight0.Enabled = true;
-                        e.DirectionalLight0.DiffuseColor = Color.White.ToVector3();
-                        e.DirectionalLight0.Direction = new Vector3(1, -1, 0);
-
                     }
 
                     mesh.Draw();
