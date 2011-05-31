@@ -40,10 +40,10 @@ namespace KaroXNA
         public bool spacePressed;
         public bool leftMouseDown;
         private bool f1Pressed;
+
         double undoTimer;
         private bool moveUndone;
         private bool startUndoTimer = false;
-
 
         private int selectedPiece, selectedTile;
         Random random = new Random();
@@ -133,6 +133,11 @@ namespace KaroXNA
             hourGlassMatrix = Matrix.CreateTranslation(0,10,0);
 
             base.Initialize();
+            //------------------TESTCODE--------------------------------
+            RasterizerState rs = new RasterizerState();
+            rs.CullMode = CullMode.None;
+            GraphicsDevice.RasterizerState = rs;
+            //-----------------------------------------------------------
         }
 
         protected override void LoadContent()
@@ -158,6 +163,7 @@ namespace KaroXNA
         {
             Content.Unload();
         }
+
         private void DoMove(int piece,int tile,int tileFrom) {
             if (tileFrom >= 0) {
                 if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
@@ -269,21 +275,21 @@ namespace KaroXNA
                     movedPiece.IsFlipped = flipping;
                     //x en y op het bord(engine) zijn x en z in de karogui
                     if (positionFrom.X == positionTo.X) {
-                        movedPiece.rotationDirectionX = Rotations.NONE;
+                        movedPiece.rotationDirectionZ = Rotations.NONE;
                     }
                     else if (positionFrom.X < positionTo.X) {
-                        movedPiece.rotationDirectionX = Rotations.ROTATIONPLUS;
+                        movedPiece.rotationDirectionZ= Rotations.ROTATIONPLUS;
                     } else {
-                        movedPiece.rotationDirectionX = Rotations.ROTATIONMIN;
+                        movedPiece.rotationDirectionZ = Rotations.ROTATIONMIN;
                     }
 
                     //x en y op het bord(engine) zijn x en z in de karogui
                     if (positionFrom.Y == positionTo.Y) {
-                        movedPiece.rotationDirectionZ = Rotations.NONE;
+                        movedPiece.rotationDirectionX = Rotations.NONE;
                     } else if (positionFrom.Y < positionTo.Y) {
-                        movedPiece.rotationDirectionZ = Rotations.ROTATIONPLUS;
+                        movedPiece.rotationDirectionX = Rotations.ROTATIONPLUS;
                     } else {
-                        movedPiece.rotationDirectionZ = Rotations.ROTATIONMIN;
+                        movedPiece.rotationDirectionX = Rotations.ROTATIONMIN;
                     }
                 } else {
                     movedPiece.rotationDirectionZ = Rotations.NONE;
@@ -444,6 +450,7 @@ namespace KaroXNA
             if (Keyboard.GetState().IsKeyUp(Keys.F1))
                 f1Pressed = false;
 
+
             #region Handle Mouse
             oldMouseState = Mouse.GetState();
 
@@ -459,7 +466,6 @@ namespace KaroXNA
 
                 foreach (var tile in TileComponents){
                     tile.Value.IsSelected = false;
-
                     Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
                     Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
                     nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, tile.Value.TileMatrix);
@@ -477,7 +483,6 @@ namespace KaroXNA
 
                 foreach (var piece in PieceComponents){
                     piece.Value.IsSelected = false;
-
                     Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
                     Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
                     nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, piece.Value.world);
@@ -588,7 +593,7 @@ namespace KaroXNA
                 {
                     foreach (BasicEffect e in mesh.Effects)
                     {
-                        e.EnableDefaultLighting();
+                        //e.EnableDefaultLighting();
 
                         e.World = transforms[mesh.ParentBone.Index] * roomMatrix;
                         e.Projection = cam.Projection;
@@ -609,6 +614,13 @@ namespace KaroXNA
                         e.World = transforms1[mesh.ParentBone.Index] * hourGlassMatrix;
                         e.Projection = cam.Projection;
                         e.View = cam.View;
+
+
+                        e.LightingEnabled = true;
+                        e.DirectionalLight0.Enabled = true;
+                        e.DirectionalLight0.DiffuseColor = Color.White.ToVector3();
+                        e.DirectionalLight0.Direction = new Vector3(1, -1, 0);
+
                     }
 
                     mesh.Draw();
