@@ -35,8 +35,7 @@ namespace KaroXNA
         public Rotations rotationDirectionZ;
         public Matrix world;
         private int rotationX;
-        private int rotationZ;
-        private int rotationY;
+        public int rotateDegrees;
         private float y;
         private double totalDistance;
 
@@ -110,18 +109,7 @@ namespace KaroXNA
                         break;
                     case Rotations.ROTATIONMIN:
                         rotationX -= 1;
-                        break;
-                }
-                switch (this.rotationDirectionZ)
-                {
-                    case Rotations.ROTATIONPLUS:
-                        if (this.rotationDirectionX == Rotations.NONE){ rotationZ += 1;}
-                        else { rotationY += 1; }
-                        break;
-                    case Rotations.ROTATIONMIN:
-                        if (this.rotationDirectionX == Rotations.NONE) { rotationZ -= 1; }
-                        else { rotationY -= 1; }
-                        break;
+                    break;
                 }
 
                 if (moving.X < 0) { moving.X *= -1; }
@@ -131,9 +119,8 @@ namespace KaroXNA
                     this.world = this.OnTopofTile.TileMatrix;
                     this.world *= Matrix.CreateTranslation(0f, 1f, 0f);
                     this.rotationDirectionX = Rotations.NONE;
-                    this.rotationDirectionZ = Rotations.NONE;
                 } else {
-                    if (this.rotationDirectionX != Rotations.NONE && this.rotationDirectionZ != Rotations.NONE)
+                    if (this.rotationDirectionX != Rotations.NONE)
                     {
                         if (distance < (totalDistance / 2))
                         {
@@ -174,8 +161,6 @@ namespace KaroXNA
 
             y = 0;
             this.rotationX = 0;
-            this.rotationZ = 0;
-            this.rotationY=0;
             this.totalDistance = this.CalculateDistance(moveDestination, world.Translation);
         }
 
@@ -205,7 +190,8 @@ namespace KaroXNA
                             e.World *= this.world;
                         }
                         else {
-                            e.World *= Matrix.CreateFromYawPitchRoll(MathHelper.ToRadians(rotationY), MathHelper.ToRadians(rotationX), MathHelper.ToRadians(rotationZ));
+                            e.World *= Matrix.CreateRotationY(MathHelper.ToRadians(rotateDegrees));
+                            e.World *= Matrix.CreateRotationX(MathHelper.ToRadians(rotationX)); 
                             e.World *= this.world;
                         }
 

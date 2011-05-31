@@ -298,33 +298,28 @@ namespace KaroXNA
                 movedPiece.MoveTo(this.TileComponents[(positionTo.Y * BOARDWIDTH) + positionTo.X]);
                 KaroEngine.Tile t = engine.GetByXY(positionTo.X, positionTo.Y);
                 bool flipping;
+                
+                int direction = (int)Math.Floor(MathHelper.ToDegrees((float)Math.Atan2(positionFrom.Y - positionTo.Y, positionFrom.X - positionTo.X)));
+
                 if (t == KaroEngine.Tile.REDMARKED || t == KaroEngine.Tile.WHITEMARKED) {
                     flipping = true;
                 } else {
                     flipping = false;
                 }
+
+                
+
                 if (flipping != movedPiece.IsFlipped) {
                     movedPiece.IsFlipped = flipping;
-                    //x en y op het bord(engine) zijn x en z in de karogui
-                    if (positionFrom.X == positionTo.X) {
-                        movedPiece.rotationDirectionZ = Rotations.NONE;
-                    }
-                    else if (positionFrom.X < positionTo.X) {
-                        movedPiece.rotationDirectionZ= Rotations.ROTATIONPLUS;
-                    } else {
-                        movedPiece.rotationDirectionZ = Rotations.ROTATIONMIN;
-                    }
-
-                    //x en y op het bord(engine) zijn x en z in de karogui
-                    if (positionFrom.Y == positionTo.Y) {
-                        movedPiece.rotationDirectionX = Rotations.NONE;
-                    } else if (positionFrom.Y < positionTo.Y) {
+                    if (positionFrom.X < positionTo.X){
                         movedPiece.rotationDirectionX = Rotations.ROTATIONPLUS;
-                    } else {
+                    }
+                    else
+                    {
                         movedPiece.rotationDirectionX = Rotations.ROTATIONMIN;
                     }
+                    movedPiece.rotateDegrees = direction-90;
                 } else {
-                    movedPiece.rotationDirectionZ = Rotations.NONE;
                     movedPiece.rotationDirectionX = Rotations.NONE;
                 }
                 this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, movedPiece);
