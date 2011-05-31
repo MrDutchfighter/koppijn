@@ -12,6 +12,14 @@ using Microsoft.Xna.Framework.Media;
 
 namespace KaroXNA
 {
+    public enum MenuState
+    {
+        NEW,
+        STARTED,
+        OPTIONS,
+        CREDITS
+
+    }
     public class Menu : DrawableGameComponent
     {
         public List<MenuItem> menuList;
@@ -22,6 +30,7 @@ namespace KaroXNA
         public KeyboardState oldState;
         public MouseState curMousePos;
         public Game1 game;
+        public MenuState menuState;
         ScrollingBackground background;
 
         public Menu(Game game, int drawOrder) : base(game)
@@ -40,7 +49,7 @@ namespace KaroXNA
         {
             // TODO: Add your initialization code here
             base.Initialize();
-
+            menuState = MenuState.NEW;
             spriteBatch = new SpriteBatch(GraphicsDevice);
             spriteFont = Game.Content.Load<SpriteFont>("MenuFont");
             // half the width and half the height -200
@@ -73,7 +82,26 @@ namespace KaroXNA
             {
                 UpdateInput();
                 background.Update(gameTime);
+
+                if (menuState == MenuState.STARTED && menuList[0].MenuName != "Resume")
+                {
+                    // remove Play
+                    menuList.RemoveAt(0);
+                    // insert Resume
+                    menuList.Insert(0, new MenuItem("Resume"));
+                    menuList.Insert(1, new MenuItem("New"));
+                }
+                else if (menuState == MenuState.NEW && menuList[0].MenuName != "Play")
+                {
+                    // Remove New
+                    menuList.RemoveAt(1);
+                    // Remove Resume
+                    menuList.RemoveAt(0);
+                    menuList.Insert(0, new MenuItem("Play"));
+                }
             }
+            
+
         }
 
         private void UpdateInput()
@@ -115,13 +143,28 @@ namespace KaroXNA
                     {
                         case "Play":
                             game.gameState = GameState.PLAYING;
+                            menuState = MenuState.STARTED;
                             break;
                         case "Options":
+                            Texture2D backgroundImage = game.Content.Load<Texture2D>("menubackground");
+                            background.mytexture = backgroundImage;
+                            menuState = MenuState.OPTIONS;
                             break;
                         case "Credits":
+                            Texture2D backgroundImageCredits = game.Content.Load<Texture2D>("menubackground");
+                            background.mytexture = backgroundImageCredits;
+                            menuState = MenuState.CREDITS;
                             break;
                         case "Exit":
                             game.Exit();
+                            break;
+                        case "Resume":
+                            game.gameState = GameState.PLAYING;
+                            break;
+                        case "New":
+                            game.gameState = GameState.PLAYING;
+                            // call game function to reset the board 
+                            game.NewGame();
                             break;
                     }
                 }

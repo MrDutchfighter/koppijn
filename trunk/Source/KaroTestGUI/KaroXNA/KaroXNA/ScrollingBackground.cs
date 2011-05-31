@@ -16,7 +16,7 @@ namespace KaroXNA
     {
         // class ScrollingBackground
         private Vector2 screenpos, origin, texturesize;
-        private Texture2D mytexture;
+        public Texture2D mytexture;
         private int screenheight;
         private int screenwidth;
         private int speed;
