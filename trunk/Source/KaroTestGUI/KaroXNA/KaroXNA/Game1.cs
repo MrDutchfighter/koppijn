@@ -63,8 +63,7 @@ namespace KaroXNA
 
         bool tPressed, rPresssed;
 
-        public Game1()
-        {
+        public Game1(){
             moveToList = new List<Tile>();
             this.IsFixedTimeStep = false;
             IsMouseVisible = true;
@@ -131,7 +130,6 @@ namespace KaroXNA
             proj = cam.Projection;
 
             roomMatrix = Matrix.CreateScale(1.4f) * Matrix.CreateTranslation(new Vector3(-20, -20, 45));
-
 
             base.Initialize();
         }
@@ -247,11 +245,8 @@ namespace KaroXNA
                 Components.Add(p);
                 this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, p);
                 insertionCount++;
-            }
-            else
-            {
-                if (tileFrom.X > 0)
-                {
+            } else {
+                if (tileFrom.X > 0) {
                     Tile movedTile = this.TileComponents[tileFrom.Y * BOARDWIDTH + tileFrom.X];
                     this.TileComponents.Remove(tileFrom.Y * BOARDWIDTH + tileFrom.X);
                     movedTile.Location = positionTo;
@@ -263,47 +258,32 @@ namespace KaroXNA
                 movedPiece.MoveTo(this.TileComponents[(positionTo.Y * BOARDWIDTH) + positionTo.X]);
                 KaroEngine.Tile t = engine.GetByXY(positionTo.X, positionTo.Y);
                 bool flipping;
-                if (t == KaroEngine.Tile.REDMARKED || t == KaroEngine.Tile.WHITEMARKED)
-                {
+                if (t == KaroEngine.Tile.REDMARKED || t == KaroEngine.Tile.WHITEMARKED) {
                     flipping = true;
-                }
-                else
-                {
+                } else {
                     flipping = false;
                 }
-                if (flipping != movedPiece.IsFlipped)
-                {
+                if (flipping != movedPiece.IsFlipped) {
                     movedPiece.IsFlipped = flipping;
                     //x en y op het bord(engine) zijn x en z in de karogui
-                    if (positionFrom.X == positionTo.X)
-                    {
+                    if (positionFrom.X == positionTo.X) {
                         movedPiece.rotationDirectionX = Rotations.NONE;
                     }
-                    else if (positionFrom.X < positionTo.X)
-                    {
+                    else if (positionFrom.X < positionTo.X) {
                         movedPiece.rotationDirectionX = Rotations.ROTATIONPLUS;
-                    }
-                    else
-                    {
+                    } else {
                         movedPiece.rotationDirectionX = Rotations.ROTATIONMIN;
                     }
 
                     //x en y op het bord(engine) zijn x en z in de karogui
-                    if (positionFrom.Y == positionTo.Y)
-                    {
+                    if (positionFrom.Y == positionTo.Y) {
                         movedPiece.rotationDirectionZ = Rotations.NONE;
-                    }
-                    else if (positionFrom.Y < positionTo.Y)
-                    {
+                    } else if (positionFrom.Y < positionTo.Y) {
                         movedPiece.rotationDirectionZ = Rotations.ROTATIONPLUS;
-                    }
-                    else
-                    {
+                    } else {
                         movedPiece.rotationDirectionZ = Rotations.ROTATIONMIN;
                     }
-                }
-                else
-                {
+                } else {
                     movedPiece.rotationDirectionZ = Rotations.NONE;
                     movedPiece.rotationDirectionX = Rotations.NONE;
                 }
@@ -595,8 +575,7 @@ namespace KaroXNA
 
         protected override void Draw(GameTime gameTime)
         {
-            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);  
-          
+            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);            
             if (gameState == GameState.PLAYING) {
                 GraphicsDevice.DepthStencilState = dss;
                 
@@ -619,10 +598,8 @@ namespace KaroXNA
                     item.Draw(gameTime);
                 }
             }
-
             // Roep de base draw aan van andere klasse
             base.Draw(gameTime);
-
             // Draw FPS (Teken NADAT het menu getekend wordt, anders verdwijnt hij achter de background)
             gameMenu.spriteBatch.Begin();
             Vector2 pos = new Vector2((GraphicsDevice.Viewport.Width - (gameMenu.spriteFont.MeasureString("FPS: " + FPS).X + 10)), (GraphicsDevice.Viewport.Height - 24));
