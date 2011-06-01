@@ -751,7 +751,7 @@ namespace KaroXNA
             // Draw FPS (Teken NADAT het menu getekend wordt, anders verdwijnt hij achter de background)
             gameMenu.spriteBatch.Begin();
             Vector2 pos = new Vector2((GraphicsDevice.Viewport.Width - (gameMenu.spriteFont.MeasureString("FPS: " + FPS).X + 10)), (GraphicsDevice.Viewport.Height - 24));
-            gameMenu.spriteBatch.DrawString(gameMenu.spriteFont, "FPS: " + FPS, pos, Color.Blue);
+            gameMenu.spriteBatch.DrawString(gameMenu.spriteFont, "FPS: " + FPS, pos, Color.Blue, 0, new Vector2(0,0), 0.6f, SpriteEffects.None, 0);
             gameMenu.spriteBatch.End();
         }
     }

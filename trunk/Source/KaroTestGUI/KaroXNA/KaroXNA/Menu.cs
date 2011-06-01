@@ -83,13 +83,13 @@ namespace KaroXNA
                 UpdateInput();
                 background.Update(gameTime);
 
-                if (menuState == MenuState.STARTED && menuList[0].MenuName != "Resume")
+                if (menuState == MenuState.STARTED && menuList[0].MenuName != "New")
                 {
                     // remove Play
                     menuList.RemoveAt(0);
                     // insert Resume
-                    menuList.Insert(0, new MenuItem("Resume"));
-                    menuList.Insert(1, new MenuItem("New"));
+                    menuList.Insert(0, new MenuItem("New"));
+                    menuList.Insert(1, new MenuItem("Resume"));
                 }
                 else if (menuState == MenuState.NEW && menuList[0].MenuName != "Play")
                 {
@@ -188,13 +188,13 @@ namespace KaroXNA
                 {
                     // Find the center of the string
                     Vector2 currentFontPosition = Vector2.Subtract(fontPosition, (spriteFont.MeasureString(menuList[i].MenuName) / 2));
-                    currentFontPosition.Y = currentFontPosition.Y + (i * 24);
+                    currentFontPosition.Y = currentFontPosition.Y + (i * 46);
 
                     // Draw selected item
                     if (selectedItem == i)
-                        spriteBatch.DrawString(spriteFont, menuList[i].MenuName, currentFontPosition, Color.DarkOrange);
+                        spriteBatch.DrawString(spriteFont, menuList[i].MenuName, currentFontPosition, Color.White, 0, new Vector2(spriteFont.MeasureString(menuList[i].MenuName).X /2, spriteFont.MeasureString(menuList[i].MenuName).Y / 2), 1.0f, SpriteEffects.None, 0);
                     else
-                        spriteBatch.DrawString(spriteFont, menuList[i].MenuName, currentFontPosition, Color.LightGreen);
+                        spriteBatch.DrawString(spriteFont, menuList[i].MenuName, currentFontPosition, Color.White, 0, new Vector2(spriteFont.MeasureString(menuList[i].MenuName).X / 2, spriteFont.MeasureString(menuList[i].MenuName).Y / 2), 0.8f, SpriteEffects.None, 0);
                 }
 
                 spriteBatch.End();
