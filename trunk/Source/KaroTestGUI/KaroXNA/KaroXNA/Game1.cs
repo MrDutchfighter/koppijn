@@ -254,15 +254,6 @@ namespace KaroXNA
             }
         }
 
-
-        private void ClearPossibleMoves()
-        {
-            foreach (var entry in TileComponents)
-            {
-                    entry.Value.IsPossibleMove = false;
-            }
-        }
-
         /// <summary>
         /// Executes a given move
         /// </summary>
@@ -270,7 +261,7 @@ namespace KaroXNA
         /// <param name="tile">Index of tile to</param>
         /// <param name="tileFrom">Index of tile from</param>
         private void DoMove(int piece, int tile, int tileFrom) {
-            ClearPossibleMoves();
+
             if (tileFrom >= 0) {
                 if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
                     Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
@@ -319,6 +310,9 @@ namespace KaroXNA
                 }
             }
             if (piece >= 0) {
+                foreach (var entry in TileComponents)
+                    entry.Value.IsPossibleMove = false;
+
                 // If the game is still running.
                 if(engine.GetGameState() == KaroEngine.GameState.INSERTION || StartingPieces.Count != 0 ){
                     Player player = engine.GetTurn();
@@ -400,6 +394,7 @@ namespace KaroXNA
                     this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, p);
                 }
             } else {
+                this.ClearSelectedItems();
                 if (tileFrom.X > 0) {
                     Tile movedTile = this.TileComponents[tileFrom.Y * BOARDWIDTH + tileFrom.X];
                     this.TileComponents.Remove(tileFrom.Y * BOARDWIDTH + tileFrom.X);
@@ -421,12 +416,14 @@ namespace KaroXNA
                     flipping = false;
                 }
 
-                if (flipping != movedPiece.IsFlipped) {
+                if (flipping != movedPiece.IsFlipped) 
+                {
                     movedPiece.IsFlipped = flipping;
                     movedPiece.rotateDegrees = direction;
                 } else {
                     movedPiece.rotateDegrees = 360;
                 }
+                
                 this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, movedPiece);
             }
         }
@@ -545,8 +542,9 @@ namespace KaroXNA
                         }
                     }
                 }
+
                 this.ShowMove(positionFrom, positionTo, tileFrom);
-                this.ClearSelectedItems();
+                
                 computerIsThinking = false;
             }
         }
@@ -828,16 +826,23 @@ namespace KaroXNA
         /// </summary>
         private void ClearSelectedItems() {
             if (selectedStartingPiece >= 0) {
-                this.StartingPieces[this.selectedStartingPiece].IsSelected = false;
+                foreach (Piece piece in StartingPieces)
+                    piece.IsSelected = false;
                 this.selectedStartingPiece = -1;
             }
             if (this.selectedPiece > 0){
-                this.PieceComponents[this.selectedPiece].IsSelected = false;
+                if (this.PieceComponents.Keys.Contains(this.selectedPiece))
+                    this.PieceComponents[this.selectedPiece].IsSelected = false;
                 this.selectedPiece = 0;
             }
             if (this.selectedTile > 0){
-                this.TileComponents[this.selectedTile].IsSelected = false;
+                if (this.TileComponents.Keys.Contains(this.selectedTile))
+                    this.TileComponents[this.selectedTile].IsSelected = false;
                 this.selectedTile = 0;
+            }
+            foreach (var entry in TileComponents)
+            {
+                entry.Value.IsPossibleMove = false;
             }
             this.moveToList.Clear();
         }
