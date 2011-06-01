@@ -175,11 +175,12 @@ namespace KaroXNA
             gameMenu.DrawOrder = 1000; //draw last
             Components.Add(gameMenu);
             Components.Add(new Hud(this, spriteBatch));
-
+            Sound.Instance(this).playTheme();
             tileModel = Content.Load<Model>("tile");
             pieceModel = Content.Load<Model>("piece");
             roomModel = Content.Load<Model>("room");
             this.NewGame();
+            
         }
 
         /// <summary>
