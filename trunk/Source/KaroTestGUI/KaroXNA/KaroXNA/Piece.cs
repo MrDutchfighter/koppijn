@@ -103,6 +103,7 @@ namespace KaroXNA
                 Vector3 moving = moveDestination - world.Translation;
                 double distance = this.CalculateDistance(world.Translation,moveDestination);
 
+                #region rotation
                 switch (rotateDegrees)
                 {
                     case 0:
@@ -181,6 +182,7 @@ namespace KaroXNA
                         
                         break;
                 }
+                #endregion
 
                 if (moving.X < 0) { moving.X *= -1; }
                 if (moving.Y < 0) { moving.Y *= -1; }
