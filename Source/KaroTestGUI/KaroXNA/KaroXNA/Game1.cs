@@ -391,16 +391,21 @@ namespace KaroXNA
 
                 if (flipping != movedPiece.IsFlipped) {
                     movedPiece.IsFlipped = flipping;
-                    if (positionFrom.X < positionTo.X){
+                    /*if (positionFrom.X < positionTo.X){
                         movedPiece.rotationDirectionX = Rotations.ROTATIONPLUS;
                     }
                     else
                     {
                         movedPiece.rotationDirectionX = Rotations.ROTATIONMIN;
-                    }
-                    movedPiece.rotateDegrees = direction-90;
+                    }*/
+                    movedPiece.rotateDegrees = direction;
+                   // int k = 3; ;
+
+
+
                 } else {
-                    movedPiece.rotationDirectionX = Rotations.NONE;
+                    //movedPiece.rotationDirectionX = Rotations.NONE;
+                    movedPiece.rotateDegrees = 360;
                 }
                 this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, movedPiece);
             }
