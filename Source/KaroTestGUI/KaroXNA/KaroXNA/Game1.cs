@@ -37,7 +37,7 @@ namespace KaroXNA
         int selectedPiece, selectedTile,selectedStartingPiece;
         private int hourGlassRotation = 0;
         private float hourGlassSinus = 0f;
-        private bool computerIsThinking = false;
+        public bool computerIsThinking = false;
         #endregion
 
         #region Engine Properties
