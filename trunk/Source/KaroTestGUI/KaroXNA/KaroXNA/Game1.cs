@@ -34,7 +34,7 @@ namespace KaroXNA
         Random random = new Random();
        
 
-        int selectedPiece, selectedTile;
+        int selectedPiece, selectedTile,selectedStartingPiece;
         private int hourGlassRotation = 0;
         private float hourGlassSinus = 0f;
         private bool computerIsThinking = false;
@@ -52,6 +52,7 @@ namespace KaroXNA
 
         Dictionary<int, Tile> TileComponents;
         Dictionary<int, Piece> PieceComponents;
+        List<Piece> StartingPieces;
         List<Tile> moveToList;
 
         public int[] move;
@@ -105,11 +106,10 @@ namespace KaroXNA
             f1Pressed = false;
             insertionCount = 0;
             undoTimer = 0;
-            engine = new KaroEngineWrapper();
 
             this.PieceComponents = new Dictionary<int, Piece>();
             this.TileComponents = new Dictionary<int, Tile>();
-
+            this.StartingPieces = new List<Piece>();
 
             BoxIndexes = new short[36] 
             {
@@ -178,17 +178,7 @@ namespace KaroXNA
             tileModel = Content.Load<Model>("tile");
             pieceModel = Content.Load<Model>("piece");
             roomModel = Content.Load<Model>("room");
-
-            for (int x = 0; x < BOARDWIDTH; x++) {
-                for (int y = 0; y < BOARDWIDTH; y++) {
-                    KaroEngine.Tile tile = engine.GetByXY(x, y);
-                    if (tile != KaroEngine.Tile.BORDER && tile != KaroEngine.Tile.EMPTY){
-                        Tile t = new Tile(this, tileModel, false, new Point(x, y));
-                        this.TileComponents.Add(y * BOARDWIDTH + x, t);
-                        Components.Add(t);
-                    }
-                }
-            }
+            this.NewGame();
         }
 
         /// <summary>
@@ -204,6 +194,10 @@ namespace KaroXNA
         /// </summary>
         public void NewGame()
         {
+            engine = new KaroEngineWrapper();
+            this.selectedPiece = 0;
+            this.selectedTile = 0;
+            this.selectedStartingPiece = -1;
             // clear tiles
             foreach (var tile in TileComponents)
             {
@@ -219,8 +213,7 @@ namespace KaroXNA
             PieceComponents.Clear();
 
             // add the tiles
-            for (int x = 0; x < BOARDWIDTH; x++)
-            {
+            for (int x = 0; x < BOARDWIDTH; x++){
                 for (int y = 0; y < BOARDWIDTH; y++)
                 {
                     KaroEngine.Tile tile = engine.GetByXY(x, y);
@@ -232,8 +225,32 @@ namespace KaroXNA
                     }
                 }
             }
+            StartingPieces.Clear();
 
-            engine = new KaroEngineWrapper();
+            //White pawns
+            for (int i = 0; i < 3; i+=1){
+                Tile t = new Tile(this, tileModel, false, new Point(i + 7, 3));
+                t.TileMatrix *= Matrix.CreateTranslation(0f, -1f, 0f);
+                Piece p = new Piece(this, pieceModel, true, t, Color.White.ToVector3());
+                this.StartingPieces.Add(p);
+                t = new Tile(this, tileModel, false, new Point(i + 7, 4));
+                t.TileMatrix *= Matrix.CreateTranslation(0f, -1f, 0f);
+                p = new Piece(this, pieceModel, true, t, Color.White.ToVector3());
+                this.StartingPieces.Add(p);                
+            }
+
+            //Red pawns
+            for (int i = 0; i < 3; i += 1)
+            {
+                Tile t = new Tile(this, tileModel, false, new Point(i + 7, 9));
+                t.TileMatrix *= Matrix.CreateTranslation(0f, -1f, 0f);
+                Piece p = new Piece(this, pieceModel, true, t, Color.Tomato.ToVector3());
+                this.StartingPieces.Add(p);
+                t = new Tile(this, tileModel, false, new Point(i + 7, 10));
+                t.TileMatrix *= Matrix.CreateTranslation(0f, -1f, 0f);
+                p = new Piece(this, pieceModel, true, t, Color.Tomato.ToVector3());
+                this.StartingPieces.Add(p);
+            }
         }
 
         /// <summary>
@@ -263,10 +280,11 @@ namespace KaroXNA
             }
             if (tile >= 0) { //If the move should be on a tile
                 if (engine.GetGameState() == KaroEngine.GameState.INSERTION) {
-                    Point location2 = TileComponents[tile].Location;
-                    if (engine.InsertByXY(location2.X, location2.Y)){
-                        this.ShowMove(location2,location2,location2);
-                        Console.WriteLine("TODO => Animation for insertionstate!");
+                    if (this.selectedStartingPiece >= 0) {
+                        Point location2 = TileComponents[tile].Location;                        
+                        if (engine.InsertByXY(location2.X, location2.Y)){
+                            this.ShowMove(location2, location2, location2);
+                        }
                     }
                 }
                 else if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
@@ -291,7 +309,20 @@ namespace KaroXNA
             }
             if (piece >= 0) {
                 // If the game is still running.
-                if (engine.GetGameState() == KaroEngine.GameState.PLAYING || engine.GetGameState() == KaroEngine.GameState.INSERTION) {
+                if(engine.GetGameState() == KaroEngine.GameState.INSERTION || StartingPieces.Count!=0){
+                    Player player = engine.GetTurn();
+                    Vector3 red = Color.Tomato.ToVector3();
+                    Vector3 white = Color.White.ToVector3();
+                    if (StartingPieces[piece].Color.Equals(white) && player == Player.WHITE ||
+                        StartingPieces[piece].Color.Equals(red) && player == Player.RED){
+                            if (this.selectedStartingPiece >= 0) {
+                                StartingPieces[selectedStartingPiece].IsSelected = false;
+                            }
+                            StartingPieces[piece].IsSelected = true;
+                            this.selectedStartingPiece = piece;
+                    }
+                }
+                if (engine.GetGameState() == KaroEngine.GameState.PLAYING ) {
                     
                     Player player = engine.GetTurn();
                     Vector3 red = Color.Tomato.ToVector3();
@@ -323,20 +354,17 @@ namespace KaroXNA
         /// <param name="tileFrom">Tile from</param>
         private void ShowMove(Point positionFrom, Point positionTo, Point tileFrom)
         {
-            if (engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12)
-            {
-                Piece p = new Piece(this, pieceModel, true, this.TileComponents[positionTo.Y * BOARDWIDTH + positionTo.X], Color.Black.ToVector3());
-                if (engine.GetTurn() == KaroEngine.Player.WHITE) //move just executed, get previous color
-                {
-                    p.Color = Color.Tomato.ToVector3();
+            if (engine.GetGameState() == KaroEngine.GameState.INSERTION || this.StartingPieces.Count != 0) {
+                if (this.selectedStartingPiece >= 0){
+                    Piece p = this.StartingPieces[this.selectedStartingPiece];
+                    p.IsSelected = false;
+                    this.ClearSelectedItems();
+                    StartingPieces.Remove(p);
+
+                    p.MoveTo(this.TileComponents[positionTo.Y * BOARDWIDTH + positionTo.X]);
+                    Components.Add(p);
+                    this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, p);
                 }
-                else
-                {
-                    p.Color = Color.White.ToVector3();
-                }
-                Components.Add(p);
-                this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, p);
-                insertionCount++;
             } else {
                 if (tileFrom.X > 0) {
                     Tile movedTile = this.TileComponents[tileFrom.Y * BOARDWIDTH + tileFrom.X];
@@ -398,8 +426,7 @@ namespace KaroXNA
                     if (!spacePressed){
                         spacePressed = true;
 
-                        if (engine.GetGameState() == KaroEngine.GameState.PLAYING || engine.GetGameState() == KaroEngine.GameState.INSERTION || insertionCount < 12)
-                        {
+                        if (engine.GetGameState() == KaroEngine.GameState.PLAYING || engine.GetGameState() == KaroEngine.GameState.INSERTION || this.StartingPieces.Count != 0){
                             if(engine.GetGameState() != KaroEngine.GameState.INSERTION)
                                 computerIsThinking = true;
                             Thread t = new Thread(new ThreadStart(ThreadedMove));
@@ -431,12 +458,25 @@ namespace KaroXNA
         /// </summary>
         private void ThreadedMove()
         {
-            lock (engine)
-            {
+            lock (engine) {
                 move = engine.CalculateComputerMove();
                 Point positionFrom = new Point(move[0] % Game1.BOARDWIDTH, move[0] / Game1.BOARDWIDTH);
                 Point positionTo = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
                 Point tileFrom = new Point(move[2] % Game1.BOARDWIDTH, move[2] / Game1.BOARDWIDTH);
+                if (this.StartingPieces.Count != 0) {
+                    this.selectedStartingPiece=0;
+                    Player player = engine.GetTurn();
+                    Vector3 red = Color.Tomato.ToVector3();
+                    Vector3 white = Color.White.ToVector3();
+
+                    for (int i = 0; i < this.StartingPieces.Count; i++) {
+                        if (StartingPieces[i].Color.Equals(white) && player == Player.WHITE ||
+                        StartingPieces[i].Color.Equals(red) && player == Player.RED){
+                            this.selectedStartingPiece = i;
+                            break;
+                        }
+                    }
+                }
                 this.ShowMove(positionFrom, positionTo, tileFrom);
                 this.ClearSelectedItems();
                 computerIsThinking = false;
@@ -584,57 +624,90 @@ namespace KaroXNA
                         }
                     }
 
-                    foreach (var piece in PieceComponents)
-                    {
-                        piece.Value.IsSelected = false;
-                        Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
-                        Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
-                        nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, piece.Value.world);
-                        farPlane = GraphicsDevice.Viewport.Unproject(farPlane, cam.Projection, cam.View, piece.Value.world);
-                        Vector3 direction = farPlane - nearPlane;
-                        direction.Normalize();
-                        Ray ray = new Ray(nearPlane, direction);
-                        float? result = ray.Intersects((BoundingBox)piece.Value.PieceModel.Tag);
-                        if (result.HasValue)
+                    Dictionary<float, int> moveableClick = new Dictionary<float, int>();
+                    Dictionary<float, int> StartingClick = new Dictionary<float, int>();
+                    if (this.StartingPieces.Count == 0){
+                        foreach (var piece in PieceComponents)
                         {
-                            results.Add(new KeyValuePair<float?, KeyValuePair<int, Type>>(result, new KeyValuePair<int, Type>(piece.Key, typeof(Piece))));
+                            piece.Value.IsSelected = false;
+                            Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
+                            Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
+                            nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, piece.Value.world);
+                            farPlane = GraphicsDevice.Viewport.Unproject(farPlane, cam.Projection, cam.View, piece.Value.world);
+                            Vector3 direction = farPlane - nearPlane;
+                            direction.Normalize();
+                            Ray ray = new Ray(nearPlane, direction);
+                            float? result = ray.Intersects((BoundingBox)piece.Value.PieceModel.Tag);
+                            if (result.HasValue)
+                            {
+                                results.Add(new KeyValuePair<float?, KeyValuePair<int, Type>>(result, new KeyValuePair<int, Type>(piece.Key, typeof(Piece))));
+                            }
+                        }
+
+                        for (int i = 0; i < moveToList.Count; i++)
+                        {
+                            Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
+                            Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
+                            nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, moveToList[i].TileMatrix);
+                            farPlane = GraphicsDevice.Viewport.Unproject(farPlane, cam.Projection, cam.View, moveToList[i].TileMatrix);
+                            Vector3 direction = farPlane - nearPlane;
+                            direction.Normalize();
+                            Ray ray = new Ray(nearPlane, direction);
+                            float? result = ray.Intersects((BoundingBox)moveToList[i].TileModel.Tag);
+                            if (result.HasValue)
+                            {
+                                moveableClick.Add(result.Value, i);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < this.StartingPieces.Count; i++)
+                        {
+                            Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
+                            Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
+                            nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, StartingPieces[i].OnTopofTile.TileMatrix);
+                            farPlane = GraphicsDevice.Viewport.Unproject(farPlane, cam.Projection, cam.View, StartingPieces[i].OnTopofTile.TileMatrix);
+                            Vector3 direction = farPlane - nearPlane;
+                            direction.Normalize();
+                            Ray ray = new Ray(nearPlane, direction);
+                            float? result = ray.Intersects((BoundingBox)StartingPieces[i].PieceModel.Tag);
+                            if (result.HasValue)
+                            {
+                                StartingClick.Add(result.Value, i);
+                            }
                         }
                     }
 
-                    Dictionary<float, int> moveableClick = new Dictionary<float, int>();
-                    for (int i = 0; i < moveToList.Count; i++)
-                    {
-                        Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
-                        Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
-                        nearPlane = GraphicsDevice.Viewport.Unproject(nearPlane, cam.Projection, cam.View, moveToList[i].TileMatrix);
-                        farPlane = GraphicsDevice.Viewport.Unproject(farPlane, cam.Projection, cam.View, moveToList[i].TileMatrix);
-                        Vector3 direction = farPlane - nearPlane;
-                        direction.Normalize();
-                        Ray ray = new Ray(nearPlane, direction);
-                        float? result = ray.Intersects((BoundingBox)moveToList[i].TileModel.Tag);
-                        if (result.HasValue)
-                        {
-                            moveableClick.Add(result.Value, i);
-                        }
-                    }
 
                     float shortestDistance = float.PositiveInfinity;
                     int index = 0;
                     int j = 0;
-                    foreach (var result in results)
-                    {
+                    foreach (var result in results){
                         if (result.Key < shortestDistance)
                             index = j;
                         j++;
                     }
+                    
+                    if (StartingClick.Count > 0) {
+                        if (index != 0){
+                            if (results[index].Key < StartingClick.First().Key){
+                                DoMove(StartingClick.First().Value, -1, -1);
+                                results.Clear();
+                                moveableClick.Clear();
+                            }
+                        }
+                        else{
+                            DoMove(StartingClick.First().Value, -1, -1);
+                        }
+                    }
 
-                    if (moveableClick.Count > 0)
-                    {
-                        if (index != 0)
-                        {
+
+                    if (moveableClick.Count > 0){
+                        if (index != 0){
                             if (results[index].Key < moveableClick.First().Key)
                             {
-                                DoMove(0, 0, moveableClick.First().Value);
+                                DoMove(-1, -1, moveableClick.First().Value);
                                 results.Clear();
                             }
                         }
@@ -682,6 +755,10 @@ namespace KaroXNA
         /// Clears all the items that were selected
         /// </summary>
         private void ClearSelectedItems() {
+            if (selectedStartingPiece >= 0) {
+                this.StartingPieces[this.selectedStartingPiece].IsSelected = false;
+                this.selectedStartingPiece = -1;
+            }
             if (this.selectedPiece > 0){
                 this.PieceComponents[this.selectedPiece].IsSelected = false;
                 this.selectedPiece = 0;
@@ -746,7 +823,9 @@ namespace KaroXNA
 
                     mesh.Draw();
                 }
-
+                foreach (var item in this.StartingPieces){
+                    item.Draw(gameTime);
+                }
                 foreach (var item in this.moveToList){
                     item.Draw(gameTime);
                 }
