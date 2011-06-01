@@ -26,6 +26,7 @@ namespace KaroXNA
         DepthStencilState dss;
         GraphicsDeviceManager graphics;
         GraphicsDevice device;
+        SpriteBatch spriteBatch;
 
         public Menu gameMenu;
         public GameState gameState;
@@ -85,21 +86,21 @@ namespace KaroXNA
         /// Constructor
         /// </summary>
         public Game1(){
+            
             moveToList = new List<Tile>();
-            this.IsFixedTimeStep = false;
+            IsFixedTimeStep = false;
             IsMouseVisible = true;
             graphics = new GraphicsDeviceManager(this);
-            this.Window.AllowUserResizing = true;
+            Window.AllowUserResizing = true;
             graphics.PreferredBackBufferWidth = 800;
             graphics.PreferredBackBufferHeight = 600;
             graphics.IsFullScreen = false;
             graphics.ApplyChanges();
-            this.Window.Title = "Karo XNA";
+            Window.Title = "Karo XNA";
             Content.RootDirectory = "Content";
             cam = new Camera(graphics.GraphicsDevice.Viewport.Width / graphics.GraphicsDevice.Viewport.Height);
             gameState = GameState.MENU;
-            gameMenu = new Menu(this, 0);
-            Components.Add(gameMenu);
+            
             spacePressed = false;
             f1Pressed = false;
             insertionCount = 0;
@@ -168,6 +169,12 @@ namespace KaroXNA
         /// </summary>
         protected override void LoadContent()
         {
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            gameMenu = new Menu(this, 0, spriteBatch);
+            Components.Add(gameMenu);
+            Components.Add(new Hud(this, spriteBatch));
+
             tileModel = Content.Load<Model>("tile");
             pieceModel = Content.Load<Model>("piece");
             roomModel = Content.Load<Model>("room");
@@ -749,10 +756,10 @@ namespace KaroXNA
             // Roep de base draw aan van andere klasse
             base.Draw(gameTime);
             // Draw FPS (Teken NADAT het menu getekend wordt, anders verdwijnt hij achter de background)
-            gameMenu.spriteBatch.Begin();
+            spriteBatch.Begin();
             Vector2 pos = new Vector2((GraphicsDevice.Viewport.Width - (gameMenu.spriteFont.MeasureString("FPS: " + FPS).X + 10)), (GraphicsDevice.Viewport.Height - 24));
-            gameMenu.spriteBatch.DrawString(gameMenu.spriteFont, "FPS: " + FPS, pos, Color.Blue, 0, new Vector2(0,0), 0.6f, SpriteEffects.None, 0);
-            gameMenu.spriteBatch.End();
+            spriteBatch.DrawString(gameMenu.spriteFont, "FPS: " + FPS, pos, Color.Blue, 0, new Vector2(0,0), 0.6f, SpriteEffects.None, 0);
+            spriteBatch.End();
         }
     }
 }
