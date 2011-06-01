@@ -22,6 +22,7 @@ namespace KaroXNA
         public Game1 game;
         public Model PieceModel { get; set; }
         public Tile OnTopofTile { get; set; }
+        private Tile previousTile;
         public Vector3 Color { get; set; }
         
         public bool IsFlipped { get; set; }
@@ -98,8 +99,8 @@ namespace KaroXNA
         public override void Update(GameTime gameTime)
         {
             if (IsMoving) {
-                float x = moveDirection.X / 180;
-                float z = moveDirection.Z / 180;
+                float x = moveDirection.X / 60;
+                float z = moveDirection.Z / 60;
 
                 Vector3 moving = moveDestination - world.Translation;
                 double distance = this.CalculateDistance(world.Translation,moveDestination);
@@ -109,75 +110,75 @@ namespace KaroXNA
                 {
                     case 0:
                         if (!IsFlipped)
-                            rotationZ += 1;
+                            rotationZ += 3;
                         else
-                            rotationZ -= 1;
+                            rotationZ -= 3;
                         break;
 
                     case 45:
                         if (!IsFlipped)
                         {
-                            rotationZ += 1;
+                            rotationZ += 3;
                             rotationY = -45;
                         }
                         else
                         {
-                            rotationZ -= 1;
+                            rotationZ -= 3;
                             rotationY = 45;
                         }
 
                         break;
 
                     case 90:
-                        rotationX -= 1;
+                        rotationX -= 3;
                         break;
                         
                     case 135:
                         if (!IsFlipped)
                         {
                             rotationY = 45;
-                            rotationZ -= 1;
+                            rotationZ -= 3;
                         }
                         else
                         {
                             rotationY = -45;
-                            rotationZ += 1;
+                            rotationZ += 3;
                         }
                         break;
 
                     case 180:
                         if (!IsFlipped)
-                            rotationZ -= 1;
+                            rotationZ -= 3;
                         else
-                            rotationZ += 1;
+                            rotationZ += 3;
                         break;
 
                     case -45:
                         if (!IsFlipped)
                         {
                             rotationY = 45;
-                            rotationZ += 1;
+                            rotationZ += 3;
                         }
                         else
                         {
                             rotationY = -45;
-                            rotationZ -= 1;
+                            rotationZ -= 3;
                         }
                         break;
 
                     case -90:
-                        rotationX += 1;
+                        rotationX += 3;
                         break;
 
                     case -135:
                         if (!IsFlipped)
                         {
-                            rotationZ -= 1;
+                            rotationZ -= 3;
                             rotationY = -45;
                         }
                         else
                         {
-                            rotationZ += 1;
+                            rotationZ += 3;
                             rotationY = 45;
                         }
                         
@@ -189,6 +190,8 @@ namespace KaroXNA
                 if (moving.Y < 0) { moving.Y *= -1; }
                 if (distance < 0.1) {
                     IsMoving = false;
+                    previousTile.IsSelected = false;
+                    OnTopofTile.IsSelected = false;
                     this.world = this.OnTopofTile.TileMatrix;
                     this.world *= Matrix.CreateTranslation(0f, 1f, 0f);
                     this.rotateDegrees = 360;
@@ -240,7 +243,10 @@ namespace KaroXNA
             }
             else { world*= Matrix.CreateTranslation(0f, 1.0f, 0f);}
             world *= Matrix.CreateTranslation(OnTopofTile.TileMatrix.Translation);
+            previousTile = OnTopofTile;
+            previousTile.IsSelected = true;
             OnTopofTile = newTile;
+            OnTopofTile.IsSelected = true;
             IsMoving = true;
           
             y = 0;

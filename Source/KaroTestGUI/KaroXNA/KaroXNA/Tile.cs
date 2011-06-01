@@ -87,9 +87,9 @@ namespace KaroXNA
             {
                 if (IsMoving)
                 {
-                    float x = this.moveDirection.X / 100;
-                    float y = this.moveDirection.Y / 100;
-                    float z = this.moveDirection.Z / 100;
+                    float x = this.moveDirection.X / 40;
+                    float y = this.moveDirection.Y / 40;
+                    float z = this.moveDirection.Z / 40;
                     this.world *= Matrix.CreateTranslation(x, y, z);
                     Vector3 moving = TileMatrix.Translation - this.world.Translation;
                     if (moving.X < 0.1f && moving.Y < 0.1f && moving.Z < 0.1f)
