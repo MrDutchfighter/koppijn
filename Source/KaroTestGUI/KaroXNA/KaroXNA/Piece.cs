@@ -100,10 +100,6 @@ namespace KaroXNA
                 float x = moveDirection.X / 180;
                 float z = moveDirection.Z / 180;
 
-                
-
-
-
                 Vector3 moving = moveDestination - world.Translation;
                 double distance = this.CalculateDistance(world.Translation,moveDestination);
 
@@ -194,11 +190,13 @@ namespace KaroXNA
                     this.world *= Matrix.CreateTranslation(0f, 1f, 0f);
                     this.rotateDegrees = 360;
                 } else {
-                    if (this.rotateDegrees != 360)
-                    {
+                    if (this.rotateDegrees != 360){
                         if (distance < (totalDistance / 2))
                         {
-                            if ((world.Translation.Y > 1 && IsFlipped))
+                            if (world.Translation.Y > 3.4f && this.rotateDegrees == 1000) {
+                                y = -0.07f; //insertionstate
+                            }
+                            else if ((world.Translation.Y > 1 && IsFlipped))
                             {
                                 y = -0.11f; //to marked
                             }
