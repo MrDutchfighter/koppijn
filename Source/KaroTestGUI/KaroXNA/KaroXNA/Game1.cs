@@ -865,7 +865,7 @@ namespace KaroXNA
 
                 foreach (ModelMesh mesh in roomModel.Meshes)
                 {
-                    GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
+                    graphics.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
                     if (mesh.Name.Equals("hourglass"))
                     {
                         foreach (BasicEffect e in mesh.Effects)
@@ -887,6 +887,8 @@ namespace KaroXNA
                             }
                             e.Projection = cam.Projection;
                             e.View = cam.View;
+
+                            
                         }
 
                     }

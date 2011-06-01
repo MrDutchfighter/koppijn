@@ -40,7 +40,7 @@ namespace KaroXNA
         public Menu(Game game, int drawOrder, SpriteBatch spriteBatch) : base(game)
         {
             this.game = (Game1)game;
-            this.DrawOrder = drawOrder;
+            this.DrawOrder = 10001;
             this.spriteBatch = spriteBatch;
 
             Initialize();
