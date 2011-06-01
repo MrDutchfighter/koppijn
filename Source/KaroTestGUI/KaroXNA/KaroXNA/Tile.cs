@@ -24,6 +24,7 @@ namespace KaroXNA
         public bool IsMovable { get; set; }
         public bool IsMoving { get; set; }
         public bool IsSelected { get; set; }
+        public bool IsPossibleMove { get; set; }
 
         public Point Location { get; set; }
         
@@ -42,6 +43,7 @@ namespace KaroXNA
             TileMatrix *= Matrix.CreateTranslation(new Vector3(location.X * 5.5f, 0, location.Y * 5.5f));
             IsMovable = isMovable;
             IsSelected = false;
+            IsPossibleMove = false;
 
             Location = location;
             Initialize();
@@ -136,7 +138,7 @@ namespace KaroXNA
                         {
                             e.DiffuseColor = Color.White.ToVector3();
                         }
-                        else if (IsMovable) {
+                        else if (IsMovable || IsPossibleMove) {
                             e.DiffuseColor = Color.Aqua.ToVector3();
                         }
                         else

@@ -254,6 +254,15 @@ namespace KaroXNA
             }
         }
 
+
+        private void ClearPossibleMoves()
+        {
+            foreach (var entry in TileComponents)
+            {
+                    entry.Value.IsPossibleMove = false;
+            }
+        }
+
         /// <summary>
         /// Executes a given move
         /// </summary>
@@ -261,6 +270,7 @@ namespace KaroXNA
         /// <param name="tile">Index of tile to</param>
         /// <param name="tileFrom">Index of tile from</param>
         private void DoMove(int piece, int tile, int tileFrom) {
+            ClearPossibleMoves();
             if (tileFrom >= 0) {
                 if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
                     Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
@@ -333,15 +343,38 @@ namespace KaroXNA
                     {
                         this.selectedPiece = piece;
                         PieceComponents[piece].IsSelected = true;
-                        if (this.selectedTile > 0) {
+
+                        Point locTest = PieceComponents[this.selectedPiece].OnTopofTile.Location;
+
+                        if (this.selectedTile > 0)
+                        {
                             Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
-                            Point location2 = TileComponents[this.selectedTile].Location;                            
+                            Point location2 = TileComponents[this.selectedTile].Location;
                             int[][] possibleMoves = engine.GetPossibleMoves(location.X, location.Y, location2.X, location2.Y);
+
                             moveToList.Clear();
-                            foreach (int[] item in possibleMoves){
-                                moveToList.Add(new Tile(this,tileModel,true,new Point(item[0],item[1])));
+                            foreach (int[] item in possibleMoves)
+                            {
+                                moveToList.Add(new Tile(this, tileModel, true, new Point(item[0], item[1])));
                             }
                         }
+
+                        else
+                        {
+                            int[][] possibleMovePiece = engine.GetPossibleMoves(locTest.X, locTest.Y, -1, -1);
+                            foreach (int[] item in possibleMovePiece)
+                            {
+                                foreach (var entry in TileComponents)
+                                {
+                                    if (entry.Value.Location.X == item[0] && entry.Value.Location.Y == item[1])
+                                    {
+                                        entry.Value.IsPossibleMove = true;
+                                    }
+                                }
+                            }
+                        }
+
+
                     }
                 }
             }
