@@ -31,10 +31,8 @@ namespace KaroXNA
 
 
         private Vector3 moveDirection,moveDestination;
-        public Rotations rotationDirectionX;
-        public Rotations rotationDirectionZ;
         public Matrix world;
-        private int rotationX;
+        private int rotationX, rotationY, rotationZ;
         public int rotateDegrees;
         private float y;
         private double totalDistance;
@@ -101,15 +99,91 @@ namespace KaroXNA
             if (IsMoving) {
                 float x = moveDirection.X / 180;
                 float z = moveDirection.Z / 180;
+
+                
+
+
+
                 Vector3 moving = moveDestination - world.Translation;
                 double distance = this.CalculateDistance(world.Translation,moveDestination);
-                switch (this.rotationDirectionX) {
-                    case Rotations.ROTATIONPLUS:
+
+                switch (rotateDegrees)
+                {
+                    case 0:
+                        if (!IsFlipped)
+                            rotationZ += 1;
+                        else
+                            rotationZ -= 1;
+                        break;
+
+                    case 45:
+                        if (!IsFlipped)
+                        {
+                            rotationZ += 1;
+                            rotationY = -45;
+                        }
+                        else
+                        {
+                            rotationZ -= 1;
+                            rotationY = 45;
+                        }
+
+                        break;
+
+                    case 90:
+                        rotationX -= 1;
+                        break;
+                        
+                    case 135:
+                        if (!IsFlipped)
+                        {
+                            rotationY = 45;
+                            rotationZ -= 1;
+                        }
+                        else
+                        {
+                            rotationY = -45;
+                            rotationZ += 1;
+                        }
+                        break;
+
+                    case 180:
+                        if (!IsFlipped)
+                            rotationZ -= 1;
+                        else
+                            rotationZ += 1;
+                        break;
+
+                    case -45:
+                        if (!IsFlipped)
+                        {
+                            rotationY = 45;
+                            rotationZ += 1;
+                        }
+                        else
+                        {
+                            rotationY = -45;
+                            rotationZ -= 1;
+                        }
+                        break;
+
+                    case -90:
                         rotationX += 1;
                         break;
-                    case Rotations.ROTATIONMIN:
-                        rotationX -= 1;
-                    break;
+
+                    case -135:
+                        if (!IsFlipped)
+                        {
+                            rotationZ -= 1;
+                            rotationY = -45;
+                        }
+                        else
+                        {
+                            rotationZ += 1;
+                            rotationY = 45;
+                        }
+                        
+                        break;
                 }
 
                 if (moving.X < 0) { moving.X *= -1; }
@@ -118,9 +192,9 @@ namespace KaroXNA
                     IsMoving = false;
                     this.world = this.OnTopofTile.TileMatrix;
                     this.world *= Matrix.CreateTranslation(0f, 1f, 0f);
-                    this.rotationDirectionX = Rotations.NONE;
+                    this.rotateDegrees = 360;
                 } else {
-                    if (this.rotationDirectionX != Rotations.NONE)
+                    if (this.rotateDegrees != 360)
                     {
                         if (distance < (totalDistance / 2))
                         {
@@ -164,6 +238,8 @@ namespace KaroXNA
           
             y = 0;
             this.rotationX = 0;
+            this.rotationY = 0;
+            this.rotationZ = 0;
             this.totalDistance = this.CalculateDistance(moveDestination, world.Translation);
         }
 
@@ -193,8 +269,7 @@ namespace KaroXNA
                             e.World *= this.world;
                         }
                         else {
-                            e.World *= Matrix.CreateRotationY(MathHelper.ToRadians(rotateDegrees));
-                            e.World *= Matrix.CreateRotationX(MathHelper.ToRadians(rotationX)); 
+                            e.World *= Matrix.CreateFromYawPitchRoll(MathHelper.ToRadians(rotationY), MathHelper.ToRadians(rotationX), MathHelper.ToRadians(rotationZ));
                             e.World *= this.world;
                         }
 
