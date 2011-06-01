@@ -421,28 +421,54 @@ namespace KaroXNA
                     flipping = false;
                 }
 
-                
-
                 if (flipping != movedPiece.IsFlipped) {
                     movedPiece.IsFlipped = flipping;
-                    /*if (positionFrom.X < positionTo.X){
-                        movedPiece.rotationDirectionX = Rotations.ROTATIONPLUS;
-                    }
-                    else
-                    {
-                        movedPiece.rotationDirectionX = Rotations.ROTATIONMIN;
-                    }*/
                     movedPiece.rotateDegrees = direction;
-                   // int k = 3; ;
-
-
-
                 } else {
-                    //movedPiece.rotationDirectionX = Rotations.NONE;
                     movedPiece.rotateDegrees = 360;
                 }
                 this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, movedPiece);
             }
+        }
+
+        /// <summary>
+        /// Undo the move from the tile.
+        /// </summary>
+        /// <param name="tileFrom"></param>
+        /// <param name="positionTo"></param>
+        private void UndoTileMove(Point tileFrom,Point positionTo,Point positionFrom){
+            int to          = positionTo.Y * BOARDWIDTH + positionTo.X;     //De tile waar de pawn eerst op stond.
+            int from        = positionFrom.Y * BOARDWIDTH + positionFrom.X; // De bewogen tile, ook plaats van de pawn
+            int fromTile    = tileFrom.Y * BOARDWIDTH + tileFrom.X; // de locatie waar de bewogen tile eerst stond.
+
+
+            #region Beweeg de oorspronkelijke tile terug var: movedTile
+            Tile movedTile = this.TileComponents[from];
+            this.TileComponents.Remove(from);
+            movedTile.Location = tileFrom;            
+            this.TileComponents.Add(fromTile,movedTile);
+            #endregion
+
+            #region Beweeg de pawn var: piece
+            Piece piece = this.PieceComponents[from];
+            PieceComponents.Remove(from);
+            piece.MoveTo(this.TileComponents[to]);
+            KaroEngine.Tile t = engine.GetByXY(positionTo.X, positionTo.Y);
+            bool flipping;
+            int direction = (int)Math.Floor(MathHelper.ToDegrees((float)Math.Atan2(positionFrom.Y - positionTo.Y, positionFrom.X - positionTo.X)));
+            if (t == KaroEngine.Tile.REDMARKED || t == KaroEngine.Tile.WHITEMARKED){ flipping = true;}
+            else{ flipping = false;}
+            if (flipping != piece.IsFlipped){
+                piece.IsFlipped = flipping;
+                piece.rotateDegrees = direction;
+            } else {
+                piece.rotateDegrees = 360;
+            }
+            this.PieceComponents.Add(to, piece);
+            #endregion
+
+            //Nadat de pawn gestart is met bewegen, verplaats de tile
+            movedTile.moveTo(Matrix.CreateTranslation(new Vector3(tileFrom.X * 5.5f, 0, tileFrom.Y * 5.5f)));
         }
 
         /// <summary>
@@ -780,7 +806,12 @@ namespace KaroXNA
                         Point positionTo = new Point(move[0] % Game1.BOARDWIDTH, move[0] / Game1.BOARDWIDTH);
                         Point positionFrom = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
                         Point tileFrom = new Point(move[2] % Game1.BOARDWIDTH, move[2] / Game1.BOARDWIDTH);
-                        this.ShowMove(positionFrom, positionTo, tileFrom);
+                        if (tileFrom.X != -1)
+                        {
+                            UndoTileMove(tileFrom, positionTo, positionFrom);
+                        } else {
+                            this.ShowMove(positionFrom, positionTo, tileFrom);
+                        }
                         moveUndone = true;
                     }
                     else
