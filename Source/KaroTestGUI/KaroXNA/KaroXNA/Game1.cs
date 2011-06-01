@@ -172,6 +172,7 @@ namespace KaroXNA
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             gameMenu = new Menu(this, 0, spriteBatch);
+            gameMenu.DrawOrder = 1000; //draw last
             Components.Add(gameMenu);
             Components.Add(new Hud(this, spriteBatch));
 
@@ -843,6 +844,7 @@ namespace KaroXNA
             foreach (var entry in TileComponents)
             {
                 entry.Value.IsPossibleMove = false;
+                entry.Value.IsSelected = false;
             }
             this.moveToList.Clear();
         }
