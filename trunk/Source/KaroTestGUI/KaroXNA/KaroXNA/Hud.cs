@@ -20,6 +20,7 @@ namespace KaroXNA
         Texture2D whiteTexture;
         Texture2D redTexture;
         SpriteFont font;
+        Texture2D Turn;
 
         public Hud(Game game, SpriteBatch spriteBatch)
             : base(game)
@@ -55,17 +56,19 @@ namespace KaroXNA
         {
             spriteBatch.Begin();
 
+            
+
             if (game.gameState != GameState.MENU)
             {
-                //spriteBatch.Draw(this.hudTexture, new Vector2((Game.GraphicsDevice.Viewport.Width / 2) - 260, Game.GraphicsDevice.Viewport.Height - 68), Color.White);
-                if (game.engine.GetTurn() == KaroEngine.Player.RED)
+                if (!game.computerIsThinking)
                 {
-                    spriteBatch.Draw(whiteTexture, new Vector2((Game.GraphicsDevice.Viewport.Width / 2) - 240, Game.GraphicsDevice.Viewport.Height - 68), Color.White);
+                    if (game.engine.GetTurn() == KaroEngine.Player.RED)
+                        Turn = redTexture;
+                    else
+                        Turn = whiteTexture;
                 }
-                else
-                {
-                    spriteBatch.Draw(redTexture, new Vector2((Game.GraphicsDevice.Viewport.Width / 2) - 240, Game.GraphicsDevice.Viewport.Height - 68), Color.White);
-                }
+
+                spriteBatch.Draw(Turn, new Vector2((Game.GraphicsDevice.Viewport.Width / 2) - 240, 10), Color.White);
             }
 
             spriteBatch.End();
