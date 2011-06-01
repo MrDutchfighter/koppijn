@@ -198,6 +198,7 @@ namespace KaroXNA
             this.selectedPiece = 0;
             this.selectedTile = 0;
             this.selectedStartingPiece = -1;
+            computerIsThinking = false;
             // clear tiles
             foreach (var tile in TileComponents)
             {
@@ -432,10 +433,12 @@ namespace KaroXNA
                         spacePressed = true;
 
                         if (engine.GetGameState() == KaroEngine.GameState.PLAYING || engine.GetGameState() == KaroEngine.GameState.INSERTION || this.StartingPieces.Count != 0){
-                            if(engine.GetGameState() != KaroEngine.GameState.INSERTION)
-                                computerIsThinking = true;
-                            Thread t = new Thread(new ThreadStart(ThreadedMove));
-                            t.Start();
+                            if (!computerIsThinking){
+                                Thread t = new Thread(new ThreadStart(ThreadedMove));
+                                t.Start();
+                                if (engine.GetGameState() != KaroEngine.GameState.INSERTION)
+                                    computerIsThinking = true;
+                            }
                         }
                     }
                 }
