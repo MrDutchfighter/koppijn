@@ -92,6 +92,7 @@ namespace KaroXNA
             IsFixedTimeStep = false;
             IsMouseVisible = true;
             graphics = new GraphicsDeviceManager(this);
+
             Window.AllowUserResizing = true;
             graphics.PreferredBackBufferWidth = 800;
             graphics.PreferredBackBufferHeight = 600;
@@ -155,12 +156,12 @@ namespace KaroXNA
             proj = cam.Projection;
 
             roomMatrix = Matrix.CreateScale(1.4f) * Matrix.CreateTranslation(new Vector3(-20, -20, 45));
-            
+  
             base.Initialize();
             //------------------TESTCODE--------------------------------
-            RasterizerState rs = new RasterizerState();
-            rs.CullMode = CullMode.None;
-            GraphicsDevice.RasterizerState = rs;
+            //RasterizerState rs = new RasterizerState();
+            //rs.CullMode = CullMode.None;
+            //GraphicsDevice.RasterizerState = rs;
             //-----------------------------------------------------------
         }
 
@@ -864,6 +865,7 @@ namespace KaroXNA
 
                 foreach (ModelMesh mesh in roomModel.Meshes)
                 {
+                    GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
                     if (mesh.Name.Equals("hourglass"))
                     {
                         foreach (BasicEffect e in mesh.Effects)
@@ -893,7 +895,6 @@ namespace KaroXNA
                         foreach (BasicEffect e in mesh.Effects)
                         {
                             //e.EnableDefaultLighting();
-
                             e.World = transforms[mesh.ParentBone.Index] * roomMatrix;
                             e.Projection = cam.Projection;
                             e.View = cam.View;
