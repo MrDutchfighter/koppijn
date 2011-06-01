@@ -23,14 +23,18 @@ namespace KaroXNA
     public class Menu : DrawableGameComponent
     {
         public List<MenuItem> menuList;
+        public List<String> creditsList;
         public SpriteBatch spriteBatch;
         public SpriteFont spriteFont;
         Vector2 fontPosition;
-        public int selectedItem;
+        Vector2 creditFontPosition;
+        public int selectedItem = 0;
+        public int selectedCreditName = 0;
         public KeyboardState oldState;
         public MouseState curMousePos;
         public Game1 game;
         public MenuState menuState;
+        public MenuState oldMenuState;
         ScrollingBackground background;
 
         public Menu(Game game, int drawOrder, SpriteBatch spriteBatch) : base(game)
@@ -55,7 +59,7 @@ namespace KaroXNA
             spriteFont = Game.Content.Load<SpriteFont>("MenuFont");
             // half the width and half the height -200
             fontPosition = new Vector2(Game.GraphicsDevice.Viewport.Width / 2, (Game.GraphicsDevice.Viewport.Height / 2) - 200);
-            
+            creditFontPosition = new Vector2(Game.GraphicsDevice.Viewport.Width / 2, 0);
             // 
             oldState = Keyboard.GetState();
 
@@ -69,6 +73,13 @@ namespace KaroXNA
 
             //background
 
+            creditsList = new List<String>();
+            creditsList.Add("Alex Steenbruggen");
+            creditsList.Add("Sebastiaan Wezenberg");
+            creditsList.Add("Ilian Spoor");
+            creditsList.Add("Robert Raaijmakers");
+            creditsList.Add("Lucas Pekel");
+            creditsList.Add("Khai Pham");
             Texture2D backgroundImage = game.Content.Load<Texture2D>("koppijnkaro");
             background = new ScrollingBackground(GraphicsDevice, backgroundImage, 100);
         }
@@ -86,19 +97,33 @@ namespace KaroXNA
 
                 if (menuState == MenuState.STARTED && menuList[0].MenuName != "New")
                 {
-                    // remove Play
-                    menuList.RemoveAt(0);
-                    // insert Resume
-                    menuList.Insert(0, new MenuItem("New"));
-                    menuList.Insert(1, new MenuItem("Resume"));
+                    createMenuItemList(MenuState.STARTED);
                 }
                 else if (menuState == MenuState.NEW && menuList[0].MenuName != "Play")
                 {
-                    // Remove New
-                    menuList.RemoveAt(1);
-                    // Remove Resume
-                    menuList.RemoveAt(0);
-                    menuList.Insert(0, new MenuItem("Play"));
+                    createMenuItemList(MenuState.NEW);
+                }
+                else if (menuState == MenuState.CREDITS && menuList[0].MenuName != "Back")
+                {
+                    createMenuItemList(MenuState.CREDITS);
+                }
+                else if (menuState == MenuState.OPTIONS && menuList[0].MenuName != "Back")
+                {
+                    createMenuItemList(MenuState.OPTIONS);
+                }
+
+                if (menuState == MenuState.CREDITS)
+                {
+                    if (creditFontPosition.Y < GraphicsDevice.Viewport.Height)
+                        creditFontPosition.Y = creditFontPosition.Y + 5;
+                    else
+                    {
+                        creditFontPosition.Y = 0;
+                        if (selectedCreditName < creditsList.Count - 1)
+                            selectedCreditName++;
+                        else
+                            selectedCreditName = 0;
+                    }
                 }
             }
             
@@ -144,28 +169,39 @@ namespace KaroXNA
                     {
                         case "Play":
                             game.gameState = GameState.PLAYING;
+                            oldMenuState = menuState;
                             menuState = MenuState.STARTED;
                             break;
                         case "Options":
                             Texture2D backgroundImage = game.Content.Load<Texture2D>("menubackground");
                             background.mytexture = backgroundImage;
+                            oldMenuState = menuState;
                             menuState = MenuState.OPTIONS;
+                            selectedItem = 0;
                             break;
                         case "Credits":
                             Texture2D backgroundImageCredits = game.Content.Load<Texture2D>("menubackground");
                             background.mytexture = backgroundImageCredits;
+                            oldMenuState = menuState;
                             menuState = MenuState.CREDITS;
+                            selectedItem = 0;
                             break;
                         case "Exit":
                             game.Exit();
                             break;
                         case "Resume":
+                            oldMenuState = menuState;
                             game.gameState = GameState.PLAYING;
                             break;
                         case "New":
                             game.gameState = GameState.PLAYING;
+                            oldMenuState = menuState;
                             // call game function to reset the board 
                             game.NewGame();
+                            break;
+                        case "Back":
+                            menuState = oldMenuState;
+                            
                             break;
                     }
                 }
@@ -180,11 +216,12 @@ namespace KaroXNA
 
         public override void Draw(GameTime gameTime)
         {
+            spriteBatch.Begin();
+            
+
             if (game.gameState == GameState.MENU)
             {
-                spriteBatch.Begin();
                 background.Draw(spriteBatch);
-
                 for (int i = 0; i < menuList.Count; i++)
                 {
                     // Find the center of the string
@@ -197,8 +234,41 @@ namespace KaroXNA
                     else
                         spriteBatch.DrawString(spriteFont, menuList[i].MenuName, currentFontPosition, Color.White, 0, new Vector2(spriteFont.MeasureString(menuList[i].MenuName).X / 2, spriteFont.MeasureString(menuList[i].MenuName).Y / 2), 0.8f, SpriteEffects.None, 0);
                 }
+            }
 
-                spriteBatch.End();
+            if (menuState == MenuState.CREDITS)
+            {
+                Vector2 currentFontPos = Vector2.Subtract(creditFontPosition, (spriteFont.MeasureString(creditsList[selectedCreditName]) / 2));
+                spriteBatch.DrawString(spriteFont, creditsList[selectedCreditName], currentFontPos, Color.Red);
+            }
+            spriteBatch.End();
+        }
+
+        private void createMenuItemList(MenuState currentMenu)
+        {
+            menuList.Clear();
+            if (currentMenu == MenuState.NEW)
+            {
+                menuList.Add(new MenuItem("Play"));
+                menuList.Add(new MenuItem("Options"));
+                menuList.Add(new MenuItem("Credits"));
+                menuList.Add(new MenuItem("Exit"));
+            }
+            else if(currentMenu == MenuState.STARTED)
+            {
+                menuList.Add(new MenuItem("New"));
+                menuList.Add(new MenuItem("Resume"));
+                menuList.Add(new MenuItem("Options"));
+                menuList.Add(new MenuItem("Credits"));
+                menuList.Add(new MenuItem("Exit"));
+            }
+            else if (currentMenu == MenuState.CREDITS)
+            {
+                menuList.Add(new MenuItem("Back"));
+            }
+            else if (currentMenu == MenuState.OPTIONS)
+            {
+                menuList.Add(new MenuItem("Back"));
             }
         }
     }
