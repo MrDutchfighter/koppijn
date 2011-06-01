@@ -309,7 +309,7 @@ namespace KaroXNA
             }
             if (piece >= 0) {
                 // If the game is still running.
-                if(engine.GetGameState() == KaroEngine.GameState.INSERTION || StartingPieces.Count!=0){
+                if(engine.GetGameState() == KaroEngine.GameState.INSERTION || StartingPieces.Count != 0 ){
                     Player player = engine.GetTurn();
                     Vector3 red = Color.Tomato.ToVector3();
                     Vector3 white = Color.White.ToVector3();
@@ -360,7 +360,7 @@ namespace KaroXNA
                     p.IsSelected = false;
                     this.ClearSelectedItems();
                     StartingPieces.Remove(p);
-
+                    p.rotateDegrees = 1000;
                     p.MoveTo(this.TileComponents[positionTo.Y * BOARDWIDTH + positionTo.X]);
                     Components.Add(p);
                     this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, p);
@@ -464,13 +464,14 @@ namespace KaroXNA
         private void ThreadedMove()
         {
             lock (engine) {
+                Player player = engine.GetTurn();
                 move = engine.CalculateComputerMove();
                 Point positionFrom = new Point(move[0] % Game1.BOARDWIDTH, move[0] / Game1.BOARDWIDTH);
                 Point positionTo = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
                 Point tileFrom = new Point(move[2] % Game1.BOARDWIDTH, move[2] / Game1.BOARDWIDTH);
                 if (this.StartingPieces.Count != 0) {
                     this.selectedStartingPiece=0;
-                    Player player = engine.GetTurn();
+                    
                     Vector3 red = Color.Tomato.ToVector3();
                     Vector3 white = Color.White.ToVector3();
 
@@ -611,8 +612,7 @@ namespace KaroXNA
 
                     List<KeyValuePair<float?, KeyValuePair<int, Type>>> results = new List<KeyValuePair<float?, KeyValuePair<int, Type>>>();
 
-                    foreach (var tile in TileComponents)
-                    {
+                    foreach (var tile in TileComponents) {
                         tile.Value.IsSelected = false;
                         Vector3 nearPlane = new Vector3(mousePosition.X, mousePosition.Y, 0);
                         Vector3 farPlane = new Vector3(mousePosition.X, mousePosition.Y, 1);
@@ -781,10 +781,9 @@ namespace KaroXNA
         /// <param name="gameTime">Elapsed time</param>
         protected override void Draw(GameTime gameTime)
         {
-            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);            
-            if (gameState == GameState.PLAYING) {
-                GraphicsDevice.DepthStencilState = dss;
-                
+            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.DepthStencilState = dss;
+            if (gameState == GameState.PLAYING) {                
                 Matrix[] transforms = new Matrix[roomModel.Bones.Count];
                 roomModel.CopyAbsoluteBoneTransformsTo(transforms);
 
