@@ -33,11 +33,13 @@ namespace KaroXNA
         public MenuState menuState;
         ScrollingBackground background;
 
-        public Menu(Game game, int drawOrder) : base(game)
+        public Menu(Game game, int drawOrder, SpriteBatch spriteBatch) : base(game)
         {
             this.game = (Game1)game;
             this.DrawOrder = drawOrder;
+            this.spriteBatch = spriteBatch;
 
+            Initialize();
             // TODO: Construct any child components here
         }
 
@@ -50,7 +52,6 @@ namespace KaroXNA
             // TODO: Add your initialization code here
             base.Initialize();
             menuState = MenuState.NEW;
-            spriteBatch = new SpriteBatch(GraphicsDevice);
             spriteFont = Game.Content.Load<SpriteFont>("MenuFont");
             // half the width and half the height -200
             fontPosition = new Vector2(Game.GraphicsDevice.Viewport.Width / 2, (Game.GraphicsDevice.Viewport.Height / 2) - 200);
