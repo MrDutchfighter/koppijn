@@ -35,6 +35,7 @@ namespace KaroXNA
         private int rotationX, rotationY, rotationZ;
         public int rotateDegrees;
         private float y;
+        private float winningY;
         private double totalDistance;
 
 
@@ -219,6 +220,12 @@ namespace KaroXNA
                     world *= Matrix.CreateTranslation(x, y, z);
                 }
             }
+
+            if (game.engine.GetGameState() == KaroEngine.GameState.GAMEFINISHED)
+            {
+                winningY += 0.1f;
+            }
+
             base.Update(gameTime);
         }
 
@@ -280,6 +287,19 @@ namespace KaroXNA
                         else
                         {
                             e.DiffuseColor = Color;
+                        }
+
+                        if (game.engine.GetGameState() == KaroEngine.GameState.GAMEFINISHED)
+                        {
+                            if (game.engine.GetTurn() == KaroEngine.Player.RED && Color == XNAColor.White.ToVector3())
+                            {
+                                e.World *= Matrix.CreateTranslation(new Vector3(0, (float)Math.Sin(winningY) +1, 0));
+                            }
+
+                            if (game.engine.GetTurn() == KaroEngine.Player.WHITE && Color == XNAColor.Tomato.ToVector3())
+                            {
+                                e.World *= Matrix.CreateTranslation(new Vector3(0, (float)Math.Sin(winningY) +1, 0));
+                            }
                         }
 
                         e.View = game.cam.View;
