@@ -217,7 +217,6 @@ namespace KaroXNA
         public override void Draw(GameTime gameTime)
         {
             spriteBatch.Begin();
-            
 
             if (game.gameState == GameState.MENU)
             {
