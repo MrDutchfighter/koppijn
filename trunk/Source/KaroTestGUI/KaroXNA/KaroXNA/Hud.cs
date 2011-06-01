@@ -14,6 +14,7 @@ namespace KaroXNA
 {
     public class Hud : Microsoft.Xna.Framework.DrawableGameComponent
     {
+        Game1 game;
         SpriteBatch spriteBatch;
         Texture2D hudTexture;
         Texture2D whiteTexture;
@@ -23,8 +24,9 @@ namespace KaroXNA
         public Hud(Game game, SpriteBatch spriteBatch)
             : base(game)
         {
+            this.game = (Game1)game;
             this.spriteBatch = spriteBatch;
-            
+            this.DrawOrder = 100000;
             Initialize();
         }
 
@@ -53,7 +55,18 @@ namespace KaroXNA
         {
             spriteBatch.Begin();
 
-            //spriteBatch.Draw(this.hudTexture, new Vector2(Game.GraphicsDevice.Viewport.Height / 2 - 510, 0), Color.White); 
+            if (game.gameState != GameState.MENU)
+            {
+                //spriteBatch.Draw(this.hudTexture, new Vector2((Game.GraphicsDevice.Viewport.Width / 2) - 260, Game.GraphicsDevice.Viewport.Height - 68), Color.White);
+                if (game.engine.GetTurn() == KaroEngine.Player.RED)
+                {
+                    spriteBatch.Draw(whiteTexture, new Vector2((Game.GraphicsDevice.Viewport.Width / 2) - 240, Game.GraphicsDevice.Viewport.Height - 68), Color.White);
+                }
+                else
+                {
+                    spriteBatch.Draw(redTexture, new Vector2((Game.GraphicsDevice.Viewport.Width / 2) - 240, Game.GraphicsDevice.Viewport.Height - 68), Color.White);
+                }
+            }
 
             spriteBatch.End();
             
