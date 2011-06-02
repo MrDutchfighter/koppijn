@@ -32,7 +32,7 @@ namespace KaroXNA
         public GameState gameState;
 
         Random random = new Random();
-       
+        bool PauseDrawing = false;
 
         int selectedPiece, selectedTile,selectedStartingPiece;
         private int hourGlassRotation = 0;
@@ -92,7 +92,7 @@ namespace KaroXNA
             IsFixedTimeStep = false;
             IsMouseVisible = true;
             graphics = new GraphicsDeviceManager(this);
-
+            
             Window.AllowUserResizing = true;
             graphics.PreferredBackBufferWidth = 800;
             graphics.PreferredBackBufferHeight = 600;
@@ -545,9 +545,9 @@ namespace KaroXNA
                         }
                     }
                 }
-
+                this.PauseDrawing = true;
                 this.ShowMove(positionFrom, positionTo, tileFrom);
-                
+                PauseDrawing = false;
                 computerIsThinking = false;
             }
         }
@@ -905,8 +905,15 @@ namespace KaroXNA
 
                     mesh.Draw();
                 }
+                while (PauseDrawing) {
+                    Thread.Sleep(1);
+                }
                 foreach (var item in this.StartingPieces){
                     item.Draw(gameTime);
+                }
+                while (PauseDrawing)
+                {
+                    Thread.Sleep(1);
                 }
                 foreach (var item in this.moveToList){
                     item.Draw(gameTime);
