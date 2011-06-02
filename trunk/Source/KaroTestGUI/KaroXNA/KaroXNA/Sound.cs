@@ -24,12 +24,16 @@ namespace KaroXNA
             this.game = (Game1)game;
             // somehow xna can't load in big wave files so this class for now only works for small sounds!
             marioTheme = game.Content.Load<SoundEffect>("stagecleared");
-        
-        }
 
+
+        }
+        static WMPLib.WindowsMediaPlayer player = new WMPLib.WindowsMediaPlayer();
         public void playTheme()
         {
-            marioTheme.Play();
+            //marioTheme.Play();
+            
+            player.URL = "http://livestreams.omroep.nl/npo/3fm-bb";
+            player.controls.play();
         }
 
         public static Sound Instance(Game game)
