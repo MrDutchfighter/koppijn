@@ -14,28 +14,58 @@ using Microsoft.Xna.Framework.Storage;
 
 namespace KaroXNA
 {
-    public class Sound
-    {
+    public class Sound {
+
         private static Sound instance;
-        private Game1 game;
-        private SoundEffect marioTheme;
 
+        /// <summary>
+        /// the sound constructor
+        /// </summary>
+        /// <param name="game"></param>
         private Sound(Game game) {
-            this.game = (Game1)game;
-            // somehow xna can't load in big wave files so this class for now only works for small sounds!
-            marioTheme = game.Content.Load<SoundEffect>("stagecleared");
-
-
+            player.URL = "http://livestreams.omroep.nl/npo/3fm-bb"; //3fm
         }
+
         static WMPLib.WindowsMediaPlayer player = new WMPLib.WindowsMediaPlayer();
-        public void playTheme()
-        {
-            //marioTheme.Play();
-            
-            //player.URL = "http://livestreams.omroep.nl/npo/3fm-bb"; //3fm
-            //player.controls.play();
+
+        public void playTheme(){}
+
+        /// <summary>
+        ///  set to URL to qmusic and start playing
+        /// </summary>
+        public void PlayQMusic() {
+            player.controls.stop();
+            player.URL = "http://www.q-music.nl/asx/q-music.asx";//qmuxic
+            player.controls.play();
         }
 
+        /// <summary>
+        ///  set to URL to 3fm and start playing
+        /// </summary>
+        public void Play3FM() {
+            player.controls.stop();
+            player.URL = "http://livestreams.omroep.nl/npo/3fm-bb"; //3fm
+            player.controls.play();
+        }
+        /// <summary>
+        /// Stop the musicplayer
+        /// </summary>
+        public void Stop() {
+            player.controls.stop();
+        }
+
+        /// <summary>
+        /// Start playing the current URL
+        /// </summary>
+        public void Play() {
+            player.controls.play();
+        }
+
+        /// <summary>
+        /// Access the music player
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
         public static Sound Instance(Game game)
         {
 
