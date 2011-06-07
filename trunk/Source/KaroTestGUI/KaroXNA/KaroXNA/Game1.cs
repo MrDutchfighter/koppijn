@@ -41,6 +41,7 @@ namespace KaroXNA
         private int hourGlassRotation = 0;
         private float hourGlassSinus = 0f;
         public bool computerIsThinking = false;
+        public bool singlePlayer;
 
         #endregion
 
@@ -113,6 +114,7 @@ namespace KaroXNA
             
             spacePressed = false;
             f1Pressed = false;
+            singlePlayer = true;
             this.radioLeftPressed = false;
             this.radioRightPressed = false;
             insertionCount = 0;
@@ -521,7 +523,7 @@ namespace KaroXNA
                 startUndoTimer = false;
             }
 
-            if (didLastMove && (gameTime.TotalGameTime.TotalMilliseconds - undoTimer) > 1000 && engine.GetGameState() != KaroEngine.GameState.GAMEFINISHED)
+            if (didLastMove && (gameTime.TotalGameTime.TotalMilliseconds - undoTimer) > 1000 && engine.GetGameState() != KaroEngine.GameState.GAMEFINISHED && singlePlayer)
             {
                 ThreadedMove();
             }

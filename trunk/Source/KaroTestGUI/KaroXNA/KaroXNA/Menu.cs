@@ -206,8 +206,13 @@ namespace KaroXNA
                             game.NewGame();
                             break;
                         case "Back":
-                            menuState = oldMenuState;
-                            
+                            menuState = oldMenuState;                            
+                            break;
+                        case "Players: 1":
+                            game.singlePlayer = false;
+                            break;
+                        case "Players: 2":
+                            game.singlePlayer = true;
                             break;
                     }
                 }
@@ -273,6 +278,16 @@ namespace KaroXNA
             }
             else if (currentMenu == MenuState.OPTIONS)
             {
+                string players = "Players: ";
+                if (game.singlePlayer)
+                {
+                    players += "1";
+                }
+                else
+                {
+                    players += "2";
+                }
+                menuList.Add(new MenuItem(players));
                 menuList.Add(new MenuItem("Back"));
                 menuList.Add(new MenuItem("Resolutions"));
             }
