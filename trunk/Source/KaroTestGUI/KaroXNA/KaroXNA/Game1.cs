@@ -495,8 +495,8 @@ namespace KaroXNA
                             if (!computerIsThinking){
                                 Thread t = new Thread(new ThreadStart(ThreadedMove));
                                 t.Start();
-                                if (engine.GetGameState() != KaroEngine.GameState.INSERTION)
-                                    computerIsThinking = true;
+                                //if (engine.GetGameState() != KaroEngine.GameState.INSERTION)
+                                    //computerIsThinking = true;
                             }
                         }
                     }
@@ -527,12 +527,18 @@ namespace KaroXNA
         {
             lock (engine) {
                 Player player = engine.GetTurn();
+
+                this.computerIsThinking = true;
                 move = engine.CalculateComputerMove();
+                this.computerIsThinking = false;
+
                 Point positionFrom = new Point(move[0] % Game1.BOARDWIDTH, move[0] / Game1.BOARDWIDTH);
                 Point positionTo = new Point(move[1] % Game1.BOARDWIDTH, move[1] / Game1.BOARDWIDTH);
                 Point tileFrom = new Point(move[2] % Game1.BOARDWIDTH, move[2] / Game1.BOARDWIDTH);
+                
+                this.PauseDrawing = true;
                 if (this.StartingPieces.Count != 0) {
-                    this.selectedStartingPiece=0;
+                    this.selectedStartingPiece = 0;
                     
                     Vector3 red = Color.Tomato.ToVector3();
                     Vector3 white = Color.White.ToVector3();
@@ -545,10 +551,9 @@ namespace KaroXNA
                         }
                     }
                 }
-                this.PauseDrawing = true;
+
                 this.ShowMove(positionFrom, positionTo, tileFrom);
-                PauseDrawing = false;
-                computerIsThinking = false;
+                this.PauseDrawing = false;
             }
         }
 
