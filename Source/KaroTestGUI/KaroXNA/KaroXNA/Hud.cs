@@ -68,9 +68,9 @@ namespace KaroXNA
                         Turn = whiteTexture;
                 }
 
-                spriteBatch.Draw(Turn, new Vector2((Game.GraphicsDevice.Viewport.Width / 2) - 240, 10), Color.White);
+                spriteBatch.Draw(Turn, new Vector2((Game.GraphicsDevice.Viewport.Width - Turn.Width - 10), 10), Color.White);
             }
-
+            
             spriteBatch.End();
             
             base.Draw(gameTime);

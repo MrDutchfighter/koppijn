@@ -207,6 +207,11 @@ namespace KaroXNA
             this.selectedTile = 0;
             this.selectedStartingPiece = -1;
             computerIsThinking = false;
+            undoTimer = 0;
+            moveUndone = false;
+            startUndoTimer = false;
+            didLastMove = false;
+
             // clear tiles
             foreach (var tile in TileComponents)
             {
@@ -260,6 +265,8 @@ namespace KaroXNA
                 p = new Piece(this, pieceModel, true, t, Color.Tomato.ToVector3());
                 this.StartingPieces.Add(p);
             }
+
+
         }
 
         /// <summary>
