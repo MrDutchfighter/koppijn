@@ -28,6 +28,9 @@ namespace KaroXNA
         GraphicsDevice device;
         SpriteBatch spriteBatch;
 
+        KeyboardState newKeyboardState;
+        KeyboardState oldKeyboardState;
+
         public Menu gameMenu;
         public GameState gameState;
 
@@ -100,8 +103,10 @@ namespace KaroXNA
             graphics.PreferredBackBufferWidth = 800;
             graphics.PreferredBackBufferHeight = 600;
             graphics.IsFullScreen = false;
+            graphics.PreferMultiSampling = true;
             graphics.ApplyChanges();
             Window.Title = "Karo XNA";
+            Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged);
             Content.RootDirectory = "Content";
             cam = new Camera(graphics.GraphicsDevice.Viewport.Width / graphics.GraphicsDevice.Viewport.Height);
             gameState = GameState.MENU;
@@ -195,6 +200,13 @@ namespace KaroXNA
         protected override void UnloadContent()
         {
             Content.Unload();
+        }
+
+        void Window_ClientSizeChanged(object sender, EventArgs e)
+        {
+
+            float ratio = (float)graphics.GraphicsDevice.Viewport.Width / (float)graphics.GraphicsDevice.Viewport.Height;
+            cam.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(80), ratio, 0.1f, 1000f); //= new Camera(graphics.GraphicsDevice.Viewport.Width / graphics.GraphicsDevice.Viewport.Height);
         }
 
         /// <summary>
@@ -592,6 +604,7 @@ namespace KaroXNA
         /// <param name="gameTime">Elapsed time</param>
         private void UpdateInput(GameTime gameTime)
         {
+            newKeyboardState = Keyboard.GetState();
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.gameState = GameState.MENU;
 
@@ -673,6 +686,13 @@ namespace KaroXNA
             if (Keyboard.GetState().IsKeyUp(Keys.R) && Mouse.GetState().MiddleButton == ButtonState.Released)
                 rPresssed = false;
             #endregion
+
+            if (newKeyboardState.IsKeyUp(Keys.F11) && oldKeyboardState.IsKeyDown(Keys.F11))
+            {
+                graphics.ToggleFullScreen();
+                Window_ClientSizeChanged(null, null);
+            }
+
 
             if (Keyboard.GetState().IsKeyUp(Keys.Space))
             {
@@ -874,6 +894,8 @@ namespace KaroXNA
                 }
             }
             #endregion
+
+            oldKeyboardState = newKeyboardState;
         }
 
         /// <summary>
@@ -922,6 +944,7 @@ namespace KaroXNA
                     {
                         foreach (BasicEffect e in mesh.Effects)
                         {
+                            e.PreferPerPixelLighting = true;
                             e.EnableDefaultLighting();
                             if (computerIsThinking)
                             {
@@ -942,6 +965,7 @@ namespace KaroXNA
                     {
                         foreach (BasicEffect e in mesh.Effects)
                         {
+
                             e.EnableDefaultLighting();
                             e.World = transforms[mesh.ParentBone.Index] * roomMatrix;
                             e.Projection = cam.Projection;

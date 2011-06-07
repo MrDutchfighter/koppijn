@@ -274,6 +274,7 @@ namespace KaroXNA
             else if (currentMenu == MenuState.OPTIONS)
             {
                 menuList.Add(new MenuItem("Back"));
+                menuList.Add(new MenuItem("Resolutions"));
             }
         }
     }
