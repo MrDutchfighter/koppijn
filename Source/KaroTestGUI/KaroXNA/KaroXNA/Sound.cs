@@ -49,6 +49,13 @@ namespace KaroXNA
             player.URL = "http://livestreams.omroep.nl/npo/3fm-bb"; //3fm
             player.controls.play();
         }
+        public void PlaySlamFM() {
+            player.controls.stop();
+            player.URL = "http://www.true.nl/streams/slamfmlivestream.asx"; //3fm
+            player.controls.play();
+        }
+
+         
         /// <summary>
         /// Stop the musicplayer
         /// </summary>
@@ -60,6 +67,7 @@ namespace KaroXNA
             switch (rotate) {
                 case 1: this.Play3FM(); break;
                 case 2: this.PlayQMusic(); break;
+                case 3: this.PlaySlamFM(); break;
                 default :
                     this.rotate=0;
                     this.Stop();
@@ -69,7 +77,7 @@ namespace KaroXNA
 
         public void goLeft() {
             if (rotate == 0) {
-                this.rotate = 2;
+                this.rotate = 3;
             }
             else
             {
