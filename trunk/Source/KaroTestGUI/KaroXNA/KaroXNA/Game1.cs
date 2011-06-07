@@ -89,7 +89,7 @@ namespace KaroXNA
         /// <summary>
         /// Constructor
         /// </summary>
-        public Game1(){
+        public Game1() {
             
             moveToList = new List<Tile>();
             IsFixedTimeStep = false;
@@ -458,7 +458,6 @@ namespace KaroXNA
             int to          = positionTo.Y * BOARDWIDTH + positionTo.X;     //De tile waar de pawn eerst op stond.
             int from        = positionFrom.Y * BOARDWIDTH + positionFrom.X; // De bewogen tile, ook plaats van de pawn
             int fromTile    = tileFrom.Y * BOARDWIDTH + tileFrom.X; // de locatie waar de bewogen tile eerst stond.
-
 
             #region Beweeg de oorspronkelijke tile terug var: movedTile
             Tile movedTile = this.TileComponents[from];
@@ -898,7 +897,7 @@ namespace KaroXNA
         }
 
         /// <summary>
-        /// Draws the whore game
+        /// Draws the whole game
         /// </summary>
         /// <param name="gameTime">Elapsed time</param>
         protected override void Draw(GameTime gameTime)
@@ -919,10 +918,7 @@ namespace KaroXNA
                             e.EnableDefaultLighting();
                             if (computerIsThinking)
                             {
-
-                                e.World =
-
-                                    Matrix.CreateTranslation(0, 200, (float)Math.Sin(hourGlassSinus) * 10)
+                                e.World = Matrix.CreateTranslation(0, 200, (float)Math.Sin(hourGlassSinus) * 10)
                                     * Matrix.CreateRotationZ(MathHelper.ToRadians(hourGlassRotation))
                                     * transforms[mesh.ParentBone.Index] 
                                     * Matrix.CreateWorld(new Vector3(33f, -10f, 60f), Vector3.Forward, Vector3.Up); //offset to middle of board
@@ -933,10 +929,7 @@ namespace KaroXNA
                             }
                             e.Projection = cam.Projection;
                             e.View = cam.View;
-
-                            
                         }
-
                     }
                     else
                     {
