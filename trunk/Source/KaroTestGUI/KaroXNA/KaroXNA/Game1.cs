@@ -69,7 +69,7 @@ namespace KaroXNA
         public bool leftMouseDown;
 
         bool f1Pressed;
-        bool tPressed, rPresssed;
+        bool tPressed, rPresssed,radioLeftPressed,radioRightPressed;
         #endregion
 
         #region Camera Properties
@@ -108,6 +108,8 @@ namespace KaroXNA
             
             spacePressed = false;
             f1Pressed = false;
+            this.radioLeftPressed = false;
+            this.radioRightPressed = false;
             insertionCount = 0;
             undoTimer = 0;
 
@@ -180,7 +182,6 @@ namespace KaroXNA
             gameMenu.DrawOrder = 1000; //draw last
             Components.Add(gameMenu);
             Components.Add(new Hud(this, spriteBatch));
-            Sound.Instance(this).playTheme();
             tileModel = Content.Load<Model>("tile");
             pieceModel = Content.Load<Model>("piece");
             roomModel = Content.Load<Model>("room");
@@ -684,6 +685,24 @@ namespace KaroXNA
             if (Keyboard.GetState().IsKeyUp(Keys.F1))
                 f1Pressed = false;
 
+            if (Keyboard.GetState().IsKeyDown(Keys.OemOpenBrackets)) { radioLeftPressed = true; }
+            if (Keyboard.GetState().IsKeyDown(Keys.OemCloseBrackets)) { radioRightPressed = true; }
+
+            if (radioLeftPressed){
+                if (Keyboard.GetState().IsKeyUp(Keys.OemOpenBrackets)){
+                    radioLeftPressed = false;
+                    Sound.Instance().goLeft();
+                }
+            }
+
+            if (radioRightPressed) {
+                if (Keyboard.GetState().IsKeyUp(Keys.OemCloseBrackets)){
+                    radioRightPressed = false;
+                    Sound.Instance().goRight();
+                }
+            }
+
+            
 
             #region Handle Mouse
             //Disable moving while computer is calculating move
