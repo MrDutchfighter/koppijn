@@ -73,13 +73,19 @@ namespace KaroXNA
 
             //background
 
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Created By: \n\r\n\r");
+            sb.AppendLine("Alex Steenbruggen\n\r");
+            sb.AppendLine("Sebastiaan Wezenberg\n\r");
+            sb.AppendLine("Ilian Spoor\n\r");
+            sb.AppendLine("Robert Raaijmakers\n\r");
+            sb.AppendLine("Lucas Pekel\n\r");
+            sb.AppendLine("Khai Pham\n\r\n\r\n\r");
+            sb.AppendLine("Windesheim, Minor Gaming 2011\n\r");
+            sb.AppendLine("\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r");
+
             creditsList = new List<String>();
-            creditsList.Add("Alex Steenbruggen");
-            creditsList.Add("Sebastiaan Wezenberg");
-            creditsList.Add("Ilian Spoor");
-            creditsList.Add("Robert Raaijmakers");
-            creditsList.Add("Lucas Pekel");
-            creditsList.Add("Khai Pham");
+            creditsList.Add(sb.ToString());
             Texture2D backgroundImage = game.Content.Load<Texture2D>("koppijnkaro");
             background = new ScrollingBackground(GraphicsDevice, backgroundImage, 100);
         }
@@ -114,15 +120,15 @@ namespace KaroXNA
 
                 if (menuState == MenuState.CREDITS)
                 {
-                    if (creditFontPosition.Y < GraphicsDevice.Viewport.Height)
-                        creditFontPosition.Y = creditFontPosition.Y + 5;
+                    if (creditFontPosition.Y > 0)
+                        creditFontPosition.Y = creditFontPosition.Y - 2;
                     else
                     {
-                        creditFontPosition.Y = 0;
                         if (selectedCreditName < creditsList.Count - 1)
                             selectedCreditName++;
                         else
                             selectedCreditName = 0;
+                        creditFontPosition.Y = spriteFont.MeasureString(creditsList[selectedCreditName]).Y;
                     }
                 }
             }
