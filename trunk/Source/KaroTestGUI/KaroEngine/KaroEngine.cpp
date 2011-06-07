@@ -11,7 +11,7 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION;
 		this->insertionCount = 0;
-		this->maxDepth = 1;
+		this->maxDepth = 3;
 		this->evaluationScore = 0;
 		this->visitedList = new VisitedList();
 		this->markedRed=0;
@@ -907,7 +907,7 @@ namespace KaroEngine
 		return hash;
 	}
 	
-	long KaroEngine::GetHash(long hash,Move *move){
+	long KaroEngine::GetHash(long hash, Move *move){
 		int topLeftCorner = (this->boardTop * BOARDWIDTH) + this->boardLeft;
 
 		if(move->tileFrom >0){

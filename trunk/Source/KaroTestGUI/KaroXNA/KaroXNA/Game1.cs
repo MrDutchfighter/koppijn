@@ -495,8 +495,6 @@ namespace KaroXNA
                             if (!computerIsThinking){
                                 Thread t = new Thread(new ThreadStart(ThreadedMove));
                                 t.Start();
-                                //if (engine.GetGameState() != KaroEngine.GameState.INSERTION)
-                                    //computerIsThinking = true;
                             }
                         }
                     }
