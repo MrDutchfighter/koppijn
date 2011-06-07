@@ -998,7 +998,6 @@ namespace KaroEngine
 		return randomNumber;
 	}
 
-
 	/**													//
 	* --------------- DO MOVE ------------------------	//
 	*/													//
