@@ -2,63 +2,102 @@
 #include <msclr\marshal_cppstd.h>
 #include "KaroEngineWrapper.h"
 
-
 using namespace msclr::interop;
 using namespace KaroEngine;
 
+/**
+* Constructor
+*/
 KaroEngineWrapper::KaroEngineWrapper(void)
 {
 	_karoEngine = new KaroEngine();	
 }
 
+/**
+* Destructor
+*/
 KaroEngineWrapper::~KaroEngineWrapper(void)
 {
 	if(_karoEngine)
 		delete _karoEngine;
 }
 
+/**
+* Gets a tile at the current position (x, y)
+*/
 Tile KaroEngineWrapper::GetByXY(int x, int y){
 	return _karoEngine->GetByXY(x,y);
 }
 
+/**
+* Executes a move
+*/
 bool KaroEngineWrapper::DoMove(int from, int to, int tile){	
 	return _karoEngine->DoMove(from,to,tile);
 }
 
+/**
+* Returns the state of the game
+*/
 GameState KaroEngineWrapper::GetGameState(){
 	return _karoEngine->GetGameState();
 }
 
+/**
+* Get the turn
+*/
 Player KaroEngineWrapper::GetTurn()
 {
 	return _karoEngine->GetTurn();
 }
 
+/**
+* Insert a tile with x, y
+*/
 bool KaroEngineWrapper::InsertByXY(int x, int y) {
 	int position=(y*_karoEngine->BOARDWIDTH)+x;
 	Move * v = new Move(position);
 	return _karoEngine->DoMove(v);
 }
 
-int KaroEngineWrapper::GetBoardTop(){
+/**
+* Get the top board boundary
+*/
+int KaroEngineWrapper::GetBoardTop() {
 	return _karoEngine->boardTop;
 }
-int KaroEngineWrapper::GetBoardLeft(){
+
+/**
+* Get the left board boundary
+*/
+int KaroEngineWrapper::GetBoardLeft() {
 	return _karoEngine->boardLeft;
 }
-int KaroEngineWrapper::GetBoardRight(){
 
+/**
+* Get the right board boundary
+*/
+int KaroEngineWrapper::GetBoardRight() {
 	return _karoEngine->boardRight;
 }
-int KaroEngineWrapper::GetBoardBottom(){
+
+/**
+* Get the bottom board boundary
+*/
+int KaroEngineWrapper::GetBoardBottom() {
 	return _karoEngine->boardBottom;
 }
 
-
+/**
+* Return the evaluation score
+*/
 int KaroEngineWrapper::GetEvaluationScore(){
 	return _karoEngine->GetEvaluationScore();
 }
 
+/**
+* Calculates a computer move and return an array with the correct move (posFrom, posTo, tileFrom)
+*/
 array<int>^ KaroEngineWrapper::CalculateComputerMove(){
 
 	Move* calculatedMove = _karoEngine->CalculateComputerMove();
@@ -74,13 +113,18 @@ array<int>^ KaroEngineWrapper::CalculateComputerMove(){
 		theMove[3] = 0;
 	
 	return theMove;
-	
 }
 
+/**
+* Gets the content of the message log
+*/
 String ^KaroEngineWrapper::GetMessageLog(){
 	return marshal_as<String ^>(_karoEngine->GetMessageLog());
 }
 
+/**
+* Get an array of possible moves
+*/
 array<array<int>^>^ KaroEngineWrapper::GetPossibleMoves(int x, int y,int tileFromX,int tileFromY){
 	vector<Move*>* possibleMoves = _karoEngine->GetPossibleMoves((y*_karoEngine->BOARDWIDTH+x));
 	
@@ -108,6 +152,9 @@ array<array<int>^>^ KaroEngineWrapper::GetPossibleMoves(int x, int y,int tileFro
 	return params;
 }
 
+/**
+* Undo the last move, returns the last move
+*/
 array<int>^ KaroEngineWrapper::UndoLastMove() {
 	_karoEngine->UndoMove(_karoEngine->lastMove);
 
