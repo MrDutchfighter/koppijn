@@ -896,7 +896,7 @@ namespace KaroXNA
                     {
                         foreach (BasicEffect e in mesh.Effects)
                         {
-                            //e.EnableDefaultLighting();
+                            e.EnableDefaultLighting();
                             e.World = transforms[mesh.ParentBone.Index] * roomMatrix;
                             e.Projection = cam.Projection;
                             e.View = cam.View;
