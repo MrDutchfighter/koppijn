@@ -1,0 +1,282 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:Pipeline="Microsoft.Xna.Framework.Content.Pipeline" xmlns:Framework="Microsoft.Xna.Framework" xmlns:Processors="Microsoft.Xna.Framework.Content.Pipeline.Processors">
+  <Asset Type="Pipeline:BuildItemCollection">
+    <Item>
+      <Source>teapot.X</Source>
+      <Name>teapot</Name>
+      <Importer>XImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\teapot.xnb</Output>
+      <Time>2011-06-01T12:10:14.2586342+02:00</Time>
+      <Dependency>
+        <Key>obj\x86\Debug\teapot_0.xml</Key>
+        <Value>2011-06-01T13:54:30.8139746+02:00</Value>
+      </Dependency>
+    </Item>
+    <Item>
+      <Source>tile.FBX</Source>
+      <Name>tile</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>CustomModelProcessor</Processor>
+      <Parameters>
+        <Data Key="ResizeTexturesToPowerOfTwo">True</Data>
+      </Parameters>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\tile.xnb</Output>
+      <Time>2011-06-01T12:10:14.3226379+02:00</Time>
+      <Dependency>
+        <Key>obj\x86\Debug\tile_0.xml</Key>
+        <Value>2011-06-01T13:54:33.6931392+02:00</Value>
+      </Dependency>
+      <Request>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\FBX\FFD3235E\tile.fbm\wood_0.xnb</Request>
+    </Item>
+    <Item>
+      <Source>piece.FBX</Source>
+      <Name>piece</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>CustomModelProcessor</Processor>
+      <Parameters>
+        <Data Key="ResizeTexturesToPowerOfTwo">True</Data>
+      </Parameters>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\piece.xnb</Output>
+      <Time>2011-06-01T12:10:14.2706349+02:00</Time>
+      <Dependency>
+        <Key>obj\x86\Debug\piece_0.xml</Key>
+        <Value>2011-06-01T13:54:34.1971681+02:00</Value>
+      </Dependency>
+    </Item>
+    <Item>
+      <Source>room.FBX</Source>
+      <Name>room</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+      <Parameters>
+        <Data Key="ResizeTexturesToPowerOfTwo">True</Data>
+      </Parameters>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\room.xnb</Output>
+      <Time>2011-06-07T10:14:02.149496+02:00</Time>
+      <Dependency>
+        <Key>obj\x86\Debug\room_0.xml</Key>
+        <Value>2011-06-07T10:14:12.5600914+02:00</Value>
+      </Dependency>
+      <Request>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\FBX\36236D\room.fbm\wood%20texture_0.xnb</Request>
+      <Request>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\FBX\36236D\room.fbm\JJGreenRoofBrickUWallUtexture_0.xnb</Request>
+      <Request>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\FBX\36236D\room.fbm\WW-047_0.xnb</Request>
+    </Item>
+    <Item>
+      <Source>MenuFont.spritefont</Source>
+      <Name>MenuFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\MenuFont.xnb</Output>
+      <Time>2011-06-01T12:10:14.2996365+02:00</Time>
+    </Item>
+    <Item>
+      <Source>SpriteFont1.spritefont</Source>
+      <Name>SpriteFont1</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\SpriteFont1.xnb</Output>
+      <Time>2011-06-01T12:10:14.307637+02:00</Time>
+    </Item>
+    <Item>
+      <Source>koppijnkaro.jpg</Source>
+      <Name>koppijnkaro</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\koppijnkaro.xnb</Output>
+      <Time>2011-06-01T12:10:14.2976364+02:00</Time>
+    </Item>
+    <Item>
+      <Source>menubackground.jpg</Source>
+      <Name>menubackground</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Parameters>
+        <Data Key="ResizeTexturesToPowerOfTwo">True</Data>
+      </Parameters>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\menubackground.xnb</Output>
+      <Time>2011-06-01T12:10:14.2816355+02:00</Time>
+    </Item>
+    <Item>
+      <Source>Hud.png</Source>
+      <Name>Hud</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\Hud.xnb</Output>
+      <Time>2011-06-01T12:10:14.2856357+02:00</Time>
+    </Item>
+    <Item>
+      <Source>Red.png</Source>
+      <Name>Red</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\Red.xnb</Output>
+      <Time>2011-06-01T12:10:14.3286382+02:00</Time>
+    </Item>
+    <Item>
+      <Source>White.png</Source>
+      <Name>White</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\White.xnb</Output>
+      <Time>2011-06-01T12:10:14.2656346+02:00</Time>
+    </Item>
+    <Item>
+      <Source>teapot.X</Source>
+      <Importer>XImporter</Importer>
+      <Options>IntermediateFile, DontCacheImportedData</Options>
+      <Output>obj\x86\Debug\teapot_0.xml</Output>
+      <Time>2011-06-01T12:10:14.2586342+02:00</Time>
+    </Item>
+    <Item>
+      <Source>tile.FBX</Source>
+      <Importer>FbxImporter</Importer>
+      <Options>IntermediateFile, DontCacheImportedData</Options>
+      <Output>obj\x86\Debug\tile_0.xml</Output>
+      <Time>2011-06-01T12:10:14.3226379+02:00</Time>
+    </Item>
+    <Item>
+      <Source>obj\x86\Debug\FBX\FFD3235E\tile.fbm\wood.jpg</Source>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Parameters>
+        <Data Key="ColorKeyColor" Type="Framework:Color">FFFF00FF</Data>
+        <Data Key="ColorKeyEnabled" Type="bool">true</Data>
+        <Data Key="TextureFormat" Type="Processors:TextureProcessorOutputFormat">DxtCompressed</Data>
+        <Data Key="GenerateMipmaps" Type="bool">true</Data>
+        <Data Key="ResizeToPowerOfTwo" Type="bool">true</Data>
+        <Data Key="PremultiplyAlpha" Type="bool">true</Data>
+      </Parameters>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\FBX\FFD3235E\tile.fbm\wood_0.xnb</Output>
+      <Time>2011-06-01T13:54:33.5921335+02:00</Time>
+    </Item>
+    <Item>
+      <Source>piece.FBX</Source>
+      <Importer>FbxImporter</Importer>
+      <Options>IntermediateFile, DontCacheImportedData</Options>
+      <Output>obj\x86\Debug\piece_0.xml</Output>
+      <Time>2011-06-01T12:10:14.2706349+02:00</Time>
+    </Item>
+    <Item>
+      <Source>room.FBX</Source>
+      <Importer>FbxImporter</Importer>
+      <Options>IntermediateFile, DontCacheImportedData</Options>
+      <Output>obj\x86\Debug\room_0.xml</Output>
+      <Time>2011-06-07T10:14:02.149496+02:00</Time>
+    </Item>
+    <Item>
+      <Source>obj\x86\Debug\FBX\36236D\room.fbm\WW-047.jpg</Source>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Parameters>
+        <Data Key="ColorKeyColor" Type="Framework:Color">FFFF00FF</Data>
+        <Data Key="ColorKeyEnabled" Type="bool">true</Data>
+        <Data Key="TextureFormat" Type="Processors:TextureProcessorOutputFormat">DxtCompressed</Data>
+        <Data Key="GenerateMipmaps" Type="bool">true</Data>
+        <Data Key="ResizeToPowerOfTwo" Type="bool">true</Data>
+        <Data Key="PremultiplyAlpha" Type="bool">true</Data>
+      </Parameters>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\FBX\36236D\room.fbm\WW-047_0.xnb</Output>
+      <Time>2011-06-07T10:14:10.628981+02:00</Time>
+    </Item>
+    <Item>
+      <Source>stagecleared.wav</Source>
+      <Name>stagecleared</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\stagecleared.xnb</Output>
+      <Time>2011-06-01T14:21:55.1070227+02:00</Time>
+    </Item>
+    <Item>
+      <Source>obj\x86\Debug\FBX\36236D\room.fbm\wood%20texture.jpg</Source>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Parameters>
+        <Data Key="ColorKeyColor" Type="Framework:Color">FFFF00FF</Data>
+        <Data Key="ColorKeyEnabled" Type="bool">true</Data>
+        <Data Key="TextureFormat" Type="Processors:TextureProcessorOutputFormat">DxtCompressed</Data>
+        <Data Key="GenerateMipmaps" Type="bool">true</Data>
+        <Data Key="ResizeToPowerOfTwo" Type="bool">true</Data>
+        <Data Key="PremultiplyAlpha" Type="bool">true</Data>
+      </Parameters>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\FBX\36236D\room.fbm\wood%20texture_0.xnb</Output>
+      <Time>2011-06-07T10:14:10.6229806+02:00</Time>
+    </Item>
+    <Item>
+      <Source>obj\x86\Debug\FBX\36236D\room.fbm\JJGreenRoofBrickUWallUtexture.jpg</Source>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Parameters>
+        <Data Key="ColorKeyColor" Type="Framework:Color">FFFF00FF</Data>
+        <Data Key="ColorKeyEnabled" Type="bool">true</Data>
+        <Data Key="TextureFormat" Type="Processors:TextureProcessorOutputFormat">DxtCompressed</Data>
+        <Data Key="GenerateMipmaps" Type="bool">true</Data>
+        <Data Key="ResizeToPowerOfTwo" Type="bool">true</Data>
+        <Data Key="PremultiplyAlpha" Type="bool">true</Data>
+      </Parameters>
+      <Options>None</Options>
+      <Output>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\FBX\36236D\room.fbm\JJGreenRoofBrickUWallUtexture_0.xnb</Output>
+      <Time>2011-06-07T10:14:10.6259808+02:00</Time>
+    </Item>
+    <BuildSuccessful>true</BuildSuccessful>
+    <Settings>
+      <TargetPlatform>Windows</TargetPlatform>
+      <TargetProfile>Reach</TargetProfile>
+      <BuildConfiguration>Debug</BuildConfiguration>
+      <CompressContent>false</CompressContent>
+      <RootDirectory>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNAContent\</RootDirectory>
+      <LoggerRootDirectory>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\</LoggerRootDirectory>
+      <IntermediateDirectory>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNAContent\obj\x86\Debug\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\KaroXNA\KaroXNA\bin\x86\Debug\Content\</OutputDirectory>
+    </Settings>
+    <Assemblies>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.XImporter.dll</Key>
+        <Value>2010-08-23T12:41:18+02:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.VideoImporters.dll</Key>
+        <Value>2010-08-23T12:41:18+02:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.TextureImporter.dll</Key>
+        <Value>2010-08-23T12:41:18+02:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.FBXImporter.dll</Key>
+        <Value>2010-08-23T12:41:18+02:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.EffectImporter.dll</Key>
+        <Value>2010-08-23T12:41:18+02:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.AudioImporters.dll</Key>
+        <Value>2010-08-23T12:41:18+02:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Users\Sebastiaan\Desktop\koppijn\Source\KaroTestGUI\ModelProcessor\bin\x86\Debug\CustomModelProcessor.dll</Key>
+        <Value>2011-06-01T13:54:22.7385127+02:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
+        <Value>2011-04-12T11:01:54.4463615+02:00</Value>
+      </Assembly>
+    </Assemblies>
+  </Asset>
+</XnaContent>
