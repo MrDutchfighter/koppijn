@@ -38,6 +38,7 @@ namespace KaroXNA
         private int hourGlassRotation = 0;
         private float hourGlassSinus = 0f;
         public bool computerIsThinking = false;
+
         #endregion
 
         #region Engine Properties
@@ -49,6 +50,7 @@ namespace KaroXNA
         double undoTimer;
         bool moveUndone;
         bool startUndoTimer = false;
+        bool didLastMove;
 
         Dictionary<int, Tile> TileComponents;
         Dictionary<int, Piece> PieceComponents;
@@ -58,6 +60,7 @@ namespace KaroXNA
         public int[] move;
         public short[] BoxIndexes { get; set; }
         public bool ShowBoxes { get; set; }
+
         #endregion   
 
         #region Input Properties
@@ -142,6 +145,7 @@ namespace KaroXNA
 
             dss = new DepthStencilState();
             dss.DepthBufferEnable = true;
+            didLastMove = false;
         }
 
         /// <summary>
@@ -264,7 +268,6 @@ namespace KaroXNA
         /// <param name="tile">Index of tile to</param>
         /// <param name="tileFrom">Index of tile from</param>
         private void DoMove(int piece, int tile, int tileFrom) {
-
             if (tileFrom >= 0) {
                 if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
                     Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
@@ -289,6 +292,8 @@ namespace KaroXNA
                         Point location2 = TileComponents[tile].Location;                        
                         if (engine.InsertByXY(location2.X, location2.Y)){
                             this.ShowMove(location2, location2, location2);
+                            startUndoTimer = true;
+                            moveUndone = false;
                         }
                     }
                 }
@@ -385,8 +390,11 @@ namespace KaroXNA
         /// <param name="tileFrom">Tile from</param>
         private void ShowMove(Point positionFrom, Point positionTo, Point tileFrom)
         {
-            if (engine.GetGameState() == KaroEngine.GameState.INSERTION || this.StartingPieces.Count != 0) {
-                if (this.selectedStartingPiece >= 0){
+            didLastMove = didLastMove ? false : true;
+            if (engine.GetGameState() == KaroEngine.GameState.INSERTION || this.StartingPieces.Count != 0)
+            {
+                if (this.selectedStartingPiece >= 0)
+                {
                     Piece p = this.StartingPieces[this.selectedStartingPiece];
                     p.IsSelected = false;
                     this.ClearSelectedItems();
@@ -396,9 +404,12 @@ namespace KaroXNA
                     Components.Add(p);
                     this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, p);
                 }
-            } else {
+            }
+            else
+            {
                 this.ClearSelectedItems();
-                if (tileFrom.X > 0) {
+                if (tileFrom.X > 0)
+                {
                     Tile movedTile = this.TileComponents[tileFrom.Y * BOARDWIDTH + tileFrom.X];
                     this.TileComponents.Remove(tileFrom.Y * BOARDWIDTH + tileFrom.X);
                     movedTile.Location = positionTo;
@@ -410,25 +421,31 @@ namespace KaroXNA
                 movedPiece.MoveTo(this.TileComponents[(positionTo.Y * BOARDWIDTH) + positionTo.X]);
                 KaroEngine.Tile t = engine.GetByXY(positionTo.X, positionTo.Y);
                 bool flipping;
-                
+
                 int direction = (int)Math.Floor(MathHelper.ToDegrees((float)Math.Atan2(positionFrom.Y - positionTo.Y, positionFrom.X - positionTo.X)));
 
-                if (t == KaroEngine.Tile.REDMARKED || t == KaroEngine.Tile.WHITEMARKED) {
+                if (t == KaroEngine.Tile.REDMARKED || t == KaroEngine.Tile.WHITEMARKED)
+                {
                     flipping = true;
-                } else {
+                }
+                else
+                {
                     flipping = false;
                 }
 
-                if (flipping != movedPiece.IsFlipped) 
+                if (flipping != movedPiece.IsFlipped)
                 {
                     movedPiece.IsFlipped = flipping;
                     movedPiece.rotateDegrees = direction;
-                } else {
+                }
+                else
+                {
                     movedPiece.rotateDegrees = 360;
                 }
-                
+
                 this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, movedPiece);
             }
+            
         }
 
         /// <summary>
@@ -483,6 +500,11 @@ namespace KaroXNA
             {
                 this.undoTimer = gameTime.TotalGameTime.TotalMilliseconds;
                 startUndoTimer = false;
+            }
+
+            if (didLastMove && (gameTime.TotalGameTime.TotalMilliseconds - undoTimer) > 1000 && engine.GetGameState() != KaroEngine.GameState.GAMEFINISHED)
+            {
+                ThreadedMove();
             }
 
             if (gameState == GameState.PLAYING)
@@ -552,6 +574,8 @@ namespace KaroXNA
 
                 this.ShowMove(positionFrom, positionTo, tileFrom);
                 this.PauseDrawing = false;
+                startUndoTimer = true;
+                moveUndone = false;
             }
         }
 
