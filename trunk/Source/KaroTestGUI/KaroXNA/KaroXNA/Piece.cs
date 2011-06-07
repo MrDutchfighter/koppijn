@@ -200,23 +200,23 @@ namespace KaroXNA
                         if (distance < (totalDistance / 2))
                         {
                             if (world.Translation.Y > 3.4f && this.rotateDegrees == 1000) {
-                                y = -0.07f; //insertionstate
+                                y = -0.21f; //insertionstate - -0.07f
                             }
                             else if ((world.Translation.Y > 1 && IsFlipped))
                             {
-                                y = -0.11f; //to marked
+                                y = -0.33f; //to marked - -0.11f
                             }
                             else if(!IsFlipped && world.Translation.Y > 3.4f){
-                                y = -0.043f; //to unmarked
+                                y = -0.129f; //to unmarked - -0.043f
                             }
                             else
-                            {
+                            { 
                                 y = 0;
                             }
                         }
                         else
                         {
-                            y = 0.07f;
+                            y = 0.21f; //0.07f
                         }
                     }
                     else { y = 0; }
@@ -265,11 +265,11 @@ namespace KaroXNA
                     Matrix boxWorld = Matrix.Identity;
                     foreach (BasicEffect e in mesh.Effects)
                     {
-                        //e.EnableDefaultLighting();
-                        e.LightingEnabled = true;
-                        e.DirectionalLight0.Enabled = true;
-                        e.DirectionalLight0.DiffuseColor = XNAColor.White.ToVector3();
-                        e.DirectionalLight0.Direction = new Vector3(1, -1, 0);
+                        e.EnableDefaultLighting();
+                        //e.LightingEnabled = true;
+                        //e.DirectionalLight0.Enabled = true;
+                        //e.DirectionalLight0.DiffuseColor = XNAColor.White.ToVector3();
+                        //e.DirectionalLight0.Direction = new Vector3(1, -1, 0);
 
 
                         e.PreferPerPixelLighting = true;
