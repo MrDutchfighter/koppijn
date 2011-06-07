@@ -5,6 +5,7 @@ namespace KaroXNA
 {
     public class Camera
     {
+        #region Properties
         public  Matrix View, Projection;
 		public  Vector3 CameraPosition;
 
@@ -19,8 +20,13 @@ namespace KaroXNA
         bool restore = false;
 
         private Vector3 CenterBoard = new Vector3(40f, 5f, 30f);
+        #endregion
 
-		public Camera(float aspectRatio)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="aspectRatio">Aspectratio of screen</param>
+        public Camera(float aspectRatio)
 		{
             this.CameraPosition = new Vector3(0f, 20f, 20f);
             this.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(80), 1.3f, 0.1f, 1000f);
@@ -52,10 +58,11 @@ namespace KaroXNA
 
             this.XAngle += angle;
 
-            //if (this.XAngle > 45)
-            //    this.XAngle = 45f;
-            //if (this.XAngle < -135)
-            //    this.XAngle = -135;
+            // Limit angle
+            if (this.XAngle > 45)
+                this.XAngle = 45f;
+            if (this.XAngle < -135)
+                this.XAngle = -135;
 
             // Zorgen dat hij niet gaat flippen op 45 graden
             if (this.XAngle == -45f && angle > 0)
@@ -76,8 +83,8 @@ namespace KaroXNA
 
             ZoomValue += value;
 
-            if (ZoomValue <= 0) { ZoomValue = 0.01f; }
-            if (ZoomValue >= 10) { ZoomValue = 10f; }
+            if (ZoomValue <= 0.02f) { ZoomValue = 0.02f; }
+            if (ZoomValue >= 10f) { ZoomValue = 10f; }
 
             this.UpdateView();
         }
