@@ -32,8 +32,8 @@ namespace KaroXNA
         {
             //marioTheme.Play();
             
-            player.URL = "http://livestreams.omroep.nl/npo/3fm-bb";
-            player.controls.play();
+            //player.URL = "http://livestreams.omroep.nl/npo/3fm-bb"; //3fm
+            //player.controls.play();
         }
 
         public static Sound Instance(Game game)

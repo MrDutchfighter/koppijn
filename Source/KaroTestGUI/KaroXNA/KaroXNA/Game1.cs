@@ -909,6 +909,7 @@ namespace KaroXNA
                     Thread.Sleep(1);
                 }
                 foreach (var item in this.StartingPieces){
+                    if (PauseDrawing) { break; }
                     item.Draw(gameTime);
                 }
                 while (PauseDrawing)
@@ -916,6 +917,7 @@ namespace KaroXNA
                     Thread.Sleep(1);
                 }
                 foreach (var item in this.moveToList){
+                    if (PauseDrawing) { break; }
                     item.Draw(gameTime);
                 }
             }
