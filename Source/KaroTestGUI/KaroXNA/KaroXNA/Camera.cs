@@ -29,7 +29,10 @@ namespace KaroXNA
         public Camera(float aspectRatio)
 		{
             this.CameraPosition = new Vector3(0f, 20f, 20f);
-            this.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(80), 1.3f, 0.1f, 2000f);
+            this.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 1.3f, 0.1f, 2000f);
+
+            this.SetFixedViewPlayerTwo();
+            
             this.UpdateView();
 		}
 
@@ -131,7 +134,7 @@ namespace KaroXNA
 
             this.YAngle = 0f;
             this.XAngle = 0f;
-            this.ZoomValue = 1f;
+            this.ZoomValue = 2.5f;
 
             this.UpdateView();
         }
@@ -145,7 +148,7 @@ namespace KaroXNA
 
             this.YAngle = 180f;
             this.XAngle = 0f;
-            this.ZoomValue = 1f;
+            this.ZoomValue = 2.5f;
 
             this.UpdateView();
         }
