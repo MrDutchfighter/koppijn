@@ -288,8 +288,8 @@ namespace KaroXNA
                     players += "2";
                 }
                 menuList.Add(new MenuItem(players));
+                //menuList.Add(new MenuItem("Resolutions"));
                 menuList.Add(new MenuItem("Back"));
-                menuList.Add(new MenuItem("Resolutions"));
             }
         }
     }
