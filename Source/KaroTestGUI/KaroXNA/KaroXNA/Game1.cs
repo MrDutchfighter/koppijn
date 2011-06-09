@@ -977,9 +977,8 @@ namespace KaroXNA
 
                     mesh.Draw();
                 }
-                if (this.insertionCount > 0) {
-                    while (PauseDrawing)
-                    {
+                if (engine.GetGameState() == KaroEngine.GameState.INSERTION) {
+                    while (PauseDrawing){
                         Thread.Sleep(1);
                     }
                     foreach (var item in this.StartingPieces)
