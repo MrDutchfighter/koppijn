@@ -977,12 +977,16 @@ namespace KaroXNA
 
                     mesh.Draw();
                 }
-                while (PauseDrawing) {
-                    Thread.Sleep(1);
-                }
-                foreach (var item in this.StartingPieces){
-                    if (PauseDrawing) { break; }
-                    item.Draw(gameTime);
+                if (this.insertionCount > 0) {
+                    while (PauseDrawing)
+                    {
+                        Thread.Sleep(1);
+                    }
+                    foreach (var item in this.StartingPieces)
+                    {
+                        if (PauseDrawing) { break; }
+                        item.Draw(gameTime);
+                    }
                 }
                 while (PauseDrawing)
                 {
