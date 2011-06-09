@@ -29,7 +29,7 @@ namespace KaroXNA
         public Camera(float aspectRatio)
 		{
             this.CameraPosition = new Vector3(0f, 20f, 20f);
-            this.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(80), 1.3f, 0.1f, 1000f);
+            this.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(80), 1.3f, 0.1f, 2000f);
             this.UpdateView();
 		}
 
