@@ -31,6 +31,8 @@ namespace KaroXNA
         KeyboardState newKeyboardState;
         KeyboardState oldKeyboardState;
 
+        int lamp1Index, lamp2Index;
+
         public Menu gameMenu;
         public GameState gameState;
 
@@ -193,7 +195,14 @@ namespace KaroXNA
             pieceModel = Content.Load<Model>("piece");
             roomModel = Content.Load<Model>("room");
             this.NewGame();
-            
+            for(int i =0;i<roomModel.Meshes.Count;i++){
+                if (roomModel.Meshes[i].Name.Equals("Lamp1")) {
+                    this.lamp1Index = i;
+                }
+                else if (roomModel.Meshes[i].Name.Equals("Lamp002")) {
+                    this.lamp2Index = i;
+                }
+            }
         }
 
         /// <summary>
@@ -934,15 +943,19 @@ namespace KaroXNA
         {
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.DepthStencilState = dss;
-            if (gameState == GameState.PLAYING) {                
+            if (gameState == GameState.PLAYING)
+            {
                 Matrix[] transforms = new Matrix[roomModel.Bones.Count];
                 roomModel.CopyAbsoluteBoneTransformsTo(transforms);
 
                 foreach (ModelMesh mesh in roomModel.Meshes)
                 {
                     graphics.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
-                    if (mesh.Name.Equals("hourglass"))
+
+                    if (mesh.Name.Equals("Lamp1") || mesh.Name.Equals("Lamp002"))
                     {
+                    }
+                    else if (mesh.Name.Equals("hourglass")) {
                         foreach (BasicEffect e in mesh.Effects)
                         {
                             e.PreferPerPixelLighting = true;
@@ -951,7 +964,7 @@ namespace KaroXNA
                             {
                                 e.World = Matrix.CreateTranslation(0, 200, (float)Math.Sin(hourGlassSinus) * 10)
                                     * Matrix.CreateRotationZ(MathHelper.ToRadians(hourGlassRotation))
-                                    * transforms[mesh.ParentBone.Index] 
+                                    * transforms[mesh.ParentBone.Index]
                                     * Matrix.CreateWorld(new Vector3(33f, -10f, 60f), Vector3.Forward, Vector3.Up); //offset to middle of board
                             }
                             else
@@ -961,23 +974,25 @@ namespace KaroXNA
                             e.Projection = cam.Projection;
                             e.View = cam.View;
                         }
+                        mesh.Draw();
                     }
                     else
                     {
-                        foreach (BasicEffect e in mesh.Effects)
-                        {
-
+                        foreach (BasicEffect e in mesh.Effects) {
                             e.EnableDefaultLighting();
                             e.World = transforms[mesh.ParentBone.Index] * roomMatrix;
                             e.Projection = cam.Projection;
                             e.View = cam.View;
                         }
+                        mesh.Draw();
                     }
 
-                    mesh.Draw();
+                    
                 }
-                if (engine.GetGameState() == KaroEngine.GameState.INSERTION) {
-                    while (PauseDrawing){
+                if (engine.GetGameState() == KaroEngine.GameState.INSERTION)
+                {
+                    while (PauseDrawing)
+                    {
                         Thread.Sleep(1);
                     }
                     foreach (var item in this.StartingPieces)
@@ -990,15 +1005,37 @@ namespace KaroXNA
                 {
                     Thread.Sleep(1);
                 }
-                foreach (var item in this.moveToList){
+                foreach (var item in this.moveToList)
+                {
                     if (PauseDrawing) { break; }
                     item.Draw(gameTime);
                 }
+                // Roep de base draw aan van andere klasse
+                base.Draw(gameTime);
+
+                // teken lamp 1 en 2 nadat de ase is getekend.
+                foreach (BasicEffect e in this.roomModel.Meshes[this.lamp1Index].Effects) {
+                    e.EnableDefaultLighting();
+                    e.World = transforms[this.roomModel.Meshes[this.lamp1Index].ParentBone.Index] * roomMatrix;
+                    e.Projection = cam.Projection;
+                    e.View = cam.View;
+                }
+                this.roomModel.Meshes[this.lamp1Index].Draw();
+                foreach (BasicEffect e in this.roomModel.Meshes[this.lamp2Index].Effects) {
+                    e.EnableDefaultLighting();
+                    e.World = transforms[this.roomModel.Meshes[this.lamp2Index].ParentBone.Index] * roomMatrix;
+                    e.Projection = cam.Projection;
+                    e.View = cam.View;
+                }
+                this.roomModel.Meshes[this.lamp2Index].Draw();
+            }
+            else {
+                // Roep de base draw aan van andere klasse
+                base.Draw(gameTime);
             }
 
 
-            // Roep de base draw aan van andere klasse
-            base.Draw(gameTime);
+            
             // Draw FPS (Teken NADAT het menu getekend wordt, anders verdwijnt hij achter de background)
             spriteBatch.Begin();
             Vector2 pos = new Vector2((GraphicsDevice.Viewport.Width - (((gameMenu.spriteFont.MeasureString("FPS: " + FPS).X + 10)/100)*60)), (GraphicsDevice.Viewport.Height - 24));
