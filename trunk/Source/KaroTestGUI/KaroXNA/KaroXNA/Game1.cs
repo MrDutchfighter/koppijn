@@ -206,7 +206,6 @@ namespace KaroXNA
 
         void Window_ClientSizeChanged(object sender, EventArgs e)
         {
-
             float ratio = (float)graphics.GraphicsDevice.Viewport.Width / (float)graphics.GraphicsDevice.Viewport.Height;
             cam.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(80), ratio, 0.1f, 1000f); //= new Camera(graphics.GraphicsDevice.Viewport.Width / graphics.GraphicsDevice.Viewport.Height);
         }
