@@ -5,14 +5,12 @@
 
 namespace KaroEngine 
 {
-	KaroEngine::KaroEngine(void)
-	{
+	KaroEngine::KaroEngine(void) {
 		this->board = new Tile[BOARDWIDTH * BOARDWIDTH];
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION;
 		this->insertionCount = 0;
-		this->maxDepth = 1;
-		this->evaluationScore = 0;
+		this->maxDepth = 4;
 		this->visitedList = new VisitedList();
 		this->markedRed=0;
 		this->markedWhite=0;
@@ -102,8 +100,8 @@ namespace KaroEngine
 					return false;
 			}
 		}
-
-		vector<Move*>* moves= this->GetPossibleMoves(from);
+		vector<Move*>* moves = new vector<Move*>();
+		this->GetPossibleMoves(from,moves);
 		for(int i=0;i<moves->size();i++){
 			if(moves->at(i)->positionTo == to && moves->at(i)->positionFrom == from && moves->at(i)->tileFrom == tileFrom) {
 				move = moves->at(i);
@@ -192,9 +190,7 @@ namespace KaroEngine
 									return true;
 							}
 						}
-					}
-					else
-					{
+					} else {
 						// Check opposite direction
 						if(board[(lastMove - possibleSteps[i])] == marked)
 						{
@@ -364,13 +360,13 @@ namespace KaroEngine
 		// Loop through all the stones of the current player
 		if(forPlayer == Player::RED) {
 			for(std::map<int, bool>::iterator it = this->redPieces.begin(); it != this->redPieces.end(); ++it) {
-				vector<Move*> *moves = GetPossibleMoves(it->first);
-				possibleMoves->insert(possibleMoves->end(), moves->begin(), moves->end());
+				GetPossibleMoves(it->first,possibleMoves);
+				//possibleMoves->insert(possibleMoves->end(), moves->begin(), moves->end());
 			}
 		} else if(forPlayer == Player::WHITE) {
 			for(std::map<int, bool>::iterator it = this->whitePieces.begin(); it != this->whitePieces.end(); ++it) {
-				vector<Move*> *moves = GetPossibleMoves(it->first);
-				possibleMoves->insert(possibleMoves->end(), moves->begin(), moves->end());
+				GetPossibleMoves(it->first,possibleMoves);
+				//possibleMoves->insert(possibleMoves->end(), moves->begin(), moves->end());
 			}
 		}
 
@@ -380,18 +376,15 @@ namespace KaroEngine
 	/**
 	* Get all the possible moves from the current tile
 	*/
-	vector<Move*>* KaroEngine::GetPossibleMoves(int curTile) {
-
-		vector<Move*> *possibleMoves = new vector<Move*>();
-
-		if(this->board[curTile]==Tile::EMPTY || 
+	void KaroEngine::GetPossibleMoves(int curTile,vector<Move*>* possibleMoves) {
+		/*if(this->board[curTile]==Tile::EMPTY || 
 			this->board[curTile]==Tile::BORDER ||
 			(turn==Player::RED && this->board[curTile]==Tile::WHITEMARKED) ||
 			(turn==Player::RED && this->board[curTile]==Tile::WHITEUNMARKED) ||
 			(turn==Player::WHITE && this->board[curTile]==Tile::REDMARKED) ||
 			(turn==Player::WHITE && this->board[curTile]==Tile::REDUNMARKED)) {
-				return new vector<Move*>();
-		} 
+				return;
+		}*/
 		
 		/*
 		for(int i=0;i<289;i++){
@@ -401,17 +394,13 @@ namespace KaroEngine
 		}*/
 
 		// Check all the possible (normal) moves
-		for(int i=0; i<8; i++) {
-				// Kan ik verplaatsen naar deze tegel
-
+		for(int i=0; i<8; i++) { // Kan ik verplaatsen naar deze tegel
 			if(board[curTile+possibleSteps[i]] == Tile::SOLIDTILE ||
 				board[curTile+possibleSteps[i]] == Tile::MOVEABLETILE ||
 				(moveableTiles.size() > 0 && GetAmountConnectedNeighbours(curTile+possibleSteps[i]) > 0 && board[curTile+possibleSteps[i]] == Tile::EMPTY)) {
-					
 					// Willen we een tegel mee verplaatsen?
 					if(board[curTile+possibleSteps[i]] == Tile::EMPTY) {
 						for each(std::pair<int,int> j in moveableTiles) {
-
 							int neighbours = 1;
 							if(i == 0 || i == 2 || i == 5 || i == 7) {
 								//Tile tempTile= board[j.first];
@@ -441,7 +430,6 @@ namespace KaroEngine
 						// Willen we een tegel mee verplaatsen?
 						if(board[curTile+possibleJumps[i]] == Tile::EMPTY) {
 							for each(std::pair<int,int> j in moveableTiles) {
-
 								int neighbours = 1;
 								if(i == 0 || i == 2 || i == 5 || i == 7) {
 									//Tile tempTile= board[j.first];
@@ -460,20 +448,18 @@ namespace KaroEngine
 				}
 			}
 		}
-
-		return possibleMoves;
+		return;
 	}
 
 	/**
 	* Checks & transforms neighbours and self for movable tiles
 	*/
-	void KaroEngine::TransformToMovableTiles(int tileNumber, bool checkNeighbours = true, bool checkDiagonalNeighbours = false) {
+	void KaroEngine::TransformToMovableTiles(int tileNumber) {
 		//return;
 		// Staat er niks op deze tile?
 		if(board[tileNumber] == Tile::SOLIDTILE || board[tileNumber] == Tile::MOVEABLETILE) {
-			
 			//if(board[tileNumber] == Tile::MOVEABLETILE) {
-				moveableTiles.erase(tileNumber);
+				//moveableTiles.erase(tileNumber);
 			//}
 			board[tileNumber] = Tile::EMPTY;
 
@@ -505,10 +491,10 @@ namespace KaroEngine
 			else {
 				board[tileNumber] = Tile::SOLIDTILE;
 			}
-		} else {
-			moveableTiles.erase(tileNumber);
-		}
-
+		} //else {
+			//moveableTiles.erase(tileNumber);
+		//}
+		/*
 		// Check the neighbours
 		if(checkNeighbours) {
 			if(this->board[tileNumber-1] != Tile::BORDER) {
@@ -540,6 +526,7 @@ namespace KaroEngine
 				TransformToMovableTiles(tileNumber+(BOARDWIDTH-1), false);
 			}
 		}
+		*/
 	}
 
 	/**
@@ -548,7 +535,7 @@ namespace KaroEngine
 	void KaroEngine::TransformToMoveableTiles() {
 		moveableTiles.clear();
 		for(std::map<int,int>::iterator it = this->allEmptyTiles.begin(); it != this->allEmptyTiles.end(); ++it) {
-			TransformToMovableTiles(it->first, false, false);
+			TransformToMovableTiles(it->first);
 		}
 	}
 
@@ -600,24 +587,6 @@ namespace KaroEngine
 		return AmountTiles;
 	}
 
-	/**
-	* Can someone place his 'marble' here
-	*/
-	bool KaroEngine::FreeForMove(int tile)
-	{
-		if(board[tile] == Tile::SOLIDTILE || board[tile] == Tile::MOVEABLETILE) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	* Does this tile takes part in the game
-	*/
-	bool KaroEngine::IsGameTile(int tile)
-	{
-		return (board[tile] != Tile::EMPTY && board[tile] != Tile::BORDER);
-	}
 
 	/**													//
 	* --------------- Algorithm functions ---------		//
@@ -634,35 +603,32 @@ namespace KaroEngine
 		Move *bestMove = new Move();
 		if(turn == Player::RED) {
 			bestMove->score = INT_MIN; // Int32.MinValue
-		} else {
-			bestMove->score = INT_MAX; // Int32.MaxValue
-		}
-
-		//First check if the score is already know, then evaluate. 
-		if(depth != 0) {
-
-			if(turn == Player::RED) {
+			//First check if the score is already know, then evaluate. 
+			if(depth!=0){
 				map<int,pair<int,int>>::iterator it = transpositionTableRed.find(hash);
-				if (it != transpositionTableRed.end())
-				{
+				if (it != transpositionTableRed.end()) {
 					bestMove->score = it->second.second;
 					return bestMove;
 				}
-			} else {
+			}
+		} else {
+			bestMove->score = INT_MAX; // Int32.MaxValue
+			//First check if the score is already know, then evaluate. 
+			if(depth != 0) {
 				map<int,pair<int,int>>::iterator it = transpositionTableWhite.find(hash);
 				if (it != transpositionTableWhite.end())
 				{
 					bestMove->score = it->second.second;
 					return bestMove;
 				}
-			} 
+			}
 		}
 
 		// If maximum depth is reached
 		if(depth == maxDepth) {
 			bestMove->score = evaluationScore;
 			return bestMove;
-		}		
+		}
 
 		// Find next moves for the current player
 		vector<Move*> * possibleMoves = GetPossibleMoves(turn);
@@ -673,7 +639,6 @@ namespace KaroEngine
 		for(int i=0; i < possibleMoves->size(); i++) {
 			// Execute the move
 			DoMove(possibleMoves->at(i));
-
 			currentHash = GetHash(hash, possibleMoves->at(i));
 
 			// Was this the winning move? (has to be here, because IsWinner needs the last move...)

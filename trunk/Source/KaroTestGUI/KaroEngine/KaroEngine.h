@@ -56,7 +56,6 @@ namespace KaroEngine
 		Tile * board;
 		Player turn;
 		int insertionCount;
-		int evaluationScore;		
 		int possibleSteps[8];
 		int possibleJumps[8];			
 		
@@ -88,7 +87,7 @@ namespace KaroEngine
 		Move * MiniMax(Player p, int depth, int alpha, int beta,long hash, int currentEvaluation);
 		int GetAmountConnectedTilesRecursive(int tileNumber);
 		int GetAmountConnectedNeighbours(int tileNumber);
-		void TransformToMovableTiles(int tileNumber, bool checkNeighbours, bool checkDiagonalNeighbours);
+		void TransformToMovableTiles(int tileNumber);
 		void TransformToMoveableTiles();
 
 		// Do Move
@@ -136,7 +135,7 @@ namespace KaroEngine
 
 		// Get possible moves
 		vector<Move*> * GetPossibleMoves(Player forPlayer);
-		vector<Move*> * GetPossibleMoves(int tile);
+		void GetPossibleMoves(int tile,vector<Move*>* possibleMoves);
 
 		// Algorithm functions
 		Move* CalculateComputerMove();
