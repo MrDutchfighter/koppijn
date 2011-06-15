@@ -50,6 +50,7 @@ namespace KaroXNA
         #region Engine Properties
         public KaroEngine.KaroEngineWrapper engine;
         public const int BOARDWIDTH = 17;
+        private Thread t;                           // Engine thread
 
         public int insertionCount;
 
@@ -213,6 +214,11 @@ namespace KaroXNA
             Content.Unload();
         }
 
+        /// <summary>
+        /// Handler for when the user resizes the window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void Window_ClientSizeChanged(object sender, EventArgs e)
         {
             float ratio = (float)graphics.GraphicsDevice.Viewport.Width / (float)graphics.GraphicsDevice.Viewport.Height;
@@ -298,6 +304,7 @@ namespace KaroXNA
         /// <param name="tile">Index of tile to</param>
         /// <param name="tileFrom">Index of tile from</param>
         private void DoMove(int piece, int tile, int tileFrom) {
+
             if (tileFrom >= 0) {
                 if (engine.GetGameState() == KaroEngine.GameState.PLAYING) {
                     Point location = PieceComponents[this.selectedPiece].OnTopofTile.Location;
@@ -313,17 +320,20 @@ namespace KaroXNA
                         //start undo timer
                         startUndoTimer = true;
                         moveUndone = false;
+                        didLastMove = true;
                     }
                 }
             }
+
             if (tile >= 0) { //If the move should be on a tile
                 if (engine.GetGameState() == KaroEngine.GameState.INSERTION) {
                     if (this.selectedStartingPiece >= 0) {
                         Point location2 = TileComponents[tile].Location;                        
                         if (engine.InsertByXY(location2.X, location2.Y)){
                             this.ShowMove(location2, location2, location2);
-                            startUndoTimer = true;
+                            startUndoTimer = false; // TODO :: Build in undo move in insertion state (why not just restart the game in this early stage?)
                             moveUndone = false;
+                            didLastMove = true;
                         }
                     }
                 }
@@ -340,10 +350,12 @@ namespace KaroXNA
                         this.ClearSelectedItems();
                         if (engine.DoMove(from, to, -1)) {
                             this.ShowMove(location, location2, new Point());
+
+                            //start undo timer
+                            startUndoTimer = true;
+                            moveUndone = false;
+                            didLastMove = true;
                         }
-                        //start undo timer
-                        startUndoTimer = true;
-                        moveUndone = false;
                     }
                 }
             }
@@ -364,6 +376,9 @@ namespace KaroXNA
                             StartingPieces[piece].IsSelected = true;
                             this.selectedStartingPiece = piece;
                     }
+                    startUndoTimer = false; // TODO :: Build in undo move in insertion state (why not just restart the game in this early stage?)
+                    moveUndone = false;
+                    didLastMove = true;
                 }
                 if (engine.GetGameState() == KaroEngine.GameState.PLAYING ) {
                     
@@ -420,7 +435,6 @@ namespace KaroXNA
         /// <param name="tileFrom">Tile from</param>
         private void ShowMove(Point positionFrom, Point positionTo, Point tileFrom)
         {
-            didLastMove = didLastMove ? false : true;
             if (engine.GetGameState() == KaroEngine.GameState.INSERTION || this.StartingPieces.Count != 0)
             {
                 if (this.selectedStartingPiece >= 0)
@@ -533,7 +547,8 @@ namespace KaroXNA
 
             if (didLastMove && (gameTime.TotalGameTime.TotalMilliseconds - undoTimer) > 1000 && engine.GetGameState() != KaroEngine.GameState.GAMEFINISHED && singlePlayer)
             {
-                ThreadedMove();
+                t = new Thread(new ThreadStart(ThreadedMove));
+                t.Start();
             }
 
             if (gameState == GameState.PLAYING)
@@ -544,7 +559,7 @@ namespace KaroXNA
 
                         if (engine.GetGameState() == KaroEngine.GameState.PLAYING || engine.GetGameState() == KaroEngine.GameState.INSERTION || this.StartingPieces.Count != 0){
                             if (!computerIsThinking){
-                                Thread t = new Thread(new ThreadStart(ThreadedMove));
+                                t = new Thread(new ThreadStart(ThreadedMove));
                                 t.Start();
                             }
                         }
@@ -574,8 +589,16 @@ namespace KaroXNA
         /// </summary>
         private void ThreadedMove()
         {
+            didLastMove = false;
             lock (engine) {
                 Player player = engine.GetTurn();
+
+                // Sets var for undoAllowed
+                bool undoAllowed = true;
+                if (engine.GetGameState() == KaroEngine.GameState.INSERTION)
+                {
+                    undoAllowed = false;
+                }
 
                 this.computerIsThinking = true;
                 move = engine.CalculateComputerMove();
@@ -603,7 +626,8 @@ namespace KaroXNA
 
                 this.ShowMove(positionFrom, positionTo, tileFrom);
                 this.PauseDrawing = false;
-                startUndoTimer = true;
+
+                startUndoTimer = undoAllowed;
                 moveUndone = false;
             }
         }
@@ -738,8 +762,6 @@ namespace KaroXNA
                 }
             }
 
-            
-
             #region Handle Mouse
             //Disable moving while computer is calculating move
             if (!computerIsThinking)
@@ -841,13 +863,14 @@ namespace KaroXNA
                     
                     if (StartingClick.Count > 0) {
                         if (index != 0){
-                            if (results[index].Key < StartingClick.First().Key){
+                            if (results[index].Key < StartingClick.First().Key) {
+                                didLastMove = true;
                                 DoMove(StartingClick.First().Value, -1, -1);
                                 results.Clear();
                                 moveableClick.Clear();
                             }
                         }
-                        else{
+                        else {
                             DoMove(StartingClick.First().Value, -1, -1);
                         }
                     }
@@ -882,7 +905,7 @@ namespace KaroXNA
 
                 if (oldMouseState.RightButton == ButtonState.Pressed)
                 {
-                    if ((gameTime.TotalGameTime.TotalMilliseconds - this.undoTimer) < 1000 && !moveUndone)
+                    if ((gameTime.TotalGameTime.TotalMilliseconds - this.undoTimer) < 1000 && !moveUndone && engine.GetGameState() == KaroEngine.GameState.PLAYING)
                     {
                         //undo
                         int[] move = engine.UndoLastMove();
