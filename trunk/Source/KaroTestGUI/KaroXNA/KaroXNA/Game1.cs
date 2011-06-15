@@ -320,7 +320,6 @@ namespace KaroXNA
                         //start undo timer
                         startUndoTimer = true;
                         moveUndone = false;
-                        didLastMove = true;
                     }
                 }
             }
@@ -333,7 +332,6 @@ namespace KaroXNA
                             this.ShowMove(location2, location2, location2);
                             startUndoTimer = false; // TODO :: Build in undo move in insertion state (why not just restart the game in this early stage?)
                             moveUndone = false;
-                            didLastMove = true;
                         }
                     }
                 }
@@ -354,7 +352,6 @@ namespace KaroXNA
                             //start undo timer
                             startUndoTimer = true;
                             moveUndone = false;
-                            didLastMove = true;
                         }
                     }
                 }
@@ -378,7 +375,6 @@ namespace KaroXNA
                     }
                     startUndoTimer = false; // TODO :: Build in undo move in insertion state (why not just restart the game in this early stage?)
                     moveUndone = false;
-                    didLastMove = true;
                 }
                 if (engine.GetGameState() == KaroEngine.GameState.PLAYING ) {
                     
@@ -420,8 +416,6 @@ namespace KaroXNA
                                 }
                             }
                         }
-
-
                     }
                 }
             }
@@ -435,6 +429,9 @@ namespace KaroXNA
         /// <param name="tileFrom">Tile from</param>
         private void ShowMove(Point positionFrom, Point positionTo, Point tileFrom)
         {
+
+            didLastMove = didLastMove ? false : true;
+
             if (engine.GetGameState() == KaroEngine.GameState.INSERTION || this.StartingPieces.Count != 0)
             {
                 if (this.selectedStartingPiece >= 0)
@@ -547,8 +544,11 @@ namespace KaroXNA
 
             if (didLastMove && (gameTime.TotalGameTime.TotalMilliseconds - undoTimer) > 1000 && engine.GetGameState() != KaroEngine.GameState.GAMEFINISHED && singlePlayer)
             {
-                t = new Thread(new ThreadStart(ThreadedMove));
-                t.Start();
+                if (!computerIsThinking)
+                {
+                    t = new Thread(new ThreadStart(ThreadedMove));
+                    t.Start();
+                }
             }
 
             if (gameState == GameState.PLAYING)
@@ -589,7 +589,6 @@ namespace KaroXNA
         /// </summary>
         private void ThreadedMove()
         {
-            didLastMove = false;
             lock (engine) {
                 Player player = engine.GetTurn();
 
