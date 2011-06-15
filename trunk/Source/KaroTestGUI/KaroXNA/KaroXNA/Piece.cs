@@ -58,17 +58,12 @@ namespace KaroXNA
             IsSelected = false;
             world = onTopofTile.TileMatrix;
             world *= Matrix.CreateTranslation(0f, 1f, 0f);
-        }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            ib = new IndexBuffer(GraphicsDevice, typeof(short), game.BoxIndexes.Length, BufferUsage.None);
-            ib.SetData<short>(game.BoxIndexes);
+            ib = new IndexBuffer(game.GraphicsDevice, typeof(short), this.game.BoxIndexes.Length, BufferUsage.None);
+            ib.SetData<short>(this.game.BoxIndexes);
 
             BoundingBox b = (BoundingBox)PieceModel.Tag;
-            VertexPositionColor[]  points = new VertexPositionColor[8];
+            VertexPositionColor[] points = new VertexPositionColor[8];
 
             //front
             points[0] = new VertexPositionColor(new Vector3(b.Min.X, b.Min.Y, b.Min.Z), XNAColor.Gold);
@@ -81,16 +76,23 @@ namespace KaroXNA
             points[6] = new VertexPositionColor(new Vector3(b.Min.X, b.Max.Y, b.Max.Z), XNAColor.Gold);
             points[7] = new VertexPositionColor(new Vector3(b.Max.X, b.Max.Y, b.Max.Z), XNAColor.Gold);
 
-            vb = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 8, BufferUsage.None);
+            vb = new VertexBuffer(this.game.GraphicsDevice, typeof(VertexPositionColor), 8, BufferUsage.None);
             vb.SetData<VertexPositionColor>(points);
 
-            effect = new BasicEffect(GraphicsDevice);
+            effect = new BasicEffect(this.game.GraphicsDevice);
             effect.VertexColorEnabled = true;
 
             rsWire.CullMode = CullMode.None;
             rsWire.FillMode = FillMode.WireFrame;
 
             rsSolid.FillMode = FillMode.Solid;
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            
         }
         private double CalculateDistance(Vector3 p1, Vector3 p2){
             return Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Z - p2.Z, 2));
@@ -319,17 +321,18 @@ namespace KaroXNA
                     if (game.ShowBoxes)
                     {
                         //Draw bounding box
-                        GraphicsDevice.RasterizerState = rsWire; //wire box
+
+                        game.GraphicsDevice.RasterizerState = rsWire; //wire box
                         effect.World = boxWorld;
                         //effect.World = Matrix.Identity;
                         effect.View = game.cam.View;
                         effect.Projection = game.cam.Projection;
                         effect.CurrentTechnique.Passes[0].Apply();
 
-                        GraphicsDevice.SetVertexBuffer(vb);
-                        GraphicsDevice.Indices = ib;
-                        GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vb.VertexCount, 0, ib.IndexCount / 3);
-                        GraphicsDevice.RasterizerState = rsSolid; //reset
+                        game.GraphicsDevice.SetVertexBuffer(vb);
+                        game.GraphicsDevice.Indices = ib;
+                        game.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vb.VertexCount, 0, ib.IndexCount / 3);
+                        game.GraphicsDevice.RasterizerState = rsSolid; //reset
                     }
                 }
             }
