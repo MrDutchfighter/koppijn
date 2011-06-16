@@ -275,10 +275,12 @@ namespace KaroXNA
                 t.TileMatrix *= Matrix.CreateTranslation(0f, -1f, 0f);
                 Piece p = new Piece(this, pieceModel, true, t, Color.White.ToVector3());
                 this.StartingPieces.Add(p);
+                this.Components.Add(p);
                 t = new Tile(this, tileModel, false, new Point(i + 7, 4));
                 t.TileMatrix *= Matrix.CreateTranslation(0f, -1f, 0f);
                 p = new Piece(this, pieceModel, true, t, Color.White.ToVector3());
-                this.StartingPieces.Add(p);                
+                this.StartingPieces.Add(p);
+                this.Components.Add(p);
             }
 
             //Red pawns
@@ -288,10 +290,12 @@ namespace KaroXNA
                 t.TileMatrix *= Matrix.CreateTranslation(0f, -1f, 0f);
                 Piece p = new Piece(this, pieceModel, true, t, Color.Tomato.ToVector3());
                 this.StartingPieces.Add(p);
+                this.Components.Add(p);
                 t = new Tile(this, tileModel, false, new Point(i + 7, 10));
                 t.TileMatrix *= Matrix.CreateTranslation(0f, -1f, 0f);
                 p = new Piece(this, pieceModel, true, t, Color.Tomato.ToVector3());
                 this.StartingPieces.Add(p);
+                this.Components.Add(p);
             }
 
 
@@ -442,7 +446,6 @@ namespace KaroXNA
                     StartingPieces.Remove(p);
                     p.rotateDegrees = 1000;
                     p.MoveTo(this.TileComponents[positionTo.Y * BOARDWIDTH + positionTo.X]);
-                    Components.Add(p);
                     this.PieceComponents.Add(positionTo.Y * BOARDWIDTH + positionTo.X, p);
                 }
             }
@@ -1010,18 +1013,6 @@ namespace KaroXNA
                     }
 
                     
-                }
-                if (engine.GetGameState() == KaroEngine.GameState.INSERTION)
-                {
-                    while (PauseDrawing)
-                    {
-                        Thread.Sleep(1);
-                    }
-                    foreach (var item in this.StartingPieces)
-                    {
-                        if (PauseDrawing) { break; }
-                        item.Draw(gameTime);
-                    }
                 }
                 while (PauseDrawing)
                 {

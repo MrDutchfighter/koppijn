@@ -1,3 +1,4 @@
+
 // This is the main DLL file.
 
 #include "stdafx.h"
@@ -10,7 +11,7 @@ namespace KaroEngine
 		this->turn = Player::WHITE;
 		this->gameState = GameState::INSERTION;
 		this->insertionCount = 0;
-		this->maxDepth = 4;
+		this->maxDepth = 3;
 		this->visitedList = new VisitedList();
 		this->markedRed=0;
 		this->markedWhite=0;
